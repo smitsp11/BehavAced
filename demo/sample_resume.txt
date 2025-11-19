@@ -1,0 +1,60 @@
+JANE SMITH
+Software Engineer
+jane.smith@email.com | (555) 123-4567 | linkedin.com/in/janesmith
+
+EDUCATION
+Bachelor of Science in Computer Science
+State University | Expected Graduation: May 2024 | GPA: 3.7/4.0
+
+EXPERIENCE
+
+Software Engineering Intern | TechCorp Inc. | San Francisco, CA | June 2023 - August 2023
+• Led a cross-functional team of 4 interns to develop and launch a new user engagement feature that increased daily active users by 35% within the first month
+• Identified and resolved a critical production bug affecting 200+ customers weekly, reducing customer complaints by 80% and saving an estimated $50K in support costs
+• Collaborated with 3 senior engineers to redesign the mobile app onboarding flow, improving completion rate from 45% to 72%
+• Delivered final project presentation to 50+ stakeholders including C-suite executives, receiving approval for full production deployment
+• Received "Outstanding Intern Award" for technical excellence and leadership
+
+Computer Science Teaching Assistant | State University | September 2022 - May 2023
+• Instructed and mentored 150+ undergraduate students across 3 sections of Introduction to Programming (CS 101)
+• Analyzed course data and identified 40% failure rate in specific module; redesigned teaching materials and introduced peer study groups, reducing failure rate to 15%
+• Provided one-on-one tutoring to 20 at-risk students, with 100% of mentees passing the course
+• Mediated grade disputes and academic integrity cases, maintaining fairness while supporting student learning
+• Developed automated grading scripts that reduced grading time by 60%, allowing more time for student interaction
+
+Hackathon Team Lead | State University Tech Competition | March 2022
+• Organized and led a diverse team of 5 students with no prior collaboration experience for 24-hour hackathon challenge
+• Made strategic decision to pivot project direction 8 hours into competition when initial approach proved technically infeasible
+• Delegated tasks effectively despite interpersonal conflicts, leveraging each team member's strengths (frontend, backend, design, presentation)
+• Secured 2nd place out of 40 competing teams and won $5,000 in prize money plus seed funding for continued development
+• Maintained team morale and motivation during high-pressure situation with minimal sleep
+
+Data Science Intern | Analytics Pro | Remote | Summer 2022
+• Analyzed customer behavior data for e-commerce client, identifying key churn predictors and presenting findings to client leadership
+• Built predictive model using Python and scikit-learn that improved customer retention forecast accuracy by 25%
+• Worked independently on remote team, managing own schedule and meeting all deadlines without direct supervision
+• Communicated complex technical findings to non-technical stakeholders through clear visualizations and presentations
+
+PROJECTS
+
+Course Registration System Redesign | Senior Capstone Project | Spring 2023
+• Led team of 4 to redesign university's outdated course registration system used by 15,000+ students
+• Conducted user research with 100+ students to identify pain points and prioritize features
+• Implemented solution using React, Node.js, and PostgreSQL; deployed MVP that handled 500+ concurrent users
+• Received university innovation award for improving student experience
+
+Personal Finance Tracker | Personal Project | 2022
+• Built full-stack web application to help users track expenses and visualize spending patterns
+• Implemented user authentication, data visualization, and budget alerts
+• Gained 200+ users through word-of-mouth and university promotion
+
+TECHNICAL SKILLS
+Languages: Python, JavaScript, Java, SQL, HTML/CSS
+Frameworks/Tools: React, Node.js, Express, Flask, Git, Docker, PostgreSQL, MongoDB
+Concepts: Data Structures, Algorithms, Machine Learning, Agile/Scrum, REST APIs
+
+LEADERSHIP & ACTIVITIES
+• President, Women in Computer Science Club (2023-2024): Organized 15+ technical workshops and networking events
+• Volunteer Coding Instructor, Local High School (2022-2023): Taught basic programming to 30 underrepresented students
+• Competitive Programming Team Member: Placed top 20% in regional ACM ICPC competition
+

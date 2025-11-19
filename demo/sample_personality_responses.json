@@ -1,0 +1,18 @@
+{
+  "questionnaire_responses": {
+    "work_style": "I'm analytical and detail-oriented, preferring structured approaches to problem-solving. I like to break down complex challenges into manageable steps and work methodically through them. I value data-driven decision making but also recognize when intuition and quick pivots are necessary. I tend to be proactive rather than reactive.",
+    
+    "communication": "I'm direct and concise in professional settings, focusing on clarity and impact. I prefer to get straight to the point while being respectful of others' perspectives. When presenting to executives or stakeholders, I lead with key takeaways and support with data. With peers, I'm more collaborative and open to brainstorming. I'm comfortable presenting to large groups.",
+    
+    "strengths": "Problem-solving under pressure, leadership in ambiguous situations, data analysis, cross-functional collaboration, mentoring others, adaptability",
+    
+    "challenges": "Sometimes I get too focused on details and need to step back for the big picture. I'm working on delegating more effectively and trusting others to own their work. I can also be impatient when processes move slowly.",
+    
+    "interview_goals": "I want to come across as confident but not arrogant, competent but still eager to learn. I tend to undersell my achievements, so I need help articulating impact more clearly.",
+    
+    "target_roles": "Software Engineer, Product Manager, Technical Program Manager at tech companies (Google, Meta, startups)"
+  },
+  
+  "writing_sample": "Last summer, I interned at TechCorp where I led a small team to build a user engagement feature. The project was challenging because we had only 8 weeks and unclear requirements. I started by setting up weekly check-ins with our PM to clarify priorities. Then I broke down the work into 2-week sprints and assigned tasks based on each person's strengths. When we hit a major technical blocker in week 4, I made the call to simplify our approach rather than risk missing the deadline. It was a tough decision because it meant cutting a feature we were excited about, but it was the right choice. We shipped on time, and the feature drove a 35% increase in daily active users. The experience taught me that sometimes good enough and on-time beats perfect and late. I also learned the importance of clear communication - I held daily standups and made sure everyone knew how their work connected to the bigger goal. The team gave me positive feedback about my leadership, especially around creating a collaborative environment where everyone felt heard."
+}
+

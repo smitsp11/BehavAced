@@ -1,0 +1,4 @@
+"""
+AI Prompt Templates
+"""
+

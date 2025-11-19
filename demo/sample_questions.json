@@ -1,0 +1,105 @@
+{
+  "behavioral_questions": {
+    "leadership": [
+      "Tell me about a time you led a team",
+      "Describe a situation where you had to motivate others",
+      "Give me an example of when you had to lead by example",
+      "Tell me about a time you had to lead without formal authority",
+      "Describe a situation where you had to delegate tasks"
+    ],
+    
+    "conflict": [
+      "Tell me about a time you disagreed with a coworker",
+      "Describe a situation where you had to work with a difficult team member",
+      "Give me an example of when you had to resolve a conflict",
+      "Tell me about a time you received critical feedback",
+      "Describe a situation where you had to give someone difficult feedback"
+    ],
+    
+    "failure": [
+      "Tell me about a time you made a mistake",
+      "Describe your biggest professional failure",
+      "Give me an example of when something didn't go as planned",
+      "Tell me about a time you missed a deadline",
+      "Describe a situation where you had to admit you were wrong"
+    ],
+    
+    "problem_solving": [
+      "Tell me about a complex problem you solved",
+      "Describe a time you had to think creatively",
+      "Give me an example of when you used data to make a decision",
+      "Tell me about a time you had to work with incomplete information",
+      "Describe a situation where you improved a process"
+    ],
+    
+    "teamwork": [
+      "Tell me about a successful team project you worked on",
+      "Describe a time you helped a struggling teammate",
+      "Give me an example of when you compromised for the good of the team",
+      "Tell me about a time you worked with a diverse team",
+      "Describe a situation where you depended on others"
+    ],
+    
+    "adaptability": [
+      "Tell me about a time you had to adapt to change",
+      "Describe a situation where priorities shifted unexpectedly",
+      "Give me an example of when you had to learn something new quickly",
+      "Tell me about a time you worked outside your comfort zone",
+      "Describe a situation where you had to pivot your approach"
+    ],
+    
+    "communication": [
+      "Tell me about a time you had to explain something complex",
+      "Describe a presentation you gave to senior leadership",
+      "Give me an example of when you had to persuade someone",
+      "Tell me about a time you had to deliver bad news",
+      "Describe a situation where communication broke down"
+    ],
+    
+    "initiative": [
+      "Tell me about a time you went above and beyond",
+      "Describe a situation where you identified a problem and solved it proactively",
+      "Give me an example of when you took initiative without being asked",
+      "Tell me about a project you started on your own",
+      "Describe a time you improved something that wasn't broken"
+    ]
+  },
+  
+  "company_specific_questions": {
+    "google": [
+      "Tell me about a time you demonstrated Googleyness",
+      "Describe a situation where you showed intellectual humility",
+      "Tell me about a time you made something 10x better"
+    ],
+    
+    "amazon": [
+      "Tell me about a time you used customer obsession",
+      "Describe a situation where you dove deep into a problem",
+      "Tell me about a time you delivered results with limited resources"
+    ],
+    
+    "meta": [
+      "Tell me about a time you moved fast and broke things",
+      "Describe a situation where you were bold",
+      "Tell me about a time you built something people loved"
+    ],
+    
+    "microsoft": [
+      "Tell me about a time you demonstrated growth mindset",
+      "Describe a situation where you created clarity",
+      "Tell me about a time you were customer obsessed"
+    ]
+  },
+  
+  "tricky_questions": [
+    "Why should we hire you?",
+    "What's your greatest weakness?",
+    "Where do you see yourself in 5 years?",
+    "Why are you leaving your current role?",
+    "Tell me about yourself",
+    "Why do you want to work here?",
+    "What's your salary expectation?",
+    "Do you have any questions for me?"
+  ]
+}
+
