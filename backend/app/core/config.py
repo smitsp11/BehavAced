@@ -9,7 +9,9 @@ class Settings(BaseSettings):
     """Application settings"""
     
     # API Keys
-    ANTHROPIC_API_KEY: str
+    # Claude/Anthropic (commented out - using Gemini instead)
+    # ANTHROPIC_API_KEY: str
+    GOOGLE_API_KEY: str  # Google Gemini API key
     OPENAI_API_KEY: Optional[str] = None
     
     # Database
@@ -26,8 +28,10 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     
     # AI Model
-    CLAUDE_MODEL: str = "claude-3-5-sonnet-20241022"
-    MAX_TOKENS: int = 4096
+    # Claude model (commented out - using Gemini instead)
+    # CLAUDE_MODEL: str = "claude-3-5-sonnet-20241022"
+    GEMINI_MODEL: str = "gemini-2.5-flash"  # Google Gemini model
+    MAX_TOKENS: int = 8192  # Gemini supports higher token limits
     TEMPERATURE: float = 0.7
     
     class Config:

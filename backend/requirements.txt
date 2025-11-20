@@ -1,7 +1,8 @@
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
 python-multipart==0.0.9
-anthropic==0.18.1
+# anthropic==0.18.1  # Commented out - using Google Gemini instead
+google-generativeai>=0.8.5
 openai==1.12.0
 supabase==2.3.4
 pydantic==2.6.0
@@ -11,4 +12,8 @@ pypdf2==3.0.1
 python-docx==1.1.0
 sqlalchemy==2.0.25
 psycopg2-binary==2.9.9
+spacy==3.7.2
+sentence-transformers==2.2.2
+scikit-learn==1.4.0
+numpy==1.24.3
 

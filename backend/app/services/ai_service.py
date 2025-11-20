@@ -1,18 +1,32 @@
 """
-AI Service - Handles all Claude API interactions
+AI Service - Handles all Google Gemini API interactions
 """
-from anthropic import Anthropic
+# Claude/Anthropic imports (commented out)
+# from anthropic import Anthropic
 from app.core.config import settings
 from typing import Dict, Any, Optional
 import json
+import google.generativeai as genai
+import os
 
 
 class AIService:
-    """Service for AI model interactions"""
+    """Service for AI model interactions using Google Gemini"""
     
     def __init__(self):
-        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-        self.model = settings.CLAUDE_MODEL
+        # Claude/Anthropic initialization (commented out)
+        # self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        # self.model = settings.CLAUDE_MODEL
+        
+        # Google Gemini initialization
+        api_key = os.getenv("GOOGLE_API_KEY") or getattr(settings, 'GOOGLE_API_KEY', None)
+        if not api_key:
+            raise ValueError("GOOGLE_API_KEY not found in environment variables or settings")
+        
+        genai.configure(api_key=api_key)
+        # Use Gemini model from settings or default
+        model_name = getattr(settings, 'GEMINI_MODEL', 'gemini-2.5-flash')
+        self.model = genai.GenerativeModel(model_name)
     
     async def generate_completion(
         self,
@@ -21,19 +35,26 @@ class AIService:
         temperature: float = None,
         max_tokens: int = None
     ) -> str:
-        """Generate a completion from Claude"""
+        """Generate a completion from Google Gemini"""
         
-        message = self.client.messages.create(
-            model=self.model,
-            max_tokens=max_tokens or settings.MAX_TOKENS,
+        # Combine system and user prompts for Gemini
+        # Gemini doesn't have separate system prompts, so we combine them
+        full_prompt = f"{system_prompt}\n\n{user_prompt}"
+        
+        # Configure generation parameters
+        # Gemini accepts generation_config as a dict or GenerationConfig object
+        generation_config = genai.GenerationConfig(
             temperature=temperature or settings.TEMPERATURE,
-            system=system_prompt,
-            messages=[
-                {"role": "user", "content": user_prompt}
-            ]
+            max_output_tokens=max_tokens or settings.MAX_TOKENS,
         )
         
-        return message.content[0].text
+        # Generate content
+        response = self.model.generate_content(
+            full_prompt,
+            generation_config=generation_config
+        )
+        
+        return response.text
     
     async def generate_structured_completion(
         self,

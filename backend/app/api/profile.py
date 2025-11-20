@@ -1,6 +1,7 @@
 """
 Profile API Routes - User onboarding and profile creation
 """
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, status
 from app.models.schemas import (
     ResumeUploadRequest,
@@ -10,6 +11,7 @@ from app.models.schemas import (
     CommunicationStyle
 )
 from app.services import ai_service, file_service, storage
+from app.services.resume_parser import resume_parser
 import uuid
 
 router = APIRouter()
@@ -22,9 +24,16 @@ async def ingest_profile(request: ResumeUploadRequest):
     
     This endpoint:
     1. Extracts text from uploaded resume
-    2. Analyzes resume using AI
-    3. Creates initial user profile
-    4. Returns user_id for subsequent requests
+    2. Parses resume using traditional NLP (no LLM)
+    3. Extracts structured data: roles, accomplishments, skills, achievements
+    4. Creates initial user profile
+    5. Returns user_id for subsequent requests
+    
+    Focus: Extract narrative spine elements for behavioral interviews:
+    - Role context (team size, scope, KPIs)
+    - Quantified accomplishments
+    - Tech stack and skills
+    - Notable achievements
     """
     try:
         # Extract text from resume
@@ -39,27 +48,68 @@ async def ingest_profile(request: ResumeUploadRequest):
                 detail="Resume text is too short or could not be extracted"
             )
         
-        # Analyze resume with AI
-        resume_analysis = await ai_service.analyze_resume(resume_text)
+        # Parse resume using traditional NLP (no LLM)
+        parsed_resume = resume_parser.parse(resume_text)
         
         # Create user ID
         user_id = storage.create_user_id()
+        
+        # Determine experience level from last role
+        last_role = parsed_resume.get("last_role", {})
+        experience_level = "entry"
+        if last_role:
+            role_title_lower = last_role.get("role_title", "").lower()
+            if any(term in role_title_lower for term in ["senior", "lead", "principal", "director"]):
+                experience_level = "senior"
+            elif any(term in role_title_lower for term in ["mid", "intermediate"]):
+                experience_level = "mid"
+            elif "intern" in role_title_lower:
+                experience_level = "student"
+        
+        # Extract strengths from accomplishments and achievements
+        strengths = []
+        for role in parsed_resume.get("work_experience", []):
+            if role.get("personal_contributions"):
+                strengths.append(f"Strong {role.get('role_title', 'contributions')}")
+            if role.get("quantified_outcomes"):
+                strengths.append("Results-driven with measurable impact")
         
         # Create initial profile (will be completed with personality questionnaire)
         profile_data = {
             "user_id": user_id,
             "resume_text": resume_text,
-            "resume_analysis": resume_analysis,
-            "experience_level": resume_analysis.get("candidate_summary", {}).get("experience_level", "entry"),
-            "profile_complete": False
+            "parsed_resume": parsed_resume,
+            "headline": parsed_resume.get("headline", {}),
+            "last_role": last_role,
+            "work_experience": parsed_resume.get("work_experience", []),
+            "skills": parsed_resume.get("skills", {}),
+            "education": parsed_resume.get("education", {}),
+            "achievements": parsed_resume.get("achievements", []),
+            "embeddings": parsed_resume.get("embeddings", {}),
+            "experience_level": experience_level,
+            "profile_complete": False,
+            "created_at": datetime.now(timezone.utc),
         }
         
         # Save profile
         storage.save_profile(user_id, profile_data)
         
-        # Save extracted experiences as potential stories
-        experiences = resume_analysis.get("experiences", [])
-        storage.save_stories(user_id, experiences)
+        # Save extracted work experiences as potential story candidates
+        # These will be used later for story generation (with LLM) or semantic matching
+        story_candidates = []
+        for role in parsed_resume.get("work_experience", []):
+            for acc in role.get("accomplishments", []):
+                if acc.get("has_quantifier") or acc.get("is_personal_contribution"):
+                    story_candidates.append({
+                        "role_title": role.get("role_title"),
+                        "company": role.get("company"),
+                        "accomplishment": acc.get("text"),
+                        "quantified": acc.get("has_quantifier"),
+                        "tech_used": role.get("tech_stack", []),
+                        "kpis": role.get("kpis", [])
+                    })
+        
+        storage.save_stories(user_id, story_candidates)
         
         return ProfileResponse(
             success=True,
@@ -75,13 +125,13 @@ async def ingest_profile(request: ResumeUploadRequest):
                     "detail_preference": "balanced",
                     "storytelling_style": "narrative"
                 },
-                "strengths": resume_analysis.get("candidate_summary", {}).get("key_strengths", []),
+                "strengths": strengths[:5] if strengths else ["Strong work experience"],
                 "weaknesses": [],
                 "confidence_level": 5,
-                "experience_level": profile_data["experience_level"],
+                "experience_level": experience_level,
                 "created_at": profile_data.get("created_at")
             },
-            message=f"Resume analyzed successfully. Found {len(experiences)} potential stories."
+            message=f"Resume parsed successfully. Found {len(parsed_resume.get('work_experience', []))} roles and {len(story_candidates)} story candidates."
         )
         
     except ValueError as e:
