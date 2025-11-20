@@ -8,13 +8,112 @@ from app.models.schemas import (
     PersonalityQuestionnaireRequest,
     ProfileResponse,
     UserProfile,
-    CommunicationStyle
+    CommunicationStyle,
+    PersonalityTraits
 )
 from app.services import ai_service, file_service, storage
 from app.services.resume_parser import resume_parser
 import uuid
 
 router = APIRouter()
+
+
+def normalize_personality_traits(ai_traits: list) -> list:
+    """
+    Normalize AI-returned personality traits to match PersonalityTraits enum values.
+    
+    Maps synonyms and variations to the allowed enum values:
+    - analytical, creative, detail_oriented, big_picture
+    - collaborative, independent, assertive, diplomatic
+    """
+    if not ai_traits:
+        return []
+    
+    # Mapping from common AI outputs to enum values
+    trait_mapping = {
+        # Analytical variations
+        "analytical": PersonalityTraits.ANALYTICAL,
+        "analytical thinker": PersonalityTraits.ANALYTICAL,
+        "logical": PersonalityTraits.ANALYTICAL,
+        "data-driven": PersonalityTraits.ANALYTICAL,
+        "systematic": PersonalityTraits.ANALYTICAL,
+        
+        # Creative variations
+        "creative": PersonalityTraits.CREATIVE,
+        "innovative": PersonalityTraits.CREATIVE,
+        "imaginative": PersonalityTraits.CREATIVE,
+        
+        # Detail-oriented variations
+        "detail_oriented": PersonalityTraits.DETAIL_ORIENTED,
+        "detail-oriented": PersonalityTraits.DETAIL_ORIENTED,
+        "detail oriented": PersonalityTraits.DETAIL_ORIENTED,
+        "meticulous": PersonalityTraits.DETAIL_ORIENTED,
+        "thorough": PersonalityTraits.DETAIL_ORIENTED,
+        "precise": PersonalityTraits.DETAIL_ORIENTED,
+        
+        # Big picture variations
+        "big_picture": PersonalityTraits.BIG_PICTURE,
+        "big-picture": PersonalityTraits.BIG_PICTURE,
+        "big picture": PersonalityTraits.BIG_PICTURE,
+        "strategic": PersonalityTraits.BIG_PICTURE,
+        "visionary": PersonalityTraits.BIG_PICTURE,
+        "holistic": PersonalityTraits.BIG_PICTURE,
+        
+        # Collaborative variations
+        "collaborative": PersonalityTraits.COLLABORATIVE,
+        "team player": PersonalityTraits.COLLABORATIVE,
+        "team-oriented": PersonalityTraits.COLLABORATIVE,
+        "cooperative": PersonalityTraits.COLLABORATIVE,
+        
+        # Independent variations
+        "independent": PersonalityTraits.INDEPENDENT,
+        "self-directed": PersonalityTraits.INDEPENDENT,
+        "autonomous": PersonalityTraits.INDEPENDENT,
+        "self-reliant": PersonalityTraits.INDEPENDENT,
+        
+        # Assertive variations
+        "assertive": PersonalityTraits.ASSERTIVE,
+        "confident": PersonalityTraits.ASSERTIVE,
+        "decisive": PersonalityTraits.ASSERTIVE,
+        "direct": PersonalityTraits.ASSERTIVE,
+        
+        # Diplomatic variations
+        "diplomatic": PersonalityTraits.DIPLOMATIC,
+        "tactful": PersonalityTraits.DIPLOMATIC,
+        "considerate": PersonalityTraits.DIPLOMATIC,
+        "empathetic": PersonalityTraits.DIPLOMATIC,
+        "sensitive": PersonalityTraits.DIPLOMATIC,
+    }
+    
+    normalized = []
+    seen = set()
+    
+    for trait in ai_traits:
+        if not trait:
+            continue
+        
+        # Normalize: lowercase, strip whitespace
+        trait_lower = str(trait).lower().strip()
+        
+        # Try direct match first
+        if trait_lower in trait_mapping:
+            enum_value = trait_mapping[trait_lower]
+            if enum_value not in seen:
+                normalized.append(enum_value)
+                seen.add(enum_value)
+            continue
+        
+        # Try partial matching (e.g., "detail-oriented person" -> "detail-oriented")
+        for key, enum_value in trait_mapping.items():
+            if key in trait_lower or trait_lower in key:
+                if enum_value not in seen:
+                    normalized.append(enum_value)
+                    seen.add(enum_value)
+                break
+    
+    # If no matches found, return empty list (or could default to a subset)
+    # For now, return empty to avoid validation errors
+    return normalized
 
 
 @router.post("/ingest", response_model=ProfileResponse)
@@ -74,11 +173,39 @@ async def ingest_profile(request: ResumeUploadRequest):
             if role.get("quantified_outcomes"):
                 strengths.append("Results-driven with measurable impact")
         
+        # Transform parsed work experience into resume_analysis format for story generation
+        # This maintains compatibility with the stories endpoint which expects resume_analysis.experiences
+        experiences_for_stories = []
+        for role in parsed_resume.get("work_experience", []):
+            # Convert each role into a format suitable for story generation
+            experience_entry = {
+                "title": role.get("role_title", ""),
+                "company": role.get("company", ""),
+                "date_range": role.get("date_range", ""),
+                "description": role.get("raw_text", ""),
+                "accomplishments": [acc.get("text") for acc in role.get("accomplishments", [])],
+                "quantified_outcomes": role.get("quantified_outcomes", []),
+                "tech_stack": role.get("tech_stack", []),
+                "team_context": role.get("team_context", {}),
+                "kpis": role.get("kpis", [])
+            }
+            experiences_for_stories.append(experience_entry)
+        
+        # Create resume_analysis structure for compatibility with story generation
+        resume_analysis = {
+            "experiences": experiences_for_stories,
+            "candidate_summary": {
+                "experience_level": experience_level,
+                "key_strengths": strengths[:5] if strengths else []
+            }
+        }
+        
         # Create initial profile (will be completed with personality questionnaire)
         profile_data = {
             "user_id": user_id,
             "resume_text": resume_text,
             "parsed_resume": parsed_resume,
+            "resume_analysis": resume_analysis,  # Add for story generation compatibility
             "headline": parsed_resume.get("headline", {}),
             "last_role": last_role,
             "work_experience": parsed_resume.get("work_experience", []),
@@ -172,11 +299,19 @@ async def analyze_personality(request: PersonalityQuestionnaireRequest):
         
         profile_data = storage.get_profile(user_id) or {}
         
+        # Ensure created_at exists (use existing or create new)
+        if "created_at" not in profile_data or profile_data.get("created_at") is None:
+            profile_data["created_at"] = datetime.now(timezone.utc)
+        
+        # Normalize personality traits to enum values
+        ai_traits = personality_analysis.get("personality_traits", [])
+        normalized_traits = normalize_personality_traits(ai_traits)
+        
         # Update with personality data
         profile_data.update({
             "user_id": user_id,
             "personality_analysis": personality_analysis,
-            "personality_traits": personality_analysis.get("personality_traits", []),
+            "personality_traits": normalized_traits,  # Use normalized traits
             "communication_style": personality_analysis.get("communication_style", {}),
             "strengths": personality_analysis.get("strengths", []),
             "weaknesses": personality_analysis.get("weaknesses", []),
@@ -191,13 +326,13 @@ async def analyze_personality(request: PersonalityQuestionnaireRequest):
             user_id=user_id,
             profile={
                 "user_id": user_id,
-                "personality_traits": profile_data.get("personality_traits", []),
+                "personality_traits": normalized_traits,  # Use normalized traits
                 "communication_style": profile_data.get("communication_style", {}),
                 "strengths": profile_data.get("strengths", []),
                 "weaknesses": profile_data.get("weaknesses", []),
                 "confidence_level": profile_data.get("confidence_level", 5),
                 "experience_level": profile_data.get("experience_level", "entry"),
-                "created_at": profile_data.get("created_at")
+                "created_at": profile_data.get("created_at")  # Now guaranteed to exist
             },
             message="Personality profile created successfully"
         )
@@ -221,12 +356,22 @@ async def get_profile(user_id: str):
             detail="Profile not found"
         )
     
+    # Ensure created_at exists (should already be set, but handle edge case)
+    if "created_at" not in profile_data or profile_data.get("created_at") is None:
+        profile_data["created_at"] = datetime.now(timezone.utc)
+        storage.save_profile(user_id, profile_data)
+    
+    # Normalize personality traits if they exist (in case they were stored as strings)
+    personality_traits = profile_data.get("personality_traits", [])
+    if personality_traits and isinstance(personality_traits[0], str):
+        personality_traits = normalize_personality_traits(personality_traits)
+    
     return ProfileResponse(
         success=True,
         user_id=user_id,
         profile={
             "user_id": user_id,
-            "personality_traits": profile_data.get("personality_traits", []),
+            "personality_traits": personality_traits,
             "communication_style": profile_data.get("communication_style", {}),
             "strengths": profile_data.get("strengths", []),
             "weaknesses": profile_data.get("weaknesses", []),
