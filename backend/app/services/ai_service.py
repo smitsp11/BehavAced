@@ -61,27 +61,81 @@ class AIService:
         system_prompt: str,
         user_prompt: str,
         temperature: float = None,
-        max_tokens: int = None
+        max_tokens: int = None,
+        use_json_mode: bool = True
     ) -> Dict[str, Any]:
-        """Generate a structured JSON completion"""
+        """Generate a structured JSON completion with robust error handling"""
         
-        response_text = await self.generate_completion(
-            system_prompt=system_prompt,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            max_tokens=max_tokens
+        # For Gemini, we can try using response_mime_type for JSON mode
+        generation_config = genai.GenerationConfig(
+            temperature=temperature or settings.TEMPERATURE,
+            max_output_tokens=max_tokens or settings.MAX_TOKENS,
         )
         
-        # Extract JSON from response (handle markdown code blocks)
-        response_text = response_text.strip()
-        if response_text.startswith("```json"):
-            response_text = response_text[7:]
-        if response_text.startswith("```"):
-            response_text = response_text[3:]
-        if response_text.endswith("```"):
-            response_text = response_text[:-3]
+        # Try to force JSON output with Gemini's JSON mode
+        if use_json_mode:
+            try:
+                generation_config.response_mime_type = "application/json"
+            except:
+                pass  # Fallback if not supported
         
-        return json.loads(response_text.strip())
+        # Combine prompts and explicitly request JSON
+        full_prompt = f"{system_prompt}\n\n{user_prompt}\n\nIMPORTANT: Return ONLY valid JSON. Ensure all strings are properly escaped."
+        
+        # Generate content
+        response = self.model.generate_content(
+            full_prompt,
+            generation_config=generation_config
+        )
+        
+        response_text = response.text
+        
+        # Extract JSON from response (handle markdown code blocks and other wrapping)
+        cleaned_text = response_text.strip()
+        
+        # Remove markdown code fences
+        if cleaned_text.startswith("```json"):
+            cleaned_text = cleaned_text[7:]
+        elif cleaned_text.startswith("```"):
+            cleaned_text = cleaned_text[3:]
+        
+        if cleaned_text.endswith("```"):
+            cleaned_text = cleaned_text[:-3]
+        
+        cleaned_text = cleaned_text.strip()
+        
+        # Try to parse JSON
+        try:
+            return json.loads(cleaned_text)
+        except json.JSONDecodeError as e:
+            # Log the raw response for debugging
+            print(f"\n{'='*80}")
+            print(f"JSON Parse Error at position {e.pos}: {e.msg}")
+            print(f"Response length: {len(cleaned_text)} chars")
+            print(f"Context around error (±200 chars):")
+            print(f"...{cleaned_text[max(0, e.pos-200):min(len(cleaned_text), e.pos+200)]}...")
+            print(f"First 1000 chars:\n{cleaned_text[:1000]}")
+            print(f"Last 1000 chars:\n{cleaned_text[-1000:]}")
+            print(f"{'='*80}\n")
+            
+            # Try to extract JSON from within the text (sometimes AI adds prose)
+            # Look for the first { and last }
+            first_brace = cleaned_text.find('{')
+            last_brace = cleaned_text.rfind('}')
+            
+            if first_brace != -1 and last_brace != -1 and first_brace < last_brace:
+                json_candidate = cleaned_text[first_brace:last_brace+1]
+                try:
+                    return json.loads(json_candidate)
+                except json.JSONDecodeError as e2:
+                    print(f"Fallback extraction also failed: {e2.msg} at position {e2.pos}")
+            
+            # If all else fails, raise with more context
+            raise ValueError(
+                f"Failed to parse JSON response. Error: {e.msg} at position {e.pos}. "
+                f"Response length: {len(cleaned_text)} chars. "
+                f"Check backend logs for full context."
+            )
     
     async def analyze_resume(self, resume_text: str) -> Dict[str, Any]:
         """Extract experiences and insights from resume"""
@@ -92,7 +146,8 @@ class AIService:
         return await self.generate_structured_completion(
             system_prompt=RESUME_SYSTEM_PROMPT,
             user_prompt=user_prompt,
-            temperature=0.5
+            temperature=0.5,
+            use_json_mode=True
         )
     
     async def analyze_personality(
@@ -111,7 +166,8 @@ class AIService:
         return await self.generate_structured_completion(
             system_prompt=PERSONALITY_SYSTEM_PROMPT,
             user_prompt=user_prompt,
-            temperature=0.5
+            temperature=0.5,
+            use_json_mode=True
         )
     
     async def extract_stories(
@@ -122,15 +178,21 @@ class AIService:
         """Extract and structure behavioral stories"""
         from app.prompts.story_prompts import STORY_EXTRACTION_PROMPT, STORY_SYSTEM_PROMPT
         
+        # Limit experiences to prevent overly long responses
+        limited_experiences = resume_experiences[:8]  # Max 8 experiences
+        
         user_prompt = STORY_EXTRACTION_PROMPT.format(
-            experiences=json.dumps(resume_experiences, indent=2),
+            experiences=json.dumps(limited_experiences, indent=2),
             personality=json.dumps(personality_profile, indent=2)
         )
         
+        # Use higher max_tokens for story generation and enable JSON mode
         result = await self.generate_structured_completion(
             system_prompt=STORY_SYSTEM_PROMPT,
             user_prompt=user_prompt,
-            temperature=0.6
+            temperature=0.6,
+            max_tokens=8192,  # Allow longer responses for stories
+            use_json_mode=True
         )
         
         return result.get("stories", [])

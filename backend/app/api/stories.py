@@ -31,75 +31,14 @@ async def generate_stories(user_id: str):
                 detail="User profile not found"
             )
         
-        # Get resume experiences - try multiple locations for backward compatibility
-        experiences = []
-        
-        # 1. Try new format: resume_analysis.experiences (created after latest fix)
+        # Get resume experiences from AI-structured resume_analysis
         resume_analysis = profile.get("resume_analysis", {})
         experiences = resume_analysis.get("experiences", [])
         
-        # 2. Fallback: build from parsed_resume.work_experience
         if not experiences:
-            parsed_resume = profile.get("parsed_resume", {})
-            work_experience = parsed_resume.get("work_experience", [])
-            
-            if work_experience:
-                # Transform parsed work experience into the format AI expects
-                experiences = []
-                for role in work_experience:
-                    experience_entry = {
-                        "title": role.get("role_title", ""),
-                        "company": role.get("company", ""),
-                        "date_range": role.get("date_range", ""),
-                        "description": role.get("raw_text", ""),
-                        "accomplishments": [acc.get("text") for acc in role.get("accomplishments", [])],
-                        "quantified_outcomes": role.get("quantified_outcomes", []),
-                        "tech_stack": role.get("tech_stack", []),
-                        "team_context": role.get("team_context", {}),
-                        "kpis": role.get("kpis", [])
-                    }
-                    experiences.append(experience_entry)
-        
-        # 3. Last fallback: check if work_experience is stored directly in profile
-        if not experiences:
-            work_experience = profile.get("work_experience", [])
-            if work_experience:
-                experiences = []
-                for role in work_experience:
-                    experience_entry = {
-                        "title": role.get("role_title", "") or role.get("title", ""),
-                        "company": role.get("company", ""),
-                        "date_range": role.get("date_range", ""),
-                        "description": role.get("raw_text", "") or role.get("description", ""),
-                        "accomplishments": [acc.get("text") if isinstance(acc, dict) else acc 
-                                          for acc in role.get("accomplishments", [])],
-                        "quantified_outcomes": role.get("quantified_outcomes", []),
-                        "tech_stack": role.get("tech_stack", []),
-                        "team_context": role.get("team_context", {}),
-                        "kpis": role.get("kpis", [])
-                    }
-                    experiences.append(experience_entry)
-        
-        if not experiences:
-            # Debug: Log what's actually in the profile to diagnose the issue
-            debug_info = {
-                "profile_keys": list(profile.keys()),
-                "has_resume_analysis": "resume_analysis" in profile,
-                "has_parsed_resume": "parsed_resume" in profile,
-                "has_work_experience": "work_experience" in profile,
-            }
-            
-            # Check what's actually available
-            if "parsed_resume" in profile:
-                debug_info["parsed_resume_keys"] = list(profile["parsed_resume"].keys()) if profile["parsed_resume"] else []
-            if "resume_analysis" in profile:
-                debug_info["resume_analysis_keys"] = list(profile["resume_analysis"].keys()) if profile["resume_analysis"] else []
-            
-            print(f"DEBUG - Profile structure for user {user_id}: {debug_info}")
-            
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"No experiences found in profile. Debug info: {debug_info}. Please upload resume first."
+                detail="No experiences found in profile. Please upload your resume to generate stories."
             )
         
         # Get personality profile for voice matching

@@ -147,58 +147,35 @@ async def ingest_profile(request: ResumeUploadRequest):
                 detail="Resume text is too short or could not be extracted"
             )
         
-        # Parse resume using traditional NLP (no LLM)
+        # Parse resume using traditional NLP for embeddings and detailed structure
         parsed_resume = resume_parser.parse(resume_text)
+        
+        # Use AI to analyze resume and create structured experiences for story generation
+        # This produces the format expected by ai_service.extract_stories()
+        resume_analysis = await ai_service.analyze_resume(resume_text)
         
         # Create user ID
         user_id = storage.create_user_id()
         
-        # Determine experience level from last role
+        # Get experience level from AI analysis (fallback to NLP if needed)
+        experience_level = resume_analysis.get("candidate_summary", {}).get("experience_level", "entry")
+        if not experience_level or experience_level == "entry":
+            # Fallback: determine from last role in parsed data
+            last_role = parsed_resume.get("last_role", {})
+            if last_role:
+                role_title_lower = last_role.get("role_title", "").lower()
+                if any(term in role_title_lower for term in ["senior", "lead", "principal", "director"]):
+                    experience_level = "senior"
+                elif any(term in role_title_lower for term in ["mid", "intermediate"]):
+                    experience_level = "mid"
+                elif "intern" in role_title_lower:
+                    experience_level = "student"
+        
+        # Extract strengths from AI analysis
+        strengths = resume_analysis.get("candidate_summary", {}).get("key_strengths", [])
+        
+        # Keep last_role from NLP parsing for reference
         last_role = parsed_resume.get("last_role", {})
-        experience_level = "entry"
-        if last_role:
-            role_title_lower = last_role.get("role_title", "").lower()
-            if any(term in role_title_lower for term in ["senior", "lead", "principal", "director"]):
-                experience_level = "senior"
-            elif any(term in role_title_lower for term in ["mid", "intermediate"]):
-                experience_level = "mid"
-            elif "intern" in role_title_lower:
-                experience_level = "student"
-        
-        # Extract strengths from accomplishments and achievements
-        strengths = []
-        for role in parsed_resume.get("work_experience", []):
-            if role.get("personal_contributions"):
-                strengths.append(f"Strong {role.get('role_title', 'contributions')}")
-            if role.get("quantified_outcomes"):
-                strengths.append("Results-driven with measurable impact")
-        
-        # Transform parsed work experience into resume_analysis format for story generation
-        # This maintains compatibility with the stories endpoint which expects resume_analysis.experiences
-        experiences_for_stories = []
-        for role in parsed_resume.get("work_experience", []):
-            # Convert each role into a format suitable for story generation
-            experience_entry = {
-                "title": role.get("role_title", ""),
-                "company": role.get("company", ""),
-                "date_range": role.get("date_range", ""),
-                "description": role.get("raw_text", ""),
-                "accomplishments": [acc.get("text") for acc in role.get("accomplishments", [])],
-                "quantified_outcomes": role.get("quantified_outcomes", []),
-                "tech_stack": role.get("tech_stack", []),
-                "team_context": role.get("team_context", {}),
-                "kpis": role.get("kpis", [])
-            }
-            experiences_for_stories.append(experience_entry)
-        
-        # Create resume_analysis structure for compatibility with story generation
-        resume_analysis = {
-            "experiences": experiences_for_stories,
-            "candidate_summary": {
-                "experience_level": experience_level,
-                "key_strengths": strengths[:5] if strengths else []
-            }
-        }
         
         # Create initial profile (will be completed with personality questionnaire)
         profile_data = {
