@@ -143,6 +143,46 @@ class StorageService:
     def user_exists(self, user_id: str) -> bool:
         """Check if user exists"""
         return user_id in self.profiles
+
+    # Phase 1 MVP Persistence Methods
+    def save_personality_snapshot(self, user_id: str, snapshot: dict) -> bool:
+        """Save personality snapshot to user profile"""
+        profile = self.profiles.get(user_id, {})
+        profile["personality_snapshot"] = snapshot
+        profile["updated_at"] = datetime.now().isoformat()
+        self.profiles[user_id] = profile
+        return True
+
+    def get_personality_snapshot(self, user_id: str) -> Optional[dict]:
+        """Get personality snapshot from user profile"""
+        profile = self.profiles.get(user_id)
+        return profile.get("personality_snapshot") if profile else None
+
+    def save_story_brain(self, user_id: str, story_brain: dict) -> bool:
+        """Save story brain to user profile"""
+        profile = self.profiles.get(user_id, {})
+        profile["story_brain"] = story_brain
+        profile["updated_at"] = datetime.now().isoformat()
+        self.profiles[user_id] = profile
+        return True
+
+    def get_story_brain(self, user_id: str) -> Optional[dict]:
+        """Get story brain from user profile"""
+        profile = self.profiles.get(user_id)
+        return profile.get("story_brain") if profile else None
+
+    def save_manual_experience(self, user_id: str, experience_data: dict) -> bool:
+        """Save processed manual experience to user profile"""
+        profile = self.profiles.get(user_id, {})
+        profile["manual_experience"] = experience_data
+        profile["updated_at"] = datetime.now().isoformat()
+        self.profiles[user_id] = profile
+        return True
+
+    def get_manual_experience(self, user_id: str) -> Optional[dict]:
+        """Get processed manual experience from user profile"""
+        profile = self.profiles.get(user_id)
+        return profile.get("manual_experience") if profile else None
     
     # Cache Methods (dev mode only)
     def _load_cached_profile(self) -> bool:

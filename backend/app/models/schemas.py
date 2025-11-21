@@ -227,3 +227,124 @@ class PlanResponse(BaseModel):
     success: bool
     plan: PracticePlan
 
+
+# PHASE 1 - MVP API Models
+
+class DemoAnswerRequest(BaseModel):
+    """Request for demo answer generation (non-personalized)"""
+    question: str
+    company_context: Optional[str] = None
+    role_context: Optional[str] = None
+    industry: Optional[str] = None
+
+
+class DemoAnswerResponse(BaseModel):
+    """Response with demo answer"""
+    success: bool
+    answer: str
+    structure: str = Field(..., description="STAR, SOAR, PAR")
+    key_points: List[str]
+    estimated_time_seconds: int
+
+
+class PersonalitySnapshotRequest(BaseModel):
+    """Request for personality snapshot analysis"""
+    user_id: str
+    responses: Dict[str, Any]
+    writing_sample: Optional[str] = None
+
+
+class PersonalitySnapshot(BaseModel):
+    """Personality snapshot with embeddings"""
+    traits: List[PersonalityTraits]
+    communication_style: CommunicationStyle
+    strengths: List[str]
+    weaknesses: List[str]
+    confidence_level: int = Field(..., ge=1, le=10)
+    embedding: List[float]  # Vector embedding for similarity matching
+    tone_profile: Dict[str, Any]  # Tone modeling data
+
+
+class PersonalitySnapshotResponse(BaseModel):
+    """Response with personality snapshot"""
+    success: bool
+    user_id: str
+    snapshot: PersonalitySnapshot
+    message: str
+
+
+class ManualExperienceEntry(BaseModel):
+    """Single manual experience entry"""
+    role_title: str
+    company: str
+    location: Optional[str] = None
+    start_date: str
+    end_date: Optional[str] = None
+    description: str
+    achievements: List[str]
+    skills_used: List[str] = Field(default_factory=list)
+
+
+class ManualExperienceRequest(BaseModel):
+    """Request for manual experience input"""
+    user_id: str
+    experiences: List[ManualExperienceEntry]
+    education: Optional[Dict[str, Any]] = None
+    additional_skills: List[str] = Field(default_factory=list)
+
+
+class ManualExperienceResponse(BaseModel):
+    """Response after processing manual experience"""
+    success: bool
+    user_id: str
+    processed_experiences: List[Dict[str, Any]]
+    extracted_stories: List[Dict[str, Any]]
+    message: str
+
+
+class StoryBrainGenerateRequest(BaseModel):
+    """Request to generate story-brain (story bank)"""
+    user_id: str
+
+
+class StoryCluster(BaseModel):
+    """A cluster of related stories"""
+    cluster_id: str
+    theme: str
+    competency: str
+    stories: List[Story]
+    confidence: float
+
+
+class StoryBrain(BaseModel):
+    """Generated story-brain (bank of clustered stories)"""
+    user_id: str
+    clusters: List[StoryCluster]
+    total_stories: int
+    embedding_model: str
+    generated_at: datetime
+
+
+class StoryBrainResponse(BaseModel):
+    """Response with generated story-brain"""
+    success: bool
+    story_brain: StoryBrain
+    message: str
+
+
+class PersonalizedAnswerRequest(BaseModel):
+    """Request for personalized answer generation"""
+    user_id: str
+    question: str
+    company_context: Optional[str] = None
+    role_context: Optional[str] = None
+
+
+class PersonalizedAnswerResponse(BaseModel):
+    """Response with personalized answer"""
+    success: bool
+    routing: QuestionRouting
+    answer: GeneratedAnswer
+    tone_match_score: float = Field(..., ge=0, le=1)
+    personalization_factors: List[str]
+

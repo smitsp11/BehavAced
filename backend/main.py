@@ -25,6 +25,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Import new Phase 1 routers
+from app.api import demo, onboarding, story_brain, personalized_answers
+
 # Include routers
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
 app.include_router(stories.router, prefix="/api/stories", tags=["stories"])
@@ -32,6 +35,12 @@ app.include_router(questions.router, prefix="/api/questions", tags=["questions"]
 app.include_router(answers.router, prefix="/api/answers", tags=["answers"])
 app.include_router(practice.router, prefix="/api/practice", tags=["practice"])
 app.include_router(plans.router, prefix="/api/plans", tags=["plans"])
+
+# Phase 1 MVP routers
+app.include_router(demo.router, prefix="/api/demo", tags=["demo"])
+app.include_router(onboarding.router, prefix="/api/onboarding", tags=["onboarding"])
+app.include_router(story_brain.router, prefix="/api/story-brain", tags=["story-brain"])
+app.include_router(personalized_answers.router, prefix="/api/answers", tags=["personalized-answers"])
 
 # Include dev routes only in development
 if settings.ENVIRONMENT == "development":

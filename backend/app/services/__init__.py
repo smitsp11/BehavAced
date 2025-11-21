@@ -7,6 +7,7 @@ from .voice_service import voice_service
 from .storage_service import storage
 from .resume_parser import resume_parser
 from .vector_service import vector_service
+from .mvp_service import mvp_service
 
-__all__ = ['ai_service', 'file_service', 'voice_service', 'storage', 'resume_parser', 'vector_service']
+__all__ = ['ai_service', 'file_service', 'voice_service', 'storage', 'resume_parser', 'vector_service', 'mvp_service']
 
