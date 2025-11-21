@@ -181,3 +181,68 @@ export const getPlan = async (userId: string) => {
   return response.json()
 }
 
+// Dev API (only available in development)
+const isDev = process.env.NODE_ENV === 'development'
+
+export const saveCachedProfile = async (userId: string) => {
+  if (!isDev) {
+    throw new Error('This function is only available in development')
+  }
+  
+  const response = await fetch(`${API_URL}/api/dev/save-profile/${userId}`, {
+    method: 'POST',
+  })
+  
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Failed to save cached profile')
+  }
+
+  return response.json()
+}
+
+export const loadCachedProfile = async () => {
+  if (!isDev) {
+    throw new Error('This function is only available in development')
+  }
+  
+  const response = await fetch(`${API_URL}/api/dev/load-profile`)
+  
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Failed to load cached profile')
+  }
+
+  return response.json()
+}
+
+export const getCacheStatus = async () => {
+  if (!isDev) {
+    throw new Error('This function is only available in development')
+  }
+  
+  const response = await fetch(`${API_URL}/api/dev/cache-status`)
+  
+  if (!response.ok) {
+    throw new Error('Failed to get cache status')
+  }
+
+  return response.json()
+}
+
+export const clearCache = async () => {
+  if (!isDev) {
+    throw new Error('This function is only available in development')
+  }
+  
+  const response = await fetch(`${API_URL}/api/dev/clear-cache`, {
+    method: 'POST',
+  })
+  
+  if (!response.ok) {
+    throw new Error('Failed to clear cache')
+  }
+
+  return response.json()
+}
+

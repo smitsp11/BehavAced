@@ -45,3 +45,7 @@ coverage/
 # Uploads
 uploads/
 
+# Cache files (dev only)
+backend/.cache/
+frontend/.cache/
+

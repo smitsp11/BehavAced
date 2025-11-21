@@ -13,6 +13,7 @@ from app.models.schemas import (
 )
 from app.services import ai_service, file_service, storage
 from app.services.resume_parser import resume_parser
+from app.core.config import settings
 import uuid
 
 router = APIRouter()
@@ -215,6 +216,10 @@ async def ingest_profile(request: ResumeUploadRequest):
         
         storage.save_stories(user_id, story_candidates)
         
+        # Auto-save to cache in dev mode (after resume upload and stories saved)
+        if settings.ENVIRONMENT == "development":
+            storage.save_cached_profile(user_id)
+        
         return ProfileResponse(
             success=True,
             user_id=user_id,
@@ -297,6 +302,10 @@ async def analyze_personality(request: PersonalityQuestionnaireRequest):
         })
         
         storage.save_profile(user_id, profile_data)
+        
+        # Auto-save to cache in dev mode
+        if settings.ENVIRONMENT == "development":
+            storage.save_cached_profile(user_id)
         
         return ProfileResponse(
             success=True,

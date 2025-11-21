@@ -4,6 +4,10 @@ Storage Service - In-memory storage for MVP (can be replaced with Supabase)
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 import uuid
+import json
+import os
+from pathlib import Path
+from app.core.config import settings
 
 
 class StorageService:
@@ -15,6 +19,21 @@ class StorageService:
         self.stories: Dict[str, List[Any]] = {}
         self.attempts: Dict[str, List[Any]] = {}
         self.plans: Dict[str, Any] = {}
+        
+        # Cache directory for dev mode
+        # Handle both running from project root or backend directory
+        current_dir = Path.cwd()
+        if current_dir.name == "backend":
+            # Running from backend directory
+            self.cache_dir = Path(".cache")
+        else:
+            # Running from project root
+            self.cache_dir = Path("backend/.cache")
+        self.cache_file = self.cache_dir / "profile.json"
+        
+        # Auto-load cached profile in dev mode
+        if settings.ENVIRONMENT == "development":
+            self._load_cached_profile()
     
     # User Profile Methods
     def save_profile(self, user_id: str, profile_data: dict) -> bool:
@@ -124,6 +143,97 @@ class StorageService:
     def user_exists(self, user_id: str) -> bool:
         """Check if user exists"""
         return user_id in self.profiles
+    
+    # Cache Methods (dev mode only)
+    def _load_cached_profile(self) -> bool:
+        """Load cached profile from disk (dev mode only)"""
+        if settings.ENVIRONMENT != "development":
+            return False
+        
+        if not self.cache_file.exists():
+            return False
+        
+        try:
+            with open(self.cache_file, 'r') as f:
+                cached_data = json.load(f)
+            
+            # Restore profile data
+            if "profile" in cached_data and cached_data["profile"]:
+                user_id = cached_data["profile"].get("user_id")
+                if user_id:
+                    self.profiles[user_id] = cached_data["profile"]
+            
+            # Restore stories
+            if "stories" in cached_data and cached_data["stories"]:
+                user_id = cached_data.get("user_id")
+                if user_id:
+                    self.stories[user_id] = cached_data["stories"]
+            
+            return True
+        except Exception as e:
+            print(f"Warning: Failed to load cached profile: {e}")
+            return False
+    
+    def save_cached_profile(self, user_id: str) -> bool:
+        """Save current profile to cache file (dev mode only)"""
+        if settings.ENVIRONMENT != "development":
+            return False
+        
+        try:
+            # Create cache directory if it doesn't exist
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Get current profile and stories
+            profile_data = self.profiles.get(user_id)
+            stories_data = self.stories.get(user_id, [])
+            
+            if not profile_data:
+                return False
+            
+            # Prepare cache data
+            cache_data = {
+                "user_id": user_id,
+                "profile": profile_data,
+                "stories": stories_data,
+                "cached_at": datetime.now().isoformat()
+            }
+            
+            # Write to cache file
+            with open(self.cache_file, 'w') as f:
+                json.dump(cache_data, f, indent=2, default=str)
+            
+            return True
+        except Exception as e:
+            print(f"Error saving cached profile: {e}")
+            return False
+    
+    def load_cached_profile(self) -> Optional[Dict[str, Any]]:
+        """Load cached profile data (dev mode only)"""
+        if settings.ENVIRONMENT != "development":
+            return None
+        
+        if not self.cache_file.exists():
+            return None
+        
+        try:
+            with open(self.cache_file, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading cached profile: {e}")
+            return None
+    
+    def clear_cached_profile(self) -> bool:
+        """Clear cached profile file (dev mode only)"""
+        if settings.ENVIRONMENT != "development":
+            return False
+        
+        try:
+            if self.cache_file.exists():
+                self.cache_file.unlink()
+            return True
+        except Exception as e:
+            print(f"Error clearing cached profile: {e}")
+            return False
 
 
 # Global instance

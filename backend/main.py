@@ -6,6 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import profile, stories, questions, answers, practice, plans
 from app.core.config import settings
 
+# Import dev routes only in development
+if settings.ENVIRONMENT == "development":
+    from app.api import dev
+
 app = FastAPI(
     title="BehavAced API",
     description="AI-driven behavioral interview cognition engine",
@@ -28,6 +32,10 @@ app.include_router(questions.router, prefix="/api/questions", tags=["questions"]
 app.include_router(answers.router, prefix="/api/answers", tags=["answers"])
 app.include_router(practice.router, prefix="/api/practice", tags=["practice"])
 app.include_router(plans.router, prefix="/api/plans", tags=["plans"])
+
+# Include dev routes only in development
+if settings.ENVIRONMENT == "development":
+    app.include_router(dev.router, prefix="/api/dev", tags=["dev"])
 
 
 @app.get("/")

@@ -29,6 +29,8 @@ if [ ! -d "backend/venv" ]; then
     python3 -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
+    echo "📥 Downloading spaCy English model..."
+    python -m spacy download en_core_web_sm
     cd ..
     echo "✅ Backend dependencies installed"
 fi
