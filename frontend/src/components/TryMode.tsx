@@ -352,39 +352,37 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             </h2>
             <p className="text-center text-gray-600 text-lg mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Super simple. Super powerful.</p>
             
-            <div className="grid md:grid-cols-3 gap-8">
-              <StaggerContainer>
-                <StaggerItem>
-                  <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                    <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>1️⃣</div>
-                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Upload Your Resume</h3>
-                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      AI analyzes your communication patterns, vocabulary, and writing style.
-                    </p>
-                  </div>
-                </StaggerItem>
-                
-                <StaggerItem>
-                  <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                    <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>2️⃣</div>
-                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Build Your Story Bank</h3>
-                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      Your experiences → structured STAR/Soar stories organized by competency.
-                    </p>
-                  </div>
-                </StaggerItem>
-                
-                <StaggerItem>
-                  <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                    <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>3️⃣</div>
-                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Generate Personalized Answers</h3>
-                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      Every answer matches your tone + strengths. Sound authentically you.
-                    </p>
-                  </div>
-                </StaggerItem>
-              </StaggerContainer>
-            </div>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <StaggerItem>
+                <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                  <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>1️⃣</div>
+                  <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Upload Your Resume</h3>
+                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                    AI analyzes your communication patterns, vocabulary, and writing style.
+                  </p>
+                </div>
+              </StaggerItem>
+              
+              <StaggerItem>
+                <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                  <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>2️⃣</div>
+                  <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Build Your Story Bank</h3>
+                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                    Your experiences → structured STAR/Soar stories organized by competency.
+                  </p>
+                </div>
+              </StaggerItem>
+              
+              <StaggerItem>
+                <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                  <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>3️⃣</div>
+                  <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Generate Personalized Answers</h3>
+                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                    Every answer matches your tone + strengths. Sound authentically you.
+                  </p>
+                </div>
+              </StaggerItem>
+            </StaggerContainer>
           </div>
         </div>
       </div>
