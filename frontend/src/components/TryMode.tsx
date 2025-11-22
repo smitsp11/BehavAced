@@ -86,64 +86,67 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
 
           {/* Try It Now Section */}
           <SlideUp className="mb-8">
-            <HoverCard className="max-w-2xl mx-auto card-floating">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Play className="w-5 h-5" />
-                  Try It Now
-                </CardTitle>
-                <CardDescription>
-                  Ask any behavioral interview question and see how our AI creates compelling answers that demonstrate best practices
-                </CardDescription>
-              </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder="e.g., Tell me about a time you led a team through a challenging project..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                rows={3}
-                className="resize-none"
-              />
+            <HoverCard className="max-w-2xl mx-auto">
+              <Card className="card-floating">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Play className="w-5 h-5" />
+                    Try It Now
+                  </CardTitle>
+                  <CardDescription>
+                    Ask any behavioral interview question and see how our AI creates compelling answers that demonstrate best practices
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Textarea
+                    placeholder="e.g., Tell me about a time you led a team through a challenging project..."
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    rows={3}
+                    className="resize-none"
+                  />
 
-              <Button
-                onClick={handleGenerateDemo}
-                disabled={!question.trim() || loading}
-                className="w-full"
-                size="lg"
-              >
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Generating Answer...
-                  </>
-                ) : (
-                  <>
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Generate Demo Answer
-                  </>
-                )}
-              </Button>
+                  <Button
+                    onClick={handleGenerateDemo}
+                    disabled={!question.trim() || loading}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                        Generating Answer...
+                      </>
+                    ) : (
+                      <>
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Generate Demo Answer
+                      </>
+                    )}
+                  </Button>
 
-              {/* Sample Questions */}
-              <div className="pt-4 border-t">
-                <p className="text-sm text-gray-600 mb-3">Try these sample questions:</p>
-                <div className="grid gap-2">
-                  {SAMPLE_QUESTIONS.map((sampleQ, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleSampleQuestionClick(sampleQ)}
-                      className="text-left justify-start h-auto py-2 px-3 text-xs"
-                      disabled={loading}
-                    >
-                      {sampleQ}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                  {/* Sample Questions */}
+                  <div className="pt-4 border-t">
+                    <p className="text-sm text-gray-600 mb-3">Try these sample questions:</p>
+                    <div className="grid gap-2">
+                      {SAMPLE_QUESTIONS.map((sampleQ, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleSampleQuestionClick(sampleQ)}
+                          className="text-left justify-start h-auto py-2 px-3 text-xs"
+                          disabled={loading}
+                        >
+                          {sampleQ}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </HoverCard>
+          </SlideUp>
 
           {/* Demo Answer Display */}
           {error && (
@@ -158,45 +161,48 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
 
           {demoAnswer && (
             <SlideUp>
-              <HoverCard className="max-w-4xl mx-auto mb-8 card-floating border-primary/20">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <Star className="w-5 h-5 text-yellow-500" />
-                      Demo Answer
-                    </CardTitle>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1 px-3 py-1 bg-primary/10 rounded-full">
-                        <Target className="w-4 h-4" />
-                        {demoAnswer.structure}
-                      </span>
-                      <span className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
-                        <Clock className="w-4 h-4" />
-                        {formatTime(demoAnswer.estimated_time_seconds)}
-                      </span>
+              <HoverCard className="max-w-4xl mx-auto mb-8">
+                <Card className="card-floating border-primary/20">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-yellow-500" />
+                        Demo Answer
+                      </CardTitle>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1 px-3 py-1 bg-primary/10 rounded-full">
+                          <Target className="w-4 h-4" />
+                          {demoAnswer.structure}
+                        </span>
+                        <span className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
+                          <Clock className="w-4 h-4" />
+                          {formatTime(demoAnswer.estimated_time_seconds)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <CardDescription>
-                    High-quality example answer demonstrating STAR method best practices
-                  </CardDescription>
-                </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                    {demoAnswer.answer}
-                  </p>
-                </div>
+                    <CardDescription>
+                      High-quality example answer demonstrating STAR method best practices
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                        {demoAnswer.answer}
+                      </p>
+                    </div>
 
-                <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-2">Key Points:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-                    {demoAnswer.key_points.map((point, index) => (
-                      <li key={index}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold mb-2">Key Points:</h4>
+                      <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                        {demoAnswer.key_points.map((point, index) => (
+                          <li key={index}>{point}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              </HoverCard>
+            </SlideUp>
           )}
 
           {/* CTA Section */}

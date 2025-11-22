@@ -196,7 +196,10 @@
 
   /* Text gradient */
   .text-gradient {
-    @apply bg-gradient-to-r from-primary-start to-primary-end bg-clip-text text-transparent;
+    background: linear-gradient(90deg, hsl(var(--primary-start)), hsl(var(--primary-end)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 }
 
@@ -233,4 +236,3 @@
     @apply text-base;
   }
 }
-
