@@ -181,6 +181,34 @@ export const getPlan = async (userId: string) => {
   return response.json()
 }
 
+// Demo API
+export const generateDemoAnswer = async (
+  question: string,
+  companyContext?: string,
+  roleContext?: string,
+  industry?: string
+) => {
+  const response = await fetch(`${API_URL}/api/demo/answer`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      question,
+      company_context: companyContext,
+      role_context: roleContext,
+      industry,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Failed to generate demo answer')
+  }
+
+  return response.json()
+}
+
 // Dev API (only available in development)
 const isDev = process.env.NODE_ENV === 'development'
 

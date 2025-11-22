@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import TryMode from '@/components/TryMode'
 import OnboardingFlow from '@/components/OnboardingFlow'
 import Dashboard from '@/components/Dashboard'
 import { loadCachedProfile, getCacheStatus } from '@/lib/api'
@@ -12,6 +13,7 @@ export default function Home() {
   const [userId, setUserId] = useState<string | null>(null)
   const [isOnboarded, setIsOnboarded] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
   // Load from localStorage and check for cached profile on mount
   useEffect(() => {
@@ -66,6 +68,11 @@ export default function Home() {
         </div>
       </main>
     )
+  }
+
+  // Show try mode first, unless user has completed onboarding
+  if (!isOnboarded && !showOnboarding) {
+    return <TryMode onStartOnboarding={() => setShowOnboarding(true)} />
   }
 
   return (
