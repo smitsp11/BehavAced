@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
+import { FadeIn, SlideUp, HoverCard, StaggerContainer, StaggerItem } from '@/components/ui/motion'
 import { Sparkles, MessageSquare, ArrowRight, Play, Star, Clock, Target } from 'lucide-react'
 import { generateDemoAnswer } from '@/lib/api'
 
@@ -69,29 +70,32 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-full">
-              <Sparkles className="w-8 h-8 text-white" />
+          <FadeIn>
+            <div className="flex items-center justify-center mb-6">
+              <div className="gradient-primary p-4 rounded-full shadow-lg">
+                <Sparkles className="w-8 h-8 text-white" />
+              </div>
             </div>
-          </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            BehavAced
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            AI-powered behavioral interview coaching that adapts to your authentic voice
-          </p>
+            <h1 className="text-6xl font-bold text-gradient mb-4">
+              BehavAced
+            </h1>
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+              AI-powered behavioral interview coaching that adapts to your authentic voice and creates personalized answers that sound like you
+            </p>
+          </FadeIn>
 
           {/* Try It Now Section */}
-          <Card className="max-w-2xl mx-auto mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Play className="w-5 h-5" />
-                Try It Now
-              </CardTitle>
-              <CardDescription>
-                Ask any behavioral interview question and see how our AI creates compelling answers
-              </CardDescription>
-            </CardHeader>
+          <SlideUp className="mb-8">
+            <HoverCard className="max-w-2xl mx-auto card-floating">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Play className="w-5 h-5" />
+                  Try It Now
+                </CardTitle>
+                <CardDescription>
+                  Ask any behavioral interview question and see how our AI creates compelling answers that demonstrate best practices
+                </CardDescription>
+              </CardHeader>
             <CardContent className="space-y-4">
               <Textarea
                 placeholder="e.g., Tell me about a time you led a team through a challenging project..."
@@ -143,36 +147,39 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
 
           {/* Demo Answer Display */}
           {error && (
-            <Card className="max-w-2xl mx-auto mb-8 border-red-200">
-              <CardContent className="pt-6">
-                <p className="text-red-600">{error}</p>
-              </CardContent>
-            </Card>
+            <FadeIn>
+              <Card className="max-w-2xl mx-auto mb-8 border-red-200 bg-red-50/50">
+                <CardContent className="pt-6">
+                  <p className="text-red-600 text-center">{error}</p>
+                </CardContent>
+              </Card>
+            </FadeIn>
           )}
 
           {demoAnswer && (
-            <Card className="max-w-4xl mx-auto mb-8">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    Demo Answer
-                  </CardTitle>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span className="flex items-center gap-1">
-                      <Target className="w-4 h-4" />
-                      {demoAnswer.structure}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      {formatTime(demoAnswer.estimated_time_seconds)}
-                    </span>
+            <SlideUp>
+              <HoverCard className="max-w-4xl mx-auto mb-8 card-floating border-primary/20">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="w-5 h-5 text-yellow-500" />
+                      Demo Answer
+                    </CardTitle>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1 px-3 py-1 bg-primary/10 rounded-full">
+                        <Target className="w-4 h-4" />
+                        {demoAnswer.structure}
+                      </span>
+                      <span className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
+                        <Clock className="w-4 h-4" />
+                        {formatTime(demoAnswer.estimated_time_seconds)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <CardDescription>
-                  High-quality example answer demonstrating best practices
-                </CardDescription>
-              </CardHeader>
+                  <CardDescription>
+                    High-quality example answer demonstrating STAR method best practices
+                  </CardDescription>
+                </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
@@ -193,26 +200,28 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
           )}
 
           {/* CTA Section */}
-          <div className="text-center">
-            <div className="bg-white p-8 rounded-2xl shadow-lg max-w-2xl mx-auto">
-              <h2 className="text-2xl font-bold mb-4">Ready for Personalized Coaching?</h2>
-              <p className="text-gray-600 mb-6">
-                Upload your resume and answer a few questions about your communication style.
-                Our AI will create personalized answers that match your authentic voice and story bank.
-              </p>
-              <Button
-                onClick={onStartOnboarding}
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                Get Started - It's Free
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-              <p className="text-xs text-gray-500 mt-3">
-                Takes ~3 minutes • No account required • All data processed locally
-              </p>
+          <FadeIn>
+            <div className="text-center">
+              <HoverCard className="glass p-8 rounded-2xl max-w-2xl mx-auto card-floating">
+                <h2 className="text-3xl font-bold mb-4 text-gradient">Ready for Personalized Coaching?</h2>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Upload your resume and share your communication style.
+                  Our AI will create personalized answers that match your authentic voice and story bank.
+                </p>
+                <Button
+                  onClick={onStartOnboarding}
+                  className="gradient-primary hover:opacity-90 btn-soft text-white border-0"
+                  size="lg"
+                >
+                  Get Started - It's Free
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+                <p className="text-xs text-muted-foreground mt-4">
+                  Takes ~3 minutes • No account required • All data processed locally
+                </p>
+              </HoverCard>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </div>
 
