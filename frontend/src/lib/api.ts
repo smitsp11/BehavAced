@@ -262,13 +262,97 @@ export const clearCache = async () => {
   if (!isDev) {
     throw new Error('This function is only available in development')
   }
-  
+
   const response = await fetch(`${API_URL}/api/dev/clear-cache`, {
     method: 'POST',
   })
-  
+
   if (!response.ok) {
     throw new Error('Failed to clear cache')
+  }
+
+  return response.json()
+}
+
+// Onboarding API
+export const createPersonalitySnapshot = async (userId: string, responses: any, writingSample?: string) => {
+  const response = await fetch(`${API_URL}/api/onboarding/personality`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      responses,
+      writing_sample: writingSample,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Failed to create personality snapshot')
+  }
+
+  return response.json()
+}
+
+export const processManualExperience = async (userId: string, experiences: any[], education?: any, additionalSkills?: string[]) => {
+  const response = await fetch(`${API_URL}/api/onboarding/manual-experience`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      experiences,
+      education,
+      additional_skills: additionalSkills || [],
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Failed to process manual experience')
+  }
+
+  return response.json()
+}
+
+export const uploadVoice = async (userId: string, audioBase64: string, durationSeconds: number) => {
+  const response = await fetch(`${API_URL}/api/onboarding/voice`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      audio_base64: audioBase64,
+      duration_seconds: durationSeconds,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Failed to upload voice sample')
+  }
+
+  return response.json()
+}
+
+export const generateStoryBrain = async (userId: string) => {
+  const response = await fetch(`${API_URL}/api/story-brain/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      user_id: userId,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Failed to generate story brain')
   }
 
   return response.json()
