@@ -133,8 +133,8 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 <div className="gradient-green p-3 rounded-2xl shadow-lg green-glow">
                   <span className="text-3xl">🧠</span>
                 </div>
-                <h1 className="text-5xl md:text-6xl font-bold" style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}>
-                  <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+                <h1 className="text-5xl md:text-6xl font-playfair" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontStyle: 'normal', letterSpacing: 'normal' }}>
+                  <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
                     BehavAced
                   </span>
                 </h1>
@@ -147,7 +147,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             {/* Left Column: Headline + Input */}
             <FadeIn>
               <div className="space-y-6">
-                <h2 className="text-5xl md:text-6xl font-bold leading-tight" style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}>
+                <h2 className="text-5xl md:text-6xl leading-tight font-playfair">
                   Ace Your Behavioral Interviews With AI That{' '}
                   <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
                     Sounds Like You

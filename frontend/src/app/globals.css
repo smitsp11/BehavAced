@@ -202,6 +202,17 @@
     color: transparent;
   }
 
+  /* Playfair Display for hero elements */
+  .font-playfair,
+  .font-playfair *,
+  h1.font-playfair,
+  h1.font-playfair *,
+  h2.font-playfair,
+  h2.font-playfair * {
+    font-family: 'Playfair Display', serif !important;
+    font-weight: 700 !important;
+  }
+
   /* Cluely-style gradients */
   .gradient-mint {
     background: radial-gradient(ellipse at top left, #9EF7C3 0%, #FFFFFF 50%);
