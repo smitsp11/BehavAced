@@ -175,11 +175,11 @@ class AIService:
 
         if provider == 'claude':
             return await self._generate_claude_structured(
-                system_prompt, user_prompt, temperature, max_tokens, use_json_mode
+                system_prompt, user_prompt, temperature, max_tokens, use_json_mode, task
             )
         elif provider == 'gemini':
             return await self._generate_gemini_structured(
-                system_prompt, user_prompt, temperature, max_tokens, use_json_mode
+                system_prompt, user_prompt, temperature, max_tokens, use_json_mode, task
             )
         else:
             raise ValueError(f"Unsupported provider: {provider}")
@@ -190,10 +190,16 @@ class AIService:
         user_prompt: str,
         temperature: float = None,
         max_tokens: int = None,
-        use_json_mode: bool = True
+        use_json_mode: bool = True,
+        task: str = "general"
     ) -> Dict[str, Any]:
         """Generate structured completion using Claude"""
-        model = self._get_model_for_task("structured", 'claude')  # Use Sonnet for structured tasks
+        # Use the task-specific model if available, otherwise default to structured task model
+        try:
+            model = self._get_model_for_task(task, 'claude')
+        except (KeyError, ValueError):
+            # Fallback to structured task model if task not found
+            model = self._get_model_for_task("structured", 'claude')
 
         enhanced_system = system_prompt
         enhanced_user = user_prompt
@@ -240,13 +246,19 @@ class AIService:
         user_prompt: str,
         temperature: float = None,
         max_tokens: int = None,
-        use_json_mode: bool = True
+        use_json_mode: bool = True,
+        task: str = "general"
     ) -> Dict[str, Any]:
         """Generate structured completion using Gemini (fallback)"""
         if 'gemini' not in self.providers:
             raise ValueError("Gemini not available")
 
-        model_name = getattr(settings, 'GEMINI_MODEL', 'gemini-2.5-flash')
+        # Try to get task-specific model, fallback to default
+        try:
+            model_name = self._get_model_for_task(task, 'gemini')
+        except (KeyError, ValueError):
+            model_name = getattr(settings, 'GEMINI_MODEL', 'gemini-2.5-flash')
+        
         model = genai.GenerativeModel(model_name)
 
         generation_config = genai.GenerationConfig(

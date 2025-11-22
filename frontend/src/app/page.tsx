@@ -70,8 +70,9 @@ export default function Home() {
     )
   }
 
-  // Show try mode first, unless user has completed onboarding
-  if (!isOnboarded && !showOnboarding) {
+  // Always show TryMode first (it's the landing page)
+  // Users can try the demo, then choose to start onboarding
+  if (!showOnboarding) {
     return <TryMode onStartOnboarding={() => setShowOnboarding(true)} />
   }
 

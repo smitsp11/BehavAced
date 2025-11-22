@@ -3,6 +3,7 @@ MVP Service - Phase 1 core functionality for behavioral interview coaching
 """
 from typing import Dict, List, Any, Optional, Tuple
 import json
+import re
 from datetime import datetime
 from app.services import ai_service, storage
 from app.core.config import settings
@@ -47,33 +48,87 @@ class MVPService:
             industry=industry
         )
 
-        # Generate answer using configured model
+        # Generate structured JSON response using configured model
         model_config = self._get_model_config("DEMO_ANSWER_MODEL")
-        response = await self.ai_service.generate_completion(
-            system_prompt=system_prompt,
-            user_prompt=user_prompt,
-            temperature=model_config.get("temperature", 0.7),
-            max_tokens=model_config.get("max_tokens", 2000)
-        )
-
-        # Parse and structure response
+        
         try:
-            # This would typically parse structured JSON response from AI
-            # For now, return a basic structure
+            # Use generate_structured_completion instead of generate_completion
+            # This returns parsed JSON instead of raw text
+            parsed_response = await self.ai_service.generate_structured_completion(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+                temperature=model_config.get("temperature", 0.7),
+                max_tokens=model_config.get("max_tokens", 2000),
+                use_json_mode=True,
+                task="demo_answer"
+            )
+            
+            # Extract fields from parsed JSON response
+            answer_text = parsed_response.get("answer_text") or parsed_response.get("answer", "")
+            structure = parsed_response.get("structure", "STAR")
+            key_points = parsed_response.get("key_points", [])
+            estimated_time = parsed_response.get("estimated_time_seconds", 60)
+            
+            # Clean up answer text - remove any markdown formatting that might have leaked through
+            if isinstance(answer_text, str):
+                # Remove markdown code blocks if present
+                answer_text = re.sub(r'```json\s*', '', answer_text)
+                answer_text = re.sub(r'```\s*$', '', answer_text)
+                answer_text = answer_text.strip()
+                
+                # If response was wrapped in markdown, try to extract just the answer
+                # Look for patterns like "### 1. Complete Answer Text" followed by quoted text
+                quoted_match = re.search(r'"([^"]+(?:\\.[^"]*)*)"', answer_text)
+                if quoted_match and len(quoted_match.group(1)) > 50:
+                    answer_text = quoted_match.group(1)
+            
+            # Validate we have an answer
+            if not answer_text or len(answer_text) < 50:
+                raise ValueError("Generated answer text is too short or empty")
+            
             return {
-                "answer": response,
-                "structure": "STAR",  # Default assumption
-                "key_points": ["Identified problem", "Took action", "Achieved results"],
-                "estimated_time_seconds": 60
+                "answer": answer_text,
+                "structure": structure,
+                "key_points": key_points if isinstance(key_points, list) else ["Key achievement demonstrated"],
+                "estimated_time_seconds": estimated_time if isinstance(estimated_time, int) else 60
             }
+            
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            # If JSON parsing failed, try to extract answer from raw response
+            try:
+                raw_response = await self.ai_service.generate_completion(
+                    system_prompt=system_prompt,
+                    user_prompt=user_prompt,
+                    temperature=model_config.get("temperature", 0.7),
+                    max_tokens=model_config.get("max_tokens", 2000),
+                    task="demo_answer"
+                )
+                
+                # Try to extract JSON from raw response
+                json_match = re.search(r'\{.*\}', raw_response, re.DOTALL)
+                if json_match:
+                    try:
+                        parsed = json.loads(json_match.group())
+                        return {
+                            "answer": parsed.get("answer_text", raw_response),
+                            "structure": parsed.get("structure", "STAR"),
+                            "key_points": parsed.get("key_points", ["Key achievement demonstrated"]),
+                            "estimated_time_seconds": parsed.get("estimated_time_seconds", 60)
+                        }
+                    except:
+                        pass
+                
+                # Last resort: return raw response with defaults
+                return {
+                    "answer": raw_response,
+                    "structure": "STAR",
+                    "key_points": ["Key achievement demonstrated"],
+                    "estimated_time_seconds": 60
+                }
+            except Exception as fallback_error:
+                raise Exception(f"Error generating demo answer: {str(e)} (fallback also failed: {str(fallback_error)})")
         except Exception as e:
-            # Fallback structure
-            return {
-                "answer": response,
-                "structure": "STAR",
-                "key_points": ["Key achievement demonstrated"],
-                "estimated_time_seconds": 45
-            }
+            raise Exception(f"Error generating demo answer: {str(e)}")
 
     async def create_personality_snapshot(
         self,
