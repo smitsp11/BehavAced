@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { FadeIn, SlideUp, HoverCard, StaggerContainer, StaggerItem } from '@/components/ui/motion'
+import { motion } from 'framer-motion'
 import { Sparkles, MessageSquare, ArrowRight, Play, Star, Clock, Target } from 'lucide-react'
 import { generateDemoAnswer } from '@/lib/api'
 
@@ -55,8 +56,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
 
   const handleSampleQuestionClick = (sampleQuestion: string) => {
     setQuestion(sampleQuestion)
-    // Auto-generate for sample questions
-    setTimeout(() => handleGenerateDemo(), 100)
+    // Just set the question, don't auto-submit
   }
 
   const formatTime = (seconds: number) => {
@@ -89,8 +89,36 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             <HoverCard className="max-w-2xl mx-auto">
               <Card className="card-floating">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Play className="w-5 h-5" />
+                  <CardTitle className="flex items-center gap-3">
+                    <motion.button
+                      onClick={handleGenerateDemo}
+                      disabled={!question.trim() || loading}
+                      className={`
+                        relative flex items-center justify-center p-3 rounded-full transition-all duration-300
+                        ${!question.trim() || loading 
+                          ? 'bg-gray-200 cursor-not-allowed opacity-50' 
+                          : 'gradient-primary cursor-pointer shadow-lg'
+                        }
+                      `}
+                      whileHover={!question.trim() || loading ? {} : {
+                        scale: 1.15,
+                        y: -4,
+                        boxShadow: '0 20px 25px -5px rgba(102, 126, 234, 0.4), 0 10px 10px -5px rgba(102, 126, 234, 0.2)',
+                      }}
+                      whileTap={!question.trim() || loading ? {} : { scale: 0.95 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 17
+                      }}
+                      aria-label="Generate demo answer"
+                    >
+                      {loading ? (
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Play className="w-5 h-5 text-white" strokeWidth={2.5} />
+                      )}
+                    </motion.button>
                     Try It Now
                   </CardTitle>
                   <CardDescription>
@@ -102,28 +130,17 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                     placeholder="e.g., Tell me about a time you led a team through a challenging project..."
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                        e.preventDefault()
+                        if (question.trim() && !loading) {
+                          handleGenerateDemo()
+                        }
+                      }
+                    }}
                     rows={3}
                     className="resize-none"
                   />
-
-                  <Button
-                    onClick={handleGenerateDemo}
-                    disabled={!question.trim() || loading}
-                    className="w-full"
-                    size="lg"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                        Generating Answer...
-                      </>
-                    ) : (
-                      <>
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Generate Demo Answer
-                      </>
-                    )}
-                  </Button>
 
                   {/* Sample Questions */}
                   <div className="pt-4 border-t">
@@ -143,67 +160,58 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                       ))}
                     </div>
                   </div>
+
+                  {/* Output Display - Show below question in same card */}
+                  {error && (
+                    <FadeIn>
+                      <div className="mt-4 p-4 rounded-lg border border-red-200 bg-red-50/50">
+                        <p className="text-red-600 text-sm">{error}</p>
+                      </div>
+                    </FadeIn>
+                  )}
+
+                  {demoAnswer && (
+                    <FadeIn>
+                      <div className="mt-4 space-y-4">
+                        <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <Star className="w-5 h-5 text-yellow-500" />
+                              <h4 className="font-semibold text-lg">Demo Answer</h4>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1 px-3 py-1 bg-primary/10 rounded-full">
+                                <Target className="w-4 h-4" />
+                                {demoAnswer.structure}
+                              </span>
+                              <span className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
+                                <Clock className="w-4 h-4" />
+                                {formatTime(demoAnswer.estimated_time_seconds)}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="bg-white p-4 rounded-lg mb-3">
+                            <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                              {demoAnswer.answer}
+                            </p>
+                          </div>
+                          <div className="border-t pt-3">
+                            <h5 className="font-semibold mb-2 text-sm">Key Points:</h5>
+                            <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                              {demoAnswer.key_points.map((point, index) => (
+                                <li key={index}>{point}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </FadeIn>
+                  )}
                 </CardContent>
               </Card>
             </HoverCard>
           </SlideUp>
 
-          {/* Demo Answer Display */}
-          {error && (
-            <FadeIn>
-              <Card className="max-w-2xl mx-auto mb-8 border-red-200 bg-red-50/50">
-                <CardContent className="pt-6">
-                  <p className="text-red-600 text-center">{error}</p>
-                </CardContent>
-              </Card>
-            </FadeIn>
-          )}
-
-          {demoAnswer && (
-            <SlideUp>
-              <HoverCard className="max-w-4xl mx-auto mb-8">
-                <Card className="card-floating border-primary/20">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2">
-                        <Star className="w-5 h-5 text-yellow-500" />
-                        Demo Answer
-                      </CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1 px-3 py-1 bg-primary/10 rounded-full">
-                          <Target className="w-4 h-4" />
-                          {demoAnswer.structure}
-                        </span>
-                        <span className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
-                          <Clock className="w-4 h-4" />
-                          {formatTime(demoAnswer.estimated_time_seconds)}
-                        </span>
-                      </div>
-                    </div>
-                    <CardDescription>
-                      High-quality example answer demonstrating STAR method best practices
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                        {demoAnswer.answer}
-                      </p>
-                    </div>
-
-                    <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">Key Points:</h4>
-                      <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-                        {demoAnswer.key_points.map((point, index) => (
-                          <li key={index}>{point}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              </HoverCard>
-            </SlideUp>
-          )}
 
           {/* CTA Section */}
           <FadeIn>
