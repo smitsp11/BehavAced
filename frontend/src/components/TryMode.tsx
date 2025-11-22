@@ -3,14 +3,12 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { FadeIn, SlideUp, HoverCard, StaggerContainer, StaggerItem } from '@/components/ui/motion'
 import { motion } from 'framer-motion'
-import { Sparkles, MessageSquare, ArrowRight, Play, Star, Clock, Target } from 'lucide-react'
+import { Sparkles, MessageSquare, ArrowRight, Play, Star, Clock, Target, Upload, FileText, Brain, CheckCircle2 } from 'lucide-react'
 import { generateDemoAnswer } from '@/lib/api'
 
-// Sample questions for quick testing
 interface TryModeProps {
   onStartOnboarding: () => void
 }
@@ -24,11 +22,11 @@ interface DemoAnswer {
 }
 
 const SAMPLE_QUESTIONS = [
-  "Tell me about a time you led a team through a challenging project",
-  "Describe a situation where you solved a complex technical problem",
-  "Tell me about a time you had to adapt to a major change at work",
-  "Give me an example of when you turned around a failing project",
-  "Describe a time you had to work with a difficult team member"
+  { text: "Tell me about a time you led a team through a challenging project", emoji: "👥" },
+  { text: "Describe a situation where you solved a complex technical problem", emoji: "🔧" },
+  { text: "Tell me about a time you had to adapt to a major change at work", emoji: "🔄" },
+  { text: "Give me an example of when you turned around a failing project", emoji: "🎯" },
+  { text: "Describe a time you had to work with a difficult team member", emoji: "💬" }
 ]
 
 export default function TryMode({ onStartOnboarding }: TryModeProps) {
@@ -75,7 +73,6 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
           estimated_time_seconds: result.estimated_time_seconds || 60
         })
       } else if (result && result.answer) {
-        // Handle case where success field might be missing
         setDemoAnswer({
           success: true,
           answer: result.answer,
@@ -90,7 +87,6 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
     } catch (err: any) {
       console.error('Error generating demo answer:', err)
       
-      // Provide more specific error messages
       let errorMessage = 'Failed to generate demo answer. '
       
       if (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('Load failed')) {
@@ -114,7 +110,6 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
 
   const handleSampleQuestionClick = (sampleQuestion: string) => {
     setQuestion(sampleQuestion)
-    // Just set the question, don't auto-submit
   }
 
   const formatTime = (seconds: number) => {
@@ -124,216 +119,451 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto text-center mb-12">
+    <div className="min-h-screen gradient-mint-hero">
+      {/* Background Accent Blob */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-green-200/30 to-transparent rounded-full blur-3xl -z-10" />
+      
+      {/* Hero Section - Two Column Layout */}
+      <div className="container mx-auto px-4 py-20">
+        <div className="max-w-7xl mx-auto">
+          {/* Top Bar with Logo */}
           <FadeIn>
-            <div className="flex items-center justify-center mb-6">
-              <div className="gradient-primary p-4 rounded-full shadow-lg">
-                <Sparkles className="w-8 h-8 text-white" />
+            <div className="flex items-center justify-center mb-12">
+              <div className="flex items-center gap-3">
+                <div className="gradient-green p-3 rounded-2xl shadow-lg green-glow">
+                  <span className="text-3xl">🧠</span>
+                </div>
+                <h1 className="text-5xl md:text-6xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+                    BehavAced
+                  </span>
+                </h1>
               </div>
             </div>
-            <h1 className="text-6xl font-bold text-gradient mb-4">
-              BehavAced
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              AI-powered behavioral interview coaching that adapts to your authentic voice and creates personalized answers that sound like you
-            </p>
           </FadeIn>
 
-          {/* Try It Now Section */}
-          <SlideUp className="mb-8">
-            <HoverCard className="max-w-2xl mx-auto">
-              <Card className="card-floating">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <motion.button
-                      onClick={handleGenerateDemo}
-                      disabled={!question.trim() || loading}
-                      className={`
-                        relative flex items-center justify-center p-3 rounded-full transition-all duration-300
-                        ${!question.trim() || loading 
-                          ? 'bg-gray-200 cursor-not-allowed opacity-50' 
-                          : 'gradient-primary cursor-pointer shadow-lg'
-                        }
-                      `}
-                      whileHover={!question.trim() || loading ? {} : {
-                        scale: 1.15,
-                        y: -4,
-                        boxShadow: '0 20px 25px -5px rgba(102, 126, 234, 0.4), 0 10px 10px -5px rgba(102, 126, 234, 0.2)',
-                      }}
-                      whileTap={!question.trim() || loading ? {} : { scale: 0.95 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 17
-                      }}
-                      aria-label="Generate demo answer"
-                    >
-                      {loading ? (
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Play className="w-5 h-5 text-white" strokeWidth={2.5} />
-                      )}
-                    </motion.button>
-                    Try It Now
-                  </CardTitle>
-                  <CardDescription>
-                    Ask any behavioral interview question and see how our AI creates compelling answers that demonstrate best practices
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Textarea
-                    placeholder="e.g., Tell me about a time you led a team through a challenging project..."
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                        e.preventDefault()
-                        if (question.trim() && !loading) {
-                          handleGenerateDemo()
-                        }
-                      }
-                    }}
-                    rows={3}
-                    className="resize-none"
-                  />
+          {/* Two Column Hero Layout */}
+          <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
+            {/* Left Column: Headline + Input */}
+            <FadeIn>
+              <div className="space-y-6">
+                <h2 className="text-5xl md:text-6xl font-bold leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Ace Your Behavioral Interviews With AI That{' '}
+                  <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+                    Sounds Like You
+                  </span>
+                </h2>
+                <p className="text-xl text-gray-700 leading-relaxed">
+                  Upload your resume. Share your style. Get personalized answers that match your authentic voice.
+                </p>
 
-                  {/* Sample Questions */}
-                  <div className="pt-4 border-t">
-                    <p className="text-sm text-gray-600 mb-3">Try these sample questions:</p>
-                    <div className="grid gap-2">
-                      {SAMPLE_QUESTIONS.map((sampleQ, index) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSampleQuestionClick(sampleQ)}
-                          className="text-left justify-start h-auto py-2 px-3 text-xs"
-                          disabled={loading}
-                        >
-                          {sampleQ}
-                        </Button>
-                      ))}
-                    </div>
+                {/* Try It Input Box - Glassmorphic */}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Textarea
+                      placeholder="Ask any behavioral question... e.g., 'Tell me about a time you led a team'"
+                      value={question}
+                      onChange={(e) => setQuestion(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                          e.preventDefault()
+                          if (question.trim() && !loading) {
+                            handleGenerateDemo()
+                          }
+                        }
+                      }}
+                      rows={4}
+                      className="glassmorphic-input rounded-3xl p-6 text-lg resize-none w-full"
+                    />
                   </div>
 
-                  {/* Output Display - Show below question in same card */}
-                  {error && (
-                    <FadeIn>
-                      <div className="mt-4 p-4 rounded-lg border border-red-200 bg-red-50/50">
-                        <p className="text-red-600 text-sm">{error}</p>
-                      </div>
-                    </FadeIn>
-                  )}
+                  {/* Play Button - Green Gradient with Sparkles */}
+                  <motion.button
+                    onClick={handleGenerateDemo}
+                    disabled={!question.trim() || loading}
+                    className={`
+                      relative gradient-green rounded-full px-7 py-4 text-black font-semibold text-lg
+                      shadow-lg shadow-green-400/40 flex items-center gap-2 mx-auto
+                      ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                      ${!question.trim() || loading ? '' : 'sparkle'}
+                    `}
+                    whileHover={!question.trim() || loading ? {} : {
+                      scale: 1.05,
+                      y: -2,
+                      boxShadow: '0 20px 25px -5px rgba(40, 217, 138, 0.4), 0 10px 10px -5px rgba(40, 217, 138, 0.2)',
+                    }}
+                    whileTap={!question.trim() || loading ? {} : { scale: 0.98 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 17
+                    }}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-5 h-5" fill="currentColor" />
+                        Generate Answer
+                      </>
+                    )}
+                  </motion.button>
+                </div>
 
-                  {demoAnswer && (
-                    <FadeIn>
-                      <div className="mt-4 space-y-4">
-                        <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <Star className="w-5 h-5 text-yellow-500" />
-                              <h4 className="font-semibold text-lg">Demo Answer</h4>
-                            </div>
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1 px-3 py-1 bg-primary/10 rounded-full">
-                                <Target className="w-4 h-4" />
-                                {demoAnswer.structure}
-                              </span>
-                              <span className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
-                                <Clock className="w-4 h-4" />
-                                {formatTime(demoAnswer.estimated_time_seconds)}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="bg-white p-4 rounded-lg mb-3">
-                            <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                              {demoAnswer.answer}
-                            </p>
-                          </div>
-                          <div className="border-t pt-3">
-                            <h5 className="font-semibold mb-2 text-sm">Key Points:</h5>
-                            <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-                              {demoAnswer.key_points.map((point, index) => (
-                                <li key={index}>{point}</li>
-                              ))}
-                            </ul>
-                          </div>
+                {/* Output Display - Show below input */}
+                {error && (
+                  <FadeIn>
+                    <div className="p-4 rounded-2xl border-2 border-red-200 bg-red-50/80 backdrop-blur-sm">
+                      <p className="text-red-600 text-sm whitespace-pre-line">{error}</p>
+                    </div>
+                  </FadeIn>
+                )}
+
+                {demoAnswer && (
+                  <FadeIn>
+                    <div className="p-6 rounded-3xl border-2 border-green-200 bg-white/90 backdrop-blur-sm shadow-xl">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                          <h4 className="font-bold text-xl">Demo Answer</h4>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="px-3 py-1 bg-green-100 rounded-full text-green-700 font-medium">
+                            {demoAnswer.structure}
+                          </span>
+                          <span className="px-3 py-1 bg-emerald-100 rounded-full text-emerald-700 font-medium flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {formatTime(demoAnswer.estimated_time_seconds)}
+                          </span>
                         </div>
                       </div>
-                    </FadeIn>
-                  )}
-                </CardContent>
-              </Card>
-            </HoverCard>
-          </SlideUp>
+                      <div className="bg-gray-50 p-5 rounded-2xl mb-4">
+                        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                          {demoAnswer.answer}
+                        </p>
+                      </div>
+                      {demoAnswer.key_points && demoAnswer.key_points.length > 0 && (
+                        <div className="border-t border-gray-200 pt-4">
+                          <h5 className="font-semibold mb-2 text-sm text-gray-700">Key Points:</h5>
+                          <ul className="space-y-1 text-sm text-gray-600">
+                            {demoAnswer.key_points.map((point, index) => (
+                              <li key={index} className="flex items-start gap-2">
+                                <span className="text-green-500 mt-0.5">•</span>
+                                <span>{point}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </FadeIn>
+                )}
+              </div>
+            </FadeIn>
 
-
-          {/* CTA Section */}
-          <FadeIn>
-            <div className="text-center">
-              <HoverCard className="glass p-8 rounded-2xl max-w-2xl mx-auto card-floating">
-                <h2 className="text-3xl font-bold mb-4 text-gradient">Ready for Personalized Coaching?</h2>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Upload your resume and share your communication style.
-                  Our AI will create personalized answers that match your authentic voice and story bank.
-                </p>
-                <Button
-                  onClick={onStartOnboarding}
-                  className="gradient-primary hover:opacity-90 btn-soft text-white border-0"
-                  size="lg"
+            {/* Right Column: Playful Floating Elements */}
+            <SlideUp>
+              <div className="relative h-full min-h-[500px]">
+                {/* Floating Speech Bubbles */}
+                <motion.div
+                  className="absolute top-20 right-0 bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border-2 border-green-100 float-element"
+                  style={{ animationDelay: '0s' }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
                 >
-                  Get Started - It's Free
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-                <p className="text-xs text-muted-foreground mt-4">
-                  Takes ~3 minutes • No account required • All data processed locally
-                </p>
-              </HoverCard>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">📚</span>
+                    <div>
+                      <p className="font-semibold text-gray-800">Your personal story bank</p>
+                      <p className="text-sm text-gray-600">is ready ✨</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="absolute top-60 right-20 bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border-2 border-emerald-100 float-element"
+                  style={{ animationDelay: '1s' }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-green-500" />
+                    <div>
+                      <p className="font-semibold text-gray-800">Analysis Complete</p>
+                      <p className="text-sm text-gray-600">Voice matched ✓</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="absolute bottom-20 right-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 shadow-xl border-2 border-green-200 float-element"
+                  style={{ animationDelay: '2s' }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <div className="text-center">
+                    <span className="text-4xl mb-2 block">🎯</span>
+                    <p className="font-bold text-gray-800 text-lg">STAR Format</p>
+                    <p className="text-sm text-gray-600 mt-1">Perfect every time</p>
+                  </div>
+                </motion.div>
+              </div>
+            </SlideUp>
+          </div>
+
+          {/* Sample Questions - Horizontal Scroll Pills */}
+          <SlideUp>
+            <div className="mb-16">
+              <p className="text-sm font-medium text-gray-600 mb-4 text-center">Try these sample questions:</p>
+              <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {SAMPLE_QUESTIONS.map((sampleQ, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => handleSampleQuestionClick(sampleQ.text)}
+                    disabled={loading}
+                    className="pill-card flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className="text-xl">{sampleQ.emoji}</span>
+                    <span className="text-sm font-medium text-gray-700">{sampleQ.text}</span>
+                  </motion.button>
+                ))}
+              </div>
             </div>
-          </FadeIn>
+          </SlideUp>
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="bg-white py-16">
+      {/* How It Works Section */}
+      <div className="bg-white/50 backdrop-blur-sm py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Why Choose BehavAced?</h2>
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              How It Works
+            </h2>
+            <p className="text-center text-gray-600 text-lg mb-12">Super simple. Super powerful.</p>
+            
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">AI-Powered Personalization</h3>
-                <p className="text-gray-600">
-                  Our AI analyzes your communication style and creates answers that sound authentically like you.
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageSquare className="w-8 h-8 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Story Bank Generation</h3>
-                <p className="text-gray-600">
-                  Extract and organize your professional stories into a searchable bank for instant retrieval.
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Behavioral Interview Focus</h3>
-                <p className="text-gray-600">
-                  Specifically designed for behavioral interviews with STAR/SOAR structure and quantifiable results.
-                </p>
-              </div>
+              <StaggerContainer>
+                <StaggerItem>
+                  <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                    <div className="text-5xl mb-4">1️⃣</div>
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Upload Your Resume</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      AI analyzes your communication patterns, vocabulary, and writing style.
+                    </p>
+                  </div>
+                </StaggerItem>
+                
+                <StaggerItem>
+                  <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                    <div className="text-5xl mb-4">2️⃣</div>
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Build Your Story Bank</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Your experiences → structured STAR/Soar stories organized by competency.
+                    </p>
+                  </div>
+                </StaggerItem>
+                
+                <StaggerItem>
+                  <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                    <div className="text-5xl mb-4">3️⃣</div>
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Generate Personalized Answers</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Every answer matches your tone + strengths. Sound authentically you.
+                    </p>
+                  </div>
+                </StaggerItem>
+              </StaggerContainer>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Value Prop Section - Single Floating Card */}
+      <div className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <HoverCard>
+              <Card className="card-floating bg-white/80 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-12">
+                <h2 className="text-4xl font-bold text-center mb-12" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Why Choose BehavAced?
+                </h2>
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div className="text-center">
+                    <div className="bg-gradient-to-br from-green-100 to-emerald-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <span className="text-4xl">✨</span>
+                    </div>
+                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      ✨ AI-Powered Personalization
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Our AI analyzes your communication style and creates answers that sound authentically like you.
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-gradient-to-br from-purple-100 to-pink-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <span className="text-4xl">📚</span>
+                    </div>
+                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      📚 Smart Story Bank
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Extract and organize your professional stories into a searchable bank for instant retrieval.
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-gradient-to-br from-green-100 to-teal-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <span className="text-4xl">🎯</span>
+                    </div>
+                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      🎯 Behavioral Interview Focus
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Specifically designed for behavioral interviews with STAR/SOAR structure and quantifiable results.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-8 pt-8 border-t border-green-100 flex items-center justify-center gap-4 flex-wrap">
+                  <span className="text-sm text-gray-500">✨</span>
+                  <span className="text-sm text-gray-500">•</span>
+                  <span className="text-sm text-gray-500">Matches your authentic voice</span>
+                  <span className="text-sm text-gray-500">•</span>
+                  <span className="text-sm text-gray-500">No generic templates</span>
+                  <span className="text-sm text-gray-500">•</span>
+                  <span className="text-sm text-gray-500">Ready in seconds</span>
+                </div>
+              </Card>
+            </HoverCard>
+          </div>
+        </div>
+      </div>
+
+      {/* Testimonial Section */}
+      <div className="bg-gradient-to-br from-green-50/50 to-emerald-50/50 py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl font-bold text-center mb-12" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Loved by Students & Job Seekers
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-6 shadow-lg">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">🚀</div>
+                  <div>
+                    <p className="font-bold text-gray-800 mb-2">
+                      "I finally aced my Amazon behavioral interview! 🚀"
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      The personalized answers matched my communication style perfectly. Felt natural and confident.
+                    </p>
+                    <p className="text-xs text-gray-500 mt-3">— Sarah, Software Engineer</p>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-6 shadow-lg">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">⏱️</div>
+                  <div>
+                    <p className="font-bold text-gray-800 mb-2">
+                      "This saved me HOURS of prep time."
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      No more staring at blank pages. AI generated perfect STAR-formatted answers in seconds.
+                    </p>
+                    <p className="text-xs text-gray-500 mt-3">— Michael, MBA Student</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Big Gradient CTA Band */}
+      <div className="gradient-green-cta py-16 relative overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-6xl opacity-20 float-element">🌿</span>
+          <span className="text-6xl opacity-20 float-element ml-20" style={{ animationDelay: '1s' }}>✨</span>
+          <span className="text-6xl opacity-20 float-element ml-20" style={{ animationDelay: '2s' }}>📘</span>
+        </div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Ready to Master Your Behavioral Interviews?
+            </h2>
+            <p className="text-xl text-white/90 mb-8">
+              Get AI answers in your authentic voice.
+            </p>
+            <motion.button
+              onClick={onStartOnboarding}
+              className="bg-white text-green-600 rounded-full px-8 py-4 text-lg font-bold shadow-2xl flex items-center gap-2 mx-auto"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Get Started - It's Free
+              <ArrowRight className="w-5 h-5" />
+            </motion.button>
+            <p className="text-white/80 text-sm mt-4">
+              Takes ~3 minutes • No account required • All data processed locally
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gradient-to-b from-white to-green-50/30 py-12 border-t border-green-100">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-2xl">🧠</span>
+                  <span className="font-bold text-lg">BehavAced</span>
+                </div>
+                <p className="text-sm text-gray-600">
+                  AI-powered behavioral interview coaching
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-3">Product</h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>Features</li>
+                  <li>Pricing</li>
+                  <li>Demo</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-3">Company</h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>About</li>
+                  <li>Blog</li>
+                  <li>Contact</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-3">Legal</h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>Privacy</li>
+                  <li>Terms</li>
+                  <li>Security</li>
+                </ul>
+              </div>
+            </div>
+            <div className="pt-8 border-t border-green-100 text-center text-sm text-gray-500">
+              <p>© 2024 BehavAced. Made with 💚 for students and job seekers.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

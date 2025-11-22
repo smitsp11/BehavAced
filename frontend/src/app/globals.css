@@ -201,6 +201,101 @@
     background-clip: text;
     color: transparent;
   }
+
+  /* Cluely-style gradients */
+  .gradient-mint {
+    background: radial-gradient(ellipse at top left, #9EF7C3 0%, #FFFFFF 50%);
+  }
+
+  .gradient-mint-hero {
+    background: radial-gradient(ellipse at top, #9EF7C3 0%, #D9FFE8 30%, #FFFFFF 70%);
+  }
+
+  .gradient-green {
+    background: linear-gradient(135deg, #88FFBF 0%, #28D98A 100%);
+  }
+
+  .gradient-emerald {
+    background: linear-gradient(135deg, #28D98A 0%, #1EC778 100%);
+  }
+
+  .gradient-green-cta {
+    background: linear-gradient(135deg, #10B981 0%, #28D98A 50%, #9EF7C3 100%);
+  }
+
+  /* Glassmorphic input */
+  .glassmorphic-input {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(40, 217, 138, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .glassmorphic-input:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #28D98A;
+    box-shadow: 0 0 0 4px rgba(40, 217, 138, 0.1);
+    outline: none;
+  }
+
+  /* Hide scrollbar */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Sparkle animation for buttons */
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1) rotate(180deg); }
+  }
+
+  .sparkle::before,
+  .sparkle::after {
+    content: '✨';
+    position: absolute;
+    animation: sparkle 2s infinite;
+  }
+
+  .sparkle::before {
+    top: -8px;
+    left: -8px;
+    animation-delay: 0s;
+  }
+
+  .sparkle::after {
+    bottom: -8px;
+    right: -8px;
+    animation-delay: 1s;
+  }
+
+  /* Pill-shaped question cards */
+  .pill-card {
+    @apply rounded-full px-6 py-3 bg-white border-2 border-green-100 hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-green-200/50 hover:-translate-y-1;
+  }
+
+  /* Floating elements animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+
+  .float-element {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Green glow effect */
+  .green-glow {
+    box-shadow: 0 0 20px rgba(40, 217, 138, 0.3);
+  }
+
+  .green-glow:hover {
+    box-shadow: 0 0 30px rgba(40, 217, 138, 0.5);
+  }
 }
 
 /* Utility classes */
