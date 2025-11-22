@@ -1,4 +1,4 @@
-git git 'use client'
+git 'use client'
 
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'

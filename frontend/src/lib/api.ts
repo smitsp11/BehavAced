@@ -113,10 +113,29 @@ export const generateAnswer = async (userId: string, question: string, context?:
 export const scorePractice = async (
   userId: string,
   question: string,
-  audioBase64?: string,
+  audioBase64?: string | Blob,
   transcript?: string,
   durationSeconds?: number
 ) => {
+  let processedAudioBase64: string | undefined
+
+  // Convert Blob to base64 if needed
+  if (audioBase64 instanceof Blob) {
+    processedAudioBase64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const result = reader.result as string
+        // Remove the data:audio/webm;base64, prefix
+        const base64 = result.split(',')[1]
+        resolve(base64)
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(audioBase64)
+    })
+  } else {
+    processedAudioBase64 = audioBase64
+  }
+
   const response = await fetch(`${API_URL}/api/practice/score`, {
     method: 'POST',
     headers: {
@@ -125,7 +144,7 @@ export const scorePractice = async (
     body: JSON.stringify({
       user_id: userId,
       question,
-      audio_base64: audioBase64,
+      audio_base64: processedAudioBase64,
       transcript,
       duration_seconds: durationSeconds || 0,
     }),
