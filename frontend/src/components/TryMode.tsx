@@ -87,7 +87,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
     } catch (err: any) {
       console.error('Error generating demo answer:', err)
       
-      let errorMessage = 'Failed to generate demo answer. '
+      let errorMessage = 'c'
       
       if (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('Load failed')) {
         errorMessage += 'Unable to connect to the server. Please ensure:\n'
@@ -133,7 +133,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 <div className="gradient-green p-3 rounded-2xl shadow-lg green-glow">
                   <span className="text-3xl">🧠</span>
                 </div>
-                <h1 className="text-5xl md:text-6xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h1 className="text-5xl md:text-6xl font-black" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 900 }}>
                   <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
                     BehavAced
                   </span>
@@ -147,13 +147,13 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             {/* Left Column: Headline + Input */}
             <FadeIn>
               <div className="space-y-6">
-                <h2 className="text-5xl md:text-6xl font-bold leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h2 className="text-5xl md:text-6xl font-bold leading-tight" style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}>
                   Ace Your Behavioral Interviews With AI That{' '}
                   <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
                     Sounds Like You
                   </span>
                 </h2>
-                <p className="text-xl text-gray-700 leading-relaxed">
+                <p className="text-xl text-gray-700 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                   Upload your resume. Share your style. Get personalized answers that match your authentic voice.
                 </p>
 
@@ -174,6 +174,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                       }}
                       rows={4}
                       className="glassmorphic-input rounded-3xl p-6 text-lg resize-none w-full"
+                      style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
                     />
                   </div>
 
@@ -182,11 +183,12 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                     onClick={handleGenerateDemo}
                     disabled={!question.trim() || loading}
                     className={`
-                      relative gradient-green rounded-full px-7 py-4 text-black font-semibold text-lg
+                      relative gradient-green rounded-full px-7 py-4 text-black text-lg
                       shadow-lg shadow-green-400/40 flex items-center gap-2 mx-auto
                       ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                       ${!question.trim() || loading ? '' : 'sparkle'}
                     `}
+                    style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
                     whileHover={!question.trim() || loading ? {} : {
                       scale: 1.05,
                       y: -2,
@@ -228,27 +230,27 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                           <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-                          <h4 className="font-bold text-xl">Demo Answer</h4>
+                          <h4 className="font-bold text-xl" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Demo Answer</h4>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <span className="px-3 py-1 bg-green-100 rounded-full text-green-700 font-medium">
+                          <span className="px-3 py-1 bg-green-100 rounded-full text-green-700 font-medium" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
                             {demoAnswer.structure}
                           </span>
-                          <span className="px-3 py-1 bg-emerald-100 rounded-full text-emerald-700 font-medium flex items-center gap-1">
+                          <span className="px-3 py-1 bg-emerald-100 rounded-full text-emerald-700 font-medium flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
                             <Clock className="w-4 h-4" />
                             {formatTime(demoAnswer.estimated_time_seconds)}
                           </span>
                         </div>
                       </div>
                       <div className="bg-gray-50 p-5 rounded-2xl mb-4">
-                        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                           {demoAnswer.answer}
                         </p>
                       </div>
                       {demoAnswer.key_points && demoAnswer.key_points.length > 0 && (
                         <div className="border-t border-gray-200 pt-4">
-                          <h5 className="font-semibold mb-2 text-sm text-gray-700">Key Points:</h5>
-                          <ul className="space-y-1 text-sm text-gray-600">
+                          <h5 className="font-semibold mb-2 text-sm text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>Key Points:</h5>
+                          <ul className="space-y-1 text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                             {demoAnswer.key_points.map((point, index) => (
                               <li key={index} className="flex items-start gap-2">
                                 <span className="text-green-500 mt-0.5">•</span>
@@ -275,13 +277,13 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">📚</span>
-                    <div>
-                      <p className="font-semibold text-gray-800">Your personal story bank</p>
-                      <p className="text-sm text-gray-600">is ready ✨</p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📚</span>
+                      <div>
+                        <p className="font-medium text-gray-800" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Your personal story bank</p>
+                        <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>is ready ✨</p>
+                      </div>
                     </div>
-                  </div>
                 </motion.div>
 
                 <motion.div
@@ -291,13 +293,13 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-green-500" />
-                    <div>
-                      <p className="font-semibold text-gray-800">Analysis Complete</p>
-                      <p className="text-sm text-gray-600">Voice matched ✓</p>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="w-6 h-6 text-green-500" />
+                      <div>
+                        <p className="font-medium text-gray-800" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Analysis Complete</p>
+                        <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Voice matched ✓</p>
+                      </div>
                     </div>
-                  </div>
                 </motion.div>
 
                 <motion.div
@@ -309,8 +311,8 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 >
                   <div className="text-center">
                     <span className="text-4xl mb-2 block">🎯</span>
-                    <p className="font-bold text-gray-800 text-lg">STAR Format</p>
-                    <p className="text-sm text-gray-600 mt-1">Perfect every time</p>
+                    <p className="font-bold text-gray-800 text-lg" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>STAR Format</p>
+                    <p className="text-sm text-gray-600 mt-1" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Perfect every time</p>
                   </div>
                 </motion.div>
               </div>
@@ -320,7 +322,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
           {/* Sample Questions - Horizontal Scroll Pills */}
           <SlideUp>
             <div className="mb-16">
-              <p className="text-sm font-medium text-gray-600 mb-4 text-center">Try these sample questions:</p>
+              <p className="text-sm font-semibold text-gray-600 mb-4 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>Try these sample questions:</p>
               <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {SAMPLE_QUESTIONS.map((sampleQ, index) => (
                   <motion.button
@@ -332,7 +334,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                     whileTap={{ scale: 0.95 }}
                   >
                     <span className="text-xl">{sampleQ.emoji}</span>
-                    <span className="text-sm font-medium text-gray-700">{sampleQ.text}</span>
+                    <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>{sampleQ.text}</span>
                   </motion.button>
                 ))}
               </div>
@@ -345,18 +347,18 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       <div className="bg-white/50 backdrop-blur-sm py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
               How It Works
             </h2>
-            <p className="text-center text-gray-600 text-lg mb-12">Super simple. Super powerful.</p>
+            <p className="text-center text-gray-600 text-lg mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Super simple. Super powerful.</p>
             
             <div className="grid md:grid-cols-3 gap-8">
               <StaggerContainer>
                 <StaggerItem>
                   <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                    <div className="text-5xl mb-4">1️⃣</div>
-                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Upload Your Resume</h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>1️⃣</div>
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Upload Your Resume</h3>
+                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                       AI analyzes your communication patterns, vocabulary, and writing style.
                     </p>
                   </div>
@@ -364,9 +366,9 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 
                 <StaggerItem>
                   <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                    <div className="text-5xl mb-4">2️⃣</div>
-                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Build Your Story Bank</h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>2️⃣</div>
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Build Your Story Bank</h3>
+                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                       Your experiences → structured STAR/Soar stories organized by competency.
                     </p>
                   </div>
@@ -374,9 +376,9 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 
                 <StaggerItem>
                   <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                    <div className="text-5xl mb-4">3️⃣</div>
-                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Generate Personalized Answers</h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>3️⃣</div>
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Generate Personalized Answers</h3>
+                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                       Every answer matches your tone + strengths. Sound authentically you.
                     </p>
                   </div>
@@ -393,7 +395,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
           <div className="max-w-4xl mx-auto">
             <HoverCard>
               <Card className="card-floating bg-white/80 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-12">
-                <h2 className="text-4xl font-bold text-center mb-12" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h2 className="text-4xl font-extrabold text-center mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
                   Why Choose BehavAced?
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8">
@@ -401,10 +403,10 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                     <div className="bg-gradient-to-br from-green-100 to-emerald-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                       <span className="text-4xl">✨</span>
                     </div>
-                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
                       ✨ AI-Powered Personalization
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                       Our AI analyzes your communication style and creates answers that sound authentically like you.
                     </p>
                   </div>
@@ -412,10 +414,10 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                     <div className="bg-gradient-to-br from-purple-100 to-pink-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                       <span className="text-4xl">📚</span>
                     </div>
-                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
                       📚 Smart Story Bank
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                       Extract and organize your professional stories into a searchable bank for instant retrieval.
                     </p>
                   </div>
@@ -423,10 +425,10 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                     <div className="bg-gradient-to-br from-green-100 to-teal-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                       <span className="text-4xl">🎯</span>
                     </div>
-                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
                       🎯 Behavioral Interview Focus
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                       Specifically designed for behavioral interviews with STAR/SOAR structure and quantifiable results.
                     </p>
                   </div>
@@ -450,7 +452,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       <div className="bg-gradient-to-br from-green-50/50 to-emerald-50/50 py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold text-center mb-12" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h2 className="text-4xl font-extrabold text-center mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
               Loved by Students & Job Seekers
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
@@ -458,13 +460,13 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 <div className="flex items-start gap-4">
                   <div className="text-4xl">🚀</div>
                   <div>
-                    <p className="font-bold text-gray-800 mb-2">
+                    <p className="font-bold text-gray-800 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
                       "I finally aced my Amazon behavioral interview! 🚀"
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                       The personalized answers matched my communication style perfectly. Felt natural and confident.
                     </p>
-                    <p className="text-xs text-gray-500 mt-3">— Sarah, Software Engineer</p>
+                    <p className="text-xs text-gray-500 mt-3 italic" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>— Sarah, Software Engineer</p>
                   </div>
                 </div>
               </Card>
@@ -473,13 +475,13 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 <div className="flex items-start gap-4">
                   <div className="text-4xl">⏱️</div>
                   <div>
-                    <p className="font-bold text-gray-800 mb-2">
+                    <p className="font-bold text-gray-800 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
                       "This saved me HOURS of prep time."
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                       No more staring at blank pages. AI generated perfect STAR-formatted answers in seconds.
                     </p>
-                    <p className="text-xs text-gray-500 mt-3">— Michael, MBA Student</p>
+                    <p className="text-xs text-gray-500 mt-3 italic" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>— Michael, MBA Student</p>
                   </div>
                 </div>
               </Card>
@@ -497,15 +499,16 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
         </div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
               Ready to Master Your Behavioral Interviews?
             </h2>
-            <p className="text-xl text-white/90 mb-8">
+            <p className="text-xl text-white/90 mb-8" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
               Get AI answers in your authentic voice.
             </p>
             <motion.button
               onClick={onStartOnboarding}
-              className="bg-white text-green-600 rounded-full px-8 py-4 text-lg font-bold shadow-2xl flex items-center gap-2 mx-auto"
+              className="bg-white text-green-600 rounded-full px-8 py-4 text-lg shadow-2xl flex items-center gap-2 mx-auto"
+              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -527,31 +530,31 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
               <div>
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-2xl">🧠</span>
-                  <span className="font-bold text-lg">BehavAced</span>
+                  <span className="font-black text-lg" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 900 }}>BehavAced</span>
                 </div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                   AI-powered behavioral interview coaching
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold mb-3">Product</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h4 className="font-semibold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Product</h4>
+                <ul className="space-y-2 text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                   <li>Features</li>
                   <li>Pricing</li>
                   <li>Demo</li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-3">Company</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h4 className="font-semibold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Company</h4>
+                <ul className="space-y-2 text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                   <li>About</li>
                   <li>Blog</li>
                   <li>Contact</li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-3">Legal</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h4 className="font-semibold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Legal</h4>
+                <ul className="space-y-2 text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                   <li>Privacy</li>
                   <li>Terms</li>
                   <li>Security</li>
@@ -559,7 +562,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
               </div>
             </div>
             <div className="pt-8 border-t border-green-100 text-center text-sm text-gray-500">
-              <p>© 2024 BehavAced. Made with 💚 for students and job seekers.</p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>© 2024 BehavAced. Made with 💚 for students and job seekers.</p>
             </div>
           </div>
         </div>
