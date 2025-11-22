@@ -8,7 +8,7 @@ from app.models.schemas import (
     ManualExperienceRequest,
     ManualExperienceResponse
 )
-from app.services import mvp_service, storage
+from app.services import mvp_service, storage, voice_service
 
 router = APIRouter()
 
@@ -83,4 +83,58 @@ async def process_manual_experience(request: ManualExperienceRequest):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error processing manual experience: {str(e)}"
+        )
+
+
+@router.post("/voice")
+async def upload_voice_sample(request: dict):
+    """
+    Upload voice sample for analysis (stub implementation)
+
+    This endpoint accepts voice samples for future tone and speaking style analysis.
+    Currently returns a success response for compatibility.
+    """
+    try:
+        user_id = request.get("user_id")
+        audio_base64 = request.get("audio_base64")
+        duration_seconds = request.get("duration_seconds", 0)
+
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="user_id is required"
+            )
+
+        # For now, just acknowledge the upload
+        # Future: Implement actual voice analysis
+        if audio_base64:
+            try:
+                # Could validate base64 format here
+                # transcription = voice_service.transcribe_audio(audio_base64)
+                pass
+            except Exception as e:
+                # Log but don't fail - voice is optional
+                print(f"Voice processing failed (non-critical): {e}")
+
+        # Store voice upload metadata
+        profile = storage.get_profile(user_id) or {}
+        profile["voice_sample"] = {
+            "uploaded_at": datetime.now().isoformat(),
+            "duration_seconds": duration_seconds,
+            "processed": False  # Future: set to True when analysis is implemented
+        }
+        storage.save_profile(user_id, profile)
+
+        return {
+            "success": True,
+            "message": "Voice sample uploaded successfully",
+            "note": "Voice analysis features coming soon"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error uploading voice sample: {str(e)}"
         )

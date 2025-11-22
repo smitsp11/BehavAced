@@ -1,60 +1,164 @@
 """
-AI Service - Handles all Google Gemini API interactions
+AI Service - Handles AI model interactions with Claude (preferred) and Gemini (fallback)
 """
-# Claude/Anthropic imports (commented out)
-# from anthropic import Anthropic
+from anthropic import Anthropic
 from app.core.config import settings
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Literal
 import json
 import google.generativeai as genai
 import os
 
 
 class AIService:
-    """Service for AI model interactions using Google Gemini"""
-    
+    """Service for AI model interactions with provider selection"""
+
     def __init__(self):
-        # Claude/Anthropic initialization (commented out)
-        # self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-        # self.model = settings.CLAUDE_MODEL
-        
-        # Google Gemini initialization
-        api_key = os.getenv("GOOGLE_API_KEY") or getattr(settings, 'GOOGLE_API_KEY', None)
-        if not api_key:
-            raise ValueError("GOOGLE_API_KEY not found in environment variables or settings")
-        
-        genai.configure(api_key=api_key)
-        # Use Gemini model from settings or default
-        model_name = getattr(settings, 'GEMINI_MODEL', 'gemini-2.5-flash')
-        self.model = genai.GenerativeModel(model_name)
+        # Initialize available providers
+        self.providers = {}
+
+        # Claude/Anthropic (preferred)
+        claude_key = os.getenv("CLAUDE_API_KEY") or getattr(settings, 'CLAUDE_API_KEY', None)
+        if claude_key:
+            try:
+                self.providers['claude'] = Anthropic(api_key=claude_key)
+                print("✓ Claude API initialized")
+            except Exception as e:
+                print(f"⚠ Claude initialization failed: {e}")
+
+        # Google Gemini (fallback)
+        gemini_key = os.getenv("GOOGLE_API_KEY") or getattr(settings, 'GOOGLE_API_KEY', None)
+        if gemini_key:
+            try:
+                genai.configure(api_key=gemini_key)
+                self.providers['gemini'] = genai
+                print("✓ Gemini API initialized")
+            except Exception as e:
+                print(f"⚠ Gemini initialization failed: {e}")
+
+        if not self.providers:
+            raise ValueError("No AI providers available. Please set CLAUDE_API_KEY or GOOGLE_API_KEY")
+
+        print(f"Available providers: {list(self.providers.keys())}")
+
+    def _get_preferred_provider(self, task: str) -> str:
+        """Get the preferred provider for a task"""
+        # Claude is preferred for most tasks
+        if 'claude' in self.providers:
+            return 'claude'
+        elif 'gemini' in self.providers:
+            return 'gemini'
+        else:
+            raise ValueError("No AI providers available")
+
+    def _get_model_for_task(self, task: str, provider: str) -> str:
+        """Get the appropriate model for a task and provider"""
+        task_models = {
+            'demo_answer': {
+                'claude': settings.CLAUDE_HAIKU_MODEL,  # Fast for demos
+                'gemini': settings.GEMINI_MODEL
+            },
+            'personality_analysis': {
+                'claude': settings.CLAUDE_SONNET_MODEL,  # Complex analysis
+                'gemini': settings.GEMINI_MODEL
+            },
+            'resume_processing': {
+                'claude': settings.CLAUDE_SONNET_MODEL,
+                'gemini': settings.GEMINI_MODEL
+            },
+            'story_generation': {
+                'claude': settings.CLAUDE_SONNET_MODEL,
+                'gemini': settings.GEMINI_MODEL
+            },
+            'answer_personalization': {
+                'claude': settings.CLAUDE_SONNET_MODEL,
+                'gemini': settings.GEMINI_MODEL
+            },
+            'practice_scoring': {
+                'claude': settings.CLAUDE_SONNET_MODEL,
+                'gemini': settings.GEMINI_MODEL
+            }
+        }
+
+        return task_models.get(task, {}).get(provider, settings.GEMINI_MODEL)
     
     async def generate_completion(
         self,
         system_prompt: str,
         user_prompt: str,
         temperature: float = None,
+        max_tokens: int = None,
+        task: str = "general"
+    ) -> str:
+        """Generate a completion using available AI providers"""
+
+        provider = self._get_preferred_provider(task)
+
+        if provider == 'claude':
+            return await self._generate_claude_completion(
+                system_prompt, user_prompt, temperature, max_tokens, task
+            )
+        elif provider == 'gemini':
+            return await self._generate_gemini_completion(
+                system_prompt, user_prompt, temperature, max_tokens
+            )
+        else:
+            raise ValueError(f"Unsupported provider: {provider}")
+
+    async def _generate_claude_completion(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = None,
+        max_tokens: int = None,
+        task: str = "general"
+    ) -> str:
+        """Generate completion using Claude"""
+        model = self._get_model_for_task(task, 'claude')
+
+        try:
+            response = self.providers['claude'].messages.create(
+                model=model,
+                max_tokens=max_tokens or settings.MAX_TOKENS,
+                temperature=temperature or settings.TEMPERATURE,
+                system=system_prompt,
+                messages=[
+                    {"role": "user", "content": user_prompt}
+                ]
+            )
+            return response.content[0].text
+        except Exception as e:
+            raise Exception(f"Claude API error: {str(e)}")
+
+    async def _generate_gemini_completion(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = None,
         max_tokens: int = None
     ) -> str:
-        """Generate a completion from Google Gemini"""
-        
+        """Generate completion using Gemini (fallback)"""
+        if 'gemini' not in self.providers:
+            raise ValueError("Gemini not available")
+
+        model_name = getattr(settings, 'GEMINI_MODEL', 'gemini-2.5-flash')
+        model = genai.GenerativeModel(model_name)
+
         # Combine system and user prompts for Gemini
-        # Gemini doesn't have separate system prompts, so we combine them
         full_prompt = f"{system_prompt}\n\n{user_prompt}"
-        
-        # Configure generation parameters
-        # Gemini accepts generation_config as a dict or GenerationConfig object
+
         generation_config = genai.GenerationConfig(
             temperature=temperature or settings.TEMPERATURE,
             max_output_tokens=max_tokens or settings.MAX_TOKENS,
         )
-        
-        # Generate content
-        response = self.model.generate_content(
-            full_prompt,
-            generation_config=generation_config
-        )
-        
-        return response.text
+
+        try:
+            response = model.generate_content(
+                full_prompt,
+                generation_config=generation_config
+            )
+            return response.text
+        except Exception as e:
+            raise Exception(f"Gemini API error: {str(e)}")
     
     async def generate_structured_completion(
         self,
@@ -62,80 +166,153 @@ class AIService:
         user_prompt: str,
         temperature: float = None,
         max_tokens: int = None,
+        use_json_mode: bool = True,
+        task: str = "general"
+    ) -> Dict[str, Any]:
+        """Generate a structured JSON completion with provider selection"""
+
+        provider = self._get_preferred_provider(task)
+
+        if provider == 'claude':
+            return await self._generate_claude_structured(
+                system_prompt, user_prompt, temperature, max_tokens, use_json_mode
+            )
+        elif provider == 'gemini':
+            return await self._generate_gemini_structured(
+                system_prompt, user_prompt, temperature, max_tokens, use_json_mode
+            )
+        else:
+            raise ValueError(f"Unsupported provider: {provider}")
+
+    async def _generate_claude_structured(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = None,
+        max_tokens: int = None,
         use_json_mode: bool = True
     ) -> Dict[str, Any]:
-        """Generate a structured JSON completion with robust error handling"""
-        
-        # For Gemini, we can try using response_mime_type for JSON mode
+        """Generate structured completion using Claude"""
+        model = self._get_model_for_task("structured", 'claude')  # Use Sonnet for structured tasks
+
+        enhanced_system = system_prompt
+        enhanced_user = user_prompt
+
+        if use_json_mode:
+            enhanced_system += "\n\nAlways respond with valid JSON. Do not include any other text or explanations."
+            enhanced_user += "\n\nRespond with valid JSON only."
+
+        try:
+            response = self.providers['claude'].messages.create(
+                model=model,
+                max_tokens=max_tokens or settings.MAX_TOKENS,
+                temperature=temperature or settings.TEMPERATURE,
+                system=enhanced_system,
+                messages=[
+                    {"role": "user", "content": enhanced_user}
+                ]
+            )
+
+            text = response.content[0].text.strip()
+
+            if use_json_mode:
+                try:
+                    return json.loads(text)
+                except json.JSONDecodeError:
+                    # Try to extract JSON
+                    import re
+                    json_match = re.search(r'\{.*\}', text, re.DOTALL)
+                    if json_match:
+                        try:
+                            return json.loads(json_match.group())
+                        except json.JSONDecodeError:
+                            pass
+                    return {"response": text, "parsed": False}
+            else:
+                return {"response": text}
+
+        except Exception as e:
+            raise Exception(f"Claude structured completion error: {str(e)}")
+
+    async def _generate_gemini_structured(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = None,
+        max_tokens: int = None,
+        use_json_mode: bool = True
+    ) -> Dict[str, Any]:
+        """Generate structured completion using Gemini (fallback)"""
+        if 'gemini' not in self.providers:
+            raise ValueError("Gemini not available")
+
+        model_name = getattr(settings, 'GEMINI_MODEL', 'gemini-2.5-flash')
+        model = genai.GenerativeModel(model_name)
+
         generation_config = genai.GenerationConfig(
             temperature=temperature or settings.TEMPERATURE,
             max_output_tokens=max_tokens or settings.MAX_TOKENS,
         )
-        
-        # Try to force JSON output with Gemini's JSON mode
+
+        # Try to force JSON output
         if use_json_mode:
             try:
                 generation_config.response_mime_type = "application/json"
             except:
-                pass  # Fallback if not supported
-        
-        # Combine prompts and explicitly request JSON
+                pass  # Not supported in all versions
+
         full_prompt = f"{system_prompt}\n\n{user_prompt}\n\nIMPORTANT: Return ONLY valid JSON. Ensure all strings are properly escaped."
-        
-        # Generate content
-        response = self.model.generate_content(
-            full_prompt,
-            generation_config=generation_config
-        )
-        
-        response_text = response.text
-        
-        # Extract JSON from response (handle markdown code blocks and other wrapping)
-        cleaned_text = response_text.strip()
-        
-        # Remove markdown code fences
-        if cleaned_text.startswith("```json"):
-            cleaned_text = cleaned_text[7:]
-        elif cleaned_text.startswith("```"):
-            cleaned_text = cleaned_text[3:]
-        
-        if cleaned_text.endswith("```"):
-            cleaned_text = cleaned_text[:-3]
-        
-        cleaned_text = cleaned_text.strip()
-        
-        # Try to parse JSON
-        try:
-            return json.loads(cleaned_text)
-        except json.JSONDecodeError as e:
-            # Log the raw response for debugging
-            print(f"\n{'='*80}")
-            print(f"JSON Parse Error at position {e.pos}: {e.msg}")
-            print(f"Response length: {len(cleaned_text)} chars")
-            print(f"Context around error (±200 chars):")
-            print(f"...{cleaned_text[max(0, e.pos-200):min(len(cleaned_text), e.pos+200)]}...")
-            print(f"First 1000 chars:\n{cleaned_text[:1000]}")
-            print(f"Last 1000 chars:\n{cleaned_text[-1000:]}")
-            print(f"{'='*80}\n")
-            
-            # Try to extract JSON from within the text (sometimes AI adds prose)
-            # Look for the first { and last }
-            first_brace = cleaned_text.find('{')
-            last_brace = cleaned_text.rfind('}')
-            
-            if first_brace != -1 and last_brace != -1 and first_brace < last_brace:
-                json_candidate = cleaned_text[first_brace:last_brace+1]
-                try:
-                    return json.loads(json_candidate)
-                except json.JSONDecodeError as e2:
-                    print(f"Fallback extraction also failed: {e2.msg} at position {e2.pos}")
-            
-            # If all else fails, raise with more context
-            raise ValueError(
-                f"Failed to parse JSON response. Error: {e.msg} at position {e.pos}. "
-                f"Response length: {len(cleaned_text)} chars. "
-                f"Check backend logs for full context."
-            )
+
+        max_attempts = 3
+        for attempt in range(max_attempts):
+            try:
+                response = model.generate_content(
+                    full_prompt,
+                    generation_config=generation_config
+                )
+
+                response_text = response.text
+
+                # Extract JSON from response (handle markdown code blocks and other wrapping)
+                cleaned_text = response_text.strip()
+
+                # Remove markdown code fences
+                if cleaned_text.startswith("```json"):
+                    cleaned_text = cleaned_text[7:]
+                elif cleaned_text.startswith("```"):
+                    cleaned_text = cleaned_text[3:]
+
+                if cleaned_text.endswith("```"):
+                    cleaned_text = cleaned_text[:-3]
+
+                cleaned_text = cleaned_text.strip()
+
+                # Try to parse JSON
+                if use_json_mode:
+                    try:
+                        return json.loads(cleaned_text)
+                    except json.JSONDecodeError as e:
+                        # Try to extract JSON from within the text
+                        first_brace = cleaned_text.find('{')
+                        last_brace = cleaned_text.rfind('}')
+
+                        if first_brace != -1 and last_brace != -1 and first_brace < last_brace:
+                            json_candidate = cleaned_text[first_brace:last_brace+1]
+                            try:
+                                return json.loads(json_candidate)
+                            except json.JSONDecodeError:
+                                pass
+
+                        return {"response": cleaned_text, "parsed": False}
+                else:
+                    return {"response": cleaned_text}
+
+            except Exception as e:
+                if attempt == max_attempts - 1:
+                    raise Exception(f"Gemini structured completion error after {max_attempts} attempts: {str(e)}")
+                continue
+
+        raise Exception("Unexpected error in Gemini structured completion")
     
     async def analyze_resume(self, resume_text: str) -> Dict[str, Any]:
         """Extract experiences and insights from resume"""
@@ -147,7 +324,8 @@ class AIService:
             system_prompt=RESUME_SYSTEM_PROMPT,
             user_prompt=user_prompt,
             temperature=0.5,
-            use_json_mode=True
+            use_json_mode=True,
+            task="resume_processing"
         )
     
     async def analyze_personality(
@@ -167,7 +345,8 @@ class AIService:
             system_prompt=PERSONALITY_SYSTEM_PROMPT,
             user_prompt=user_prompt,
             temperature=0.5,
-            use_json_mode=True
+            use_json_mode=True,
+            task="personality_analysis"
         )
     
     async def extract_stories(
@@ -192,7 +371,8 @@ class AIService:
             user_prompt=user_prompt,
             temperature=0.6,
             max_tokens=8192,  # Allow longer responses for stories
-            use_json_mode=True
+            use_json_mode=True,
+            task="story_generation"
         )
         
         return result.get("stories", [])
@@ -215,7 +395,8 @@ class AIService:
         return await self.generate_structured_completion(
             system_prompt=QUESTION_SYSTEM_PROMPT,
             user_prompt=user_prompt,
-            temperature=0.4
+            temperature=0.4,
+            task="question_routing"
         )
     
     async def generate_answer(
@@ -238,7 +419,8 @@ class AIService:
         return await self.generate_structured_completion(
             system_prompt=ANSWER_SYSTEM_PROMPT,
             user_prompt=user_prompt,
-            temperature=0.7
+            temperature=0.7,
+            task="answer_personalization"
         )
     
     async def score_practice_attempt(
@@ -260,6 +442,7 @@ class AIService:
         
         return await self.generate_structured_completion(
             system_prompt=PRACTICE_SYSTEM_PROMPT,
+            task="practice_scoring",
             user_prompt=user_prompt,
             temperature=0.5
         )
@@ -282,7 +465,8 @@ class AIService:
         return await self.generate_structured_completion(
             system_prompt=IMPROVEMENT_SYSTEM_PROMPT,
             user_prompt=user_prompt,
-            temperature=0.7
+            temperature=0.7,
+            task="practice_improvement"
         )
     
     async def generate_practice_plan(
@@ -304,6 +488,7 @@ class AIService:
         
         return await self.generate_structured_completion(
             system_prompt=PLAN_SYSTEM_PROMPT,
+            task="plan_generation",
             user_prompt=user_prompt,
             temperature=0.6
         )
