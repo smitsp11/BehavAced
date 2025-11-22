@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react'
+import { BookOpen, ChevronDown, ChevronUp, Filter, Eye, Star, X } from 'lucide-react'
 import { getStories } from '@/lib/api'
 
 interface StoryBankProps {
@@ -28,6 +28,18 @@ export default function StoryBank({ userId }: StoryBankProps) {
   const [stories, setStories] = useState<Story[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedStory, setExpandedStory] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [selectedStoryDetail, setSelectedStoryDetail] = useState<Story | null>(null)
+  const [activeVersion, setActiveVersion] = useState<'star' | 'soar'>('star')
+
+  // Get unique categories from stories
+  const categories = ['all', ...Array.from(new Set(stories.flatMap(story => story.themes || [])))]
+
+  // Filter stories based on selected category
+  const filteredStories = selectedCategory === 'all'
+    ? stories
+    : stories.filter(story => story.themes?.includes(selectedCategory))
 
   useEffect(() => {
     loadStories()
@@ -48,6 +60,17 @@ export default function StoryBank({ userId }: StoryBankProps) {
 
   const toggleStory = (storyId: string) => {
     setExpandedStory(expandedStory === storyId ? null : storyId)
+  }
+
+  const openDetailModal = (story: Story) => {
+    setSelectedStoryDetail(story)
+    setShowDetailModal(true)
+    setActiveVersion('star')
+  }
+
+  const closeDetailModal = () => {
+    setShowDetailModal(false)
+    setSelectedStoryDetail(null)
   }
 
   if (loading) {
@@ -91,9 +114,34 @@ export default function StoryBank({ userId }: StoryBankProps) {
             {stories.length} {stories.length === 1 ? 'story' : 'stories'} ready for interviews
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          {/* Filter Controls */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4" />
+              <span className="text-sm font-medium">Filter by theme:</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedCategory(category)}
+                  className="capitalize"
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredStories.length} of {stories.length} stories
+          </p>
+        </CardContent>
       </Card>
 
-      {stories.map((story) => (
+      {filteredStories.map((story) => (
         <Card key={story.story_id} className="overflow-hidden">
           <CardHeader
             className="cursor-pointer hover:bg-accent transition-colors"
@@ -113,11 +161,25 @@ export default function StoryBank({ userId }: StoryBankProps) {
                   ))}
                 </div>
               </div>
-              {expandedStory === story.story_id ? (
-                <ChevronUp className="w-5 h-5" />
-              ) : (
-                <ChevronDown className="w-5 h-5" />
-              )}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openDetailModal(story)
+                  }}
+                  className="gap-1"
+                >
+                  <Eye className="w-4 h-4" />
+                  Details
+                </Button>
+                {expandedStory === story.story_id ? (
+                  <ChevronUp className="w-5 h-5" />
+                ) : (
+                  <ChevronDown className="w-5 h-5" />
+                )}
+              </div>
             </div>
           </CardHeader>
 
@@ -182,6 +244,156 @@ export default function StoryBank({ userId }: StoryBankProps) {
           )}
         </Card>
       ))}
+
+      {/* Detail Modal */}
+      {showDetailModal && selectedStoryDetail && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold">{selectedStoryDetail.title}</h2>
+                <Button variant="ghost" size="sm" onClick={closeDetailModal}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Story Themes and Competencies */}
+              <div className="mb-6">
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {selectedStoryDetail.themes?.map((theme, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full"
+                    >
+                      {theme}
+                    </span>
+                  ))}
+                </div>
+                {selectedStoryDetail.competencies && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedStoryDetail.competencies.map((comp, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded"
+                      >
+                        {comp}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Version Tabs */}
+              <div className="flex gap-2 mb-6">
+                <Button
+                  variant={activeVersion === 'star' ? 'default' : 'outline'}
+                  onClick={() => setActiveVersion('star')}
+                  className="gap-2"
+                >
+                  <Star className="w-4 h-4" />
+                  STAR Version
+                </Button>
+                <Button
+                  variant={activeVersion === 'soar' ? 'default' : 'outline'}
+                  onClick={() => setActiveVersion('soar')}
+                  className="gap-2"
+                >
+                  <Star className="w-4 h-4" />
+                  SOAR Version
+                </Button>
+              </div>
+
+              {/* Story Content */}
+              <div className="space-y-4">
+                {activeVersion === 'star' && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">STAR Format</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-primary">Situation</h4>
+                        <p className="text-muted-foreground mt-1">{selectedStoryDetail.situation}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">Task</h4>
+                        <p className="text-muted-foreground mt-1">{selectedStoryDetail.task}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">Action</h4>
+                        <ul className="list-disc list-inside text-muted-foreground mt-1">
+                          {selectedStoryDetail.actions?.map((action, idx) => (
+                            <li key={idx}>{action}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">Result</h4>
+                        <p className="text-muted-foreground mt-1">{selectedStoryDetail.result}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeVersion === 'soar' && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">SOAR Format</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-primary">Situation</h4>
+                        <p className="text-muted-foreground mt-1">{selectedStoryDetail.situation}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">Obstacle</h4>
+                        <p className="text-muted-foreground mt-1">{selectedStoryDetail.task}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">Action</h4>
+                        <ul className="list-disc list-inside text-muted-foreground mt-1">
+                          {selectedStoryDetail.actions?.map((action, idx) => (
+                            <li key={idx}>{action}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">Result</h4>
+                        <p className="text-muted-foreground mt-1">{selectedStoryDetail.result}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {selectedStoryDetail.reflection && (
+                  <div>
+                    <h4 className="font-medium text-primary">Reflection</h4>
+                    <p className="text-muted-foreground mt-1">{selectedStoryDetail.reflection}</p>
+                  </div>
+                )}
+
+                {selectedStoryDetail.star_version && activeVersion === 'star' && (
+                  <div className="border-t pt-4">
+                    <h4 className="font-medium mb-2">Full STAR Answer</h4>
+                    <div className="bg-muted p-4 rounded-lg">
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {selectedStoryDetail.star_version}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {selectedStoryDetail.compressed_version && (
+                  <div className="border-t pt-4">
+                    <h4 className="font-medium mb-2">Compressed Version (30 seconds)</h4>
+                    <div className="bg-muted p-4 rounded-lg">
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {selectedStoryDetail.compressed_version}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -209,6 +209,34 @@ export const generateDemoAnswer = async (
   return response.json()
 }
 
+// Personalized Answers API
+export const generatePersonalizedAnswer = async (
+  userId: string,
+  question: string,
+  companyContext?: string,
+  roleContext?: string
+) => {
+  const response = await fetch(`${API_URL}/api/answers/personalized`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      question,
+      company_context: companyContext,
+      role_context: roleContext,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || 'Failed to generate personalized answer')
+  }
+
+  return response.json()
+}
+
 // Dev API (only available in development)
 const isDev = process.env.NODE_ENV === 'development'
 

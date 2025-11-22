@@ -6,25 +6,42 @@ import { Button } from '@/components/ui/Button'
 import QuestionAsker from '@/components/QuestionAsker'
 import StoryBank from '@/components/StoryBank'
 import PracticeMode from '@/components/PracticeMode'
-import { BookOpen, MessageSquare, Mic, Trophy, Save, Download, Trash2 } from 'lucide-react'
-import { saveCachedProfile, loadCachedProfile, clearCache, getCacheStatus } from '@/lib/api'
+import PracticePlan from '@/components/PracticePlan'
+import { BookOpen, MessageSquare, Mic, Trophy, Save, Download, Trash2, Sparkles } from 'lucide-react'
+import { saveCachedProfile, loadCachedProfile, clearCache, getCacheStatus, getProfile } from '@/lib/api'
 
 interface DashboardProps {
   userId: string
 }
 
 export default function Dashboard({ userId }: DashboardProps) {
-  const [activeTab, setActiveTab] = useState<'ask' | 'stories' | 'practice' | 'stats'>('ask')
+  const [activeTab, setActiveTab] = useState<'ask' | 'stories' | 'practice' | 'plan'>('ask')
   const [cacheStatus, setCacheStatus] = useState<any>(null)
   const [devLoading, setDevLoading] = useState(false)
+  const [profileData, setProfileData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const isDev = process.env.NODE_ENV === 'development'
 
-  // Check cache status on mount (dev only)
+  // Load profile data and cache status on mount
   useEffect(() => {
+    loadProfileData()
     if (isDev) {
       checkCacheStatus()
     }
-  }, [isDev])
+  }, [userId, isDev])
+
+  const loadProfileData = async () => {
+    try {
+      const response = await getProfile(userId)
+      if (response.success) {
+        setProfileData(response.profile)
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const checkCacheStatus = async () => {
     if (!isDev) return
@@ -86,6 +103,17 @@ export default function Dashboard({ userId }: DashboardProps) {
     } finally {
       setDevLoading(false)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen p-4 lg:p-8 flex items-center justify-center">
+        <div className="text-center">
+          <Sparkles className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -191,12 +219,12 @@ export default function Dashboard({ userId }: DashboardProps) {
             Practice Mode
           </Button>
           <Button
-            variant={activeTab === 'stats' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('stats')}
+            variant={activeTab === 'plan' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('plan')}
             className="gap-2"
           >
             <Trophy className="w-4 h-4" />
-            Progress
+            Practice Plan
           </Button>
         </div>
 
@@ -205,23 +233,7 @@ export default function Dashboard({ userId }: DashboardProps) {
           {activeTab === 'ask' && <QuestionAsker userId={userId} />}
           {activeTab === 'stories' && <StoryBank userId={userId} />}
           {activeTab === 'practice' && <PracticeMode userId={userId} />}
-          {activeTab === 'stats' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Progress</CardTitle>
-                <CardDescription>Track your improvement over time</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <Trophy className="w-16 h-16 mx-auto mb-4" />
-                  <p>Stats and analytics coming soon!</p>
-                  <p className="text-sm mt-2">
-                    Keep practicing to see your progress here
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {activeTab === 'plan' && <PracticePlan userId={userId} />}
         </div>
       </div>
     </div>

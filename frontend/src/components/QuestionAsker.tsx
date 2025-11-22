@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Sparkles, Copy, CheckCircle2 } from 'lucide-react'
-import { generateAnswer } from '@/lib/api'
+import { generatePersonalizedAnswer } from '@/lib/api'
 
 interface QuestionAskerProps {
   userId: string
@@ -26,9 +26,7 @@ export default function QuestionAsker({ userId }: QuestionAskerProps) {
     setResult(null)
 
     try {
-      const response = await generateAnswer(userId, question, {
-        company: companyContext || undefined
-      })
+      const response = await generatePersonalizedAnswer(userId, question, companyContext)
 
       if (response.success) {
         setResult(response)
