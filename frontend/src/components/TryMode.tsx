@@ -133,7 +133,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 <div className="gradient-green p-3 rounded-2xl shadow-lg green-glow">
                   <span className="text-3xl">🧠</span>
                 </div>
-                <h1 className="text-5xl md:text-6xl font-black" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 900 }}>
+                <h1 className="text-5xl md:text-6xl font-bold" style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}>
                   <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
                     BehavAced
                   </span>
