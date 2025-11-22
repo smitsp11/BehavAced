@@ -2,7 +2,28 @@
  * API Client for BehavAced Backend
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+// Get API URL - prioritize env var, but ensure we always have a valid URL
+const getApiUrl = () => {
+  // In browser, check if env var is available
+  if (typeof window !== 'undefined') {
+    // Next.js embeds NEXT_PUBLIC_ vars at build time
+    const envUrl = process.env.NEXT_PUBLIC_API_URL
+    if (envUrl) {
+      return envUrl
+    }
+  }
+  // Fallback to localhost
+  return 'http://localhost:8000'
+}
+
+const API_URL = getApiUrl()
+
+// Log API URL in development for debugging
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  console.log('🔧 API Client initialized')
+  console.log('   API_URL:', API_URL)
+  console.log('   NEXT_PUBLIC_API_URL from env:', process.env.NEXT_PUBLIC_API_URL)
+}
 
 export interface ApiResponse<T> {
   success: boolean
@@ -207,25 +228,126 @@ export const generateDemoAnswer = async (
   roleContext?: string,
   industry?: string
 ) => {
-  const response = await fetch(`${API_URL}/api/demo/answer`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+  console.log('🚀 STEP 1: generateDemoAnswer called')
+  console.log('   Question:', question)
+  console.log('   Current API_URL value:', API_URL)
+  console.log('   process.env.NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+  
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 60000) // 60 second timeout
+
+  try {
+    const requestUrl = `${API_URL}/api/demo/answer`
+    const requestBody = JSON.stringify({
       question,
       company_context: companyContext,
       role_context: roleContext,
       industry,
-    }),
-  })
+    })
+    
+    console.log('🚀 STEP 2: Preparing fetch request')
+    console.log('   Request URL:', requestUrl)
+    console.log('   Request method: POST')
+    console.log('   Request body:', requestBody)
+    
+    // Test if we can reach the health endpoint first
+    console.log('🚀 STEP 2.5: Testing health endpoint first...')
+    try {
+      const healthResponse = await fetch(`${API_URL}/health`, {
+        method: 'GET',
+        signal: controller.signal,
+      })
+      console.log('   Health check status:', healthResponse.status)
+      const healthData = await healthResponse.json()
+      console.log('   Health check response:', healthData)
+    } catch (healthError: any) {
+      console.error('   ❌ Health check failed:', healthError)
+      console.error('   Error name:', healthError.name)
+      console.error('   Error message:', healthError.message)
+      console.error('   Error stack:', healthError.stack)
+      throw new Error(`Cannot reach backend at ${API_URL}. Health check failed: ${healthError.message}`)
+    }
+    
+    console.log('🚀 STEP 3: Making actual API request...')
+    const response = await fetch(requestUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: requestBody,
+      signal: controller.signal,
+    })
 
-  if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.detail || 'Failed to generate demo answer')
+    clearTimeout(timeoutId)
+    console.log('🚀 STEP 4: Received response')
+    console.log('   Response status:', response.status)
+    console.log('   Response statusText:', response.statusText)
+    console.log('   Response ok:', response.ok)
+    console.log('   Response headers:', Object.fromEntries(response.headers.entries()))
+
+    if (!response.ok) {
+      let errorMessage = 'Failed to generate demo answer'
+      try {
+        const error = await response.json()
+        console.error('   Error response body:', error)
+        errorMessage = error.detail || error.message || errorMessage
+      } catch (e) {
+        console.error('   Could not parse error response as JSON')
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`
+      }
+      throw new Error(errorMessage)
+    }
+
+    console.log('🚀 STEP 5: Parsing response JSON...')
+    const data = await response.json()
+    console.log('🚀 STEP 6: Response parsed successfully')
+    console.log('   Response data:', data)
+    
+    // Ensure the response has the expected structure
+    if (!data.success || !data.answer) {
+      console.error('❌ Invalid response structure:', data)
+      throw new Error('Invalid response format from server')
+    }
+    
+    console.log('✅ SUCCESS: Returning valid response')
+    return data
+  } catch (error: any) {
+    clearTimeout(timeoutId)
+    
+    console.error('❌ ERROR CAUGHT in generateDemoAnswer')
+    console.error('   Error type:', typeof error)
+    console.error('   Error name:', error?.name)
+    console.error('   Error message:', error?.message)
+    console.error('   Error stack:', error?.stack)
+    console.error('   Error object:', error)
+    
+    // Handle different error types
+    if (error.name === 'AbortError') {
+      console.error('   → AbortError: Request was aborted (timeout or cancelled)')
+      throw new Error('Request timed out. The server is taking too long to respond. Please try again.')
+    }
+    
+    // Check for network errors
+    const errorMsg = error?.message || ''
+    if (errorMsg.includes('Failed to fetch') || 
+        errorMsg.includes('NetworkError') ||
+        errorMsg.includes('Network request failed') ||
+        errorMsg.includes('Load failed') ||
+        errorMsg.includes('fetch')) {
+      console.error('   → Network/Fetch error detected')
+      console.error('   → This usually means the browser cannot reach the server')
+      throw new Error(`Unable to connect to the server at ${API_URL}. Please check if the backend is running.`)
+    }
+    
+    if (errorMsg.includes('CORS') || errorMsg.includes('OPTIONS')) {
+      console.error('   → CORS error detected')
+      throw new Error('CORS error. Please check that the backend CORS settings allow requests from http://localhost:3000')
+    }
+    
+    // Re-throw other errors with original message
+    console.error('   → Re-throwing original error')
+    throw error
   }
-
-  return response.json()
 }
 
 // Personalized Answers API

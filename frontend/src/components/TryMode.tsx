@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -36,6 +36,22 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
   const [demoAnswer, setDemoAnswer] = useState<DemoAnswer | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  
+  // Diagnostic: Log API URL on mount and test backend connection
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    console.log('🔍 TryMode loaded - API URL:', apiUrl)
+    console.log('🔍 Environment variable NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+    
+    // Test backend connection on mount
+    fetch(`${apiUrl}/health`)
+      .then(res => res.json())
+      .then(data => console.log('✅ Backend health check successful:', data))
+      .catch(err => {
+        console.error('❌ Backend health check failed:', err)
+        console.error('   This means the frontend cannot reach the backend at:', apiUrl)
+      })
+  }, [])
 
   const handleGenerateDemo = async () => {
     if (!question.trim()) return
@@ -45,10 +61,52 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
     setDemoAnswer(null)
 
     try {
+      console.log('Generating demo answer for question:', question.trim())
       const result = await generateDemoAnswer(question.trim())
-      setDemoAnswer(result)
+      console.log('Demo answer result:', result)
+      
+      // Handle both response formats
+      if (result && result.success && result.answer) {
+        setDemoAnswer({
+          success: result.success,
+          answer: result.answer,
+          structure: result.structure || 'STAR',
+          key_points: result.key_points || [],
+          estimated_time_seconds: result.estimated_time_seconds || 60
+        })
+      } else if (result && result.answer) {
+        // Handle case where success field might be missing
+        setDemoAnswer({
+          success: true,
+          answer: result.answer,
+          structure: result.structure || 'STAR',
+          key_points: result.key_points || [],
+          estimated_time_seconds: result.estimated_time_seconds || 60
+        })
+      } else {
+        console.error('Unexpected response format:', result)
+        throw new Error('Invalid response format from server')
+      }
     } catch (err: any) {
-      setError(err.message || 'Failed to generate demo answer')
+      console.error('Error generating demo answer:', err)
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to generate demo answer. '
+      
+      if (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('Load failed')) {
+        errorMessage += 'Unable to connect to the server. Please ensure:\n'
+        errorMessage += '1. Backend is running at http://localhost:8000\n'
+        errorMessage += '2. Next.js dev server has been restarted\n'
+        errorMessage += '3. Check browser console for more details'
+      } else if (err.message.includes('timeout')) {
+        errorMessage += 'Request timed out. The server is taking too long to respond.'
+      } else if (err.message.includes('CORS') || err.message.includes('OPTIONS')) {
+        errorMessage += 'CORS error. Please check that the backend CORS settings allow requests from http://localhost:3000'
+      } else {
+        errorMessage += err.message || 'Please try again.'
+      }
+      
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
