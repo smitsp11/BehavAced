@@ -22,11 +22,11 @@ interface DemoAnswer {
 }
 
 const SAMPLE_QUESTIONS = [
-  { text: "Tell me about a time you led a team through a challenging project", emoji: "👥" },
-  { text: "Describe a situation where you solved a complex technical problem", emoji: "🔧" },
-  { text: "Tell me about a time you had to adapt to a major change at work", emoji: "🔄" },
-  { text: "Give me an example of when you turned around a failing project", emoji: "🎯" },
-  { text: "Describe a time you had to work with a difficult team member", emoji: "💬" }
+  { text: "Tell me about a time you led a team through a challenging project" },
+  { text: "Describe a situation where you solved a complex technical problem" },
+  { text: "Tell me about a time you had to adapt to a major change at work" },
+  { text: "Give me an example of when you turned around a failing project" },
+  { text: "Describe a time you had to work with a difficult team member" }
 ]
 
 export default function TryMode({ onStartOnboarding }: TryModeProps) {
@@ -119,9 +119,19 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
   }
 
   return (
-    <div className="min-h-screen gradient-mint-hero">
-      {/* Background Accent Blob */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-green-200/30 to-transparent rounded-full blur-3xl -z-10" />
+    <div className="min-h-screen relative">
+      {/* Seamless Background Gradient */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50/30 to-white" />
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-10 left-10 w-[600px] h-[600px] bg-gradient-to-br from-green-200/20 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-40 right-20 w-[700px] h-[700px] bg-gradient-to-bl from-emerald-200/15 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-40 left-1/4 w-[550px] h-[550px] bg-gradient-to-tr from-green-200/18 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-1/2 right-1/3 w-[500px] h-[500px] bg-gradient-to-br from-emerald-200/12 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-[650px] h-[650px] bg-gradient-to-tl from-green-200/15 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-1/3 left-1/2 w-[450px] h-[450px] bg-gradient-to-r from-green-200/10 to-transparent rounded-full blur-3xl" />
+        </div>
+      </div>
       
       {/* Hero Section - Two Column Layout */}
       <div className="container mx-auto px-4 py-20">
@@ -271,48 +281,41 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
               <div className="relative h-full min-h-[500px]">
                 {/* Floating Speech Bubbles */}
                 <motion.div
-                  className="absolute top-20 right-0 bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border-2 border-green-100 float-element"
+                  className="absolute top-[10%] right-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-6 shadow-xl border-2 border-green-200 float-element"
                   style={{ animationDelay: '0s' }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">📚</span>
-                      <div>
-                        <p className="font-medium text-gray-800" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Your personal story bank</p>
-                        <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>is ready ✨</p>
-                      </div>
+                    <div>
+                      <p className="font-medium text-gray-800" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500 }}>Your personal story bank</p>
+                      <p className="text-sm text-gray-600" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400 }}>is ready</p>
                     </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute top-60 right-20 bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border-2 border-emerald-100 float-element"
+                  className="absolute top-[45%] right-20 bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border-2 border-emerald-100 float-element"
                   style={{ animationDelay: '1s' }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="w-6 h-6 text-green-500" />
-                      <div>
-                        <p className="font-medium text-gray-800" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Analysis Complete</p>
-                        <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Voice matched ✓</p>
-                      </div>
+                    <div>
+                      <p className="font-medium text-gray-800" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500 }}>Analysis Complete</p>
+                      <p className="text-sm text-gray-600" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400 }}>Voice matched</p>
                     </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute bottom-20 right-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 shadow-xl border-2 border-green-200 float-element"
+                  className="absolute bottom-[10%] right-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 shadow-xl border-2 border-green-200 float-element"
                   style={{ animationDelay: '2s' }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 }}
                 >
                   <div className="text-center">
-                    <span className="text-4xl mb-2 block">🎯</span>
-                    <p className="font-bold text-gray-800 text-lg" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>STAR Format</p>
-                    <p className="text-sm text-gray-600 mt-1" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Perfect every time</p>
+                    <p className="font-bold text-gray-800 text-lg" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 700 }}>STAR Format</p>
+                    <p className="text-sm text-gray-600 mt-1" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400 }}>Perfect every time</p>
                   </div>
                 </motion.div>
               </div>
@@ -333,8 +336,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <span className="text-xl">{sampleQ.emoji}</span>
-                    <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>{sampleQ.text}</span>
+                    <span className="text-sm font-medium text-gray-700" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500 }}>{sampleQ.text}</span>
                   </motion.button>
                 ))}
               </div>
@@ -344,20 +346,22 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* How It Works Section */}
-      <div className="bg-white/50 backdrop-blur-sm py-20">
+      <div className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-4 font-playfair" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
               How It Works
             </h2>
-            <p className="text-center text-gray-600 text-lg mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Super simple. Super powerful.</p>
+            <p className="text-center text-gray-600 text-lg mb-12 italic" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, fontStyle: 'italic' }}>Super simple. Super powerful.</p>
             
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <StaggerItem>
                 <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                  <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>1️⃣</div>
-                  <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Upload Your Resume</h3>
-                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  <div className="flex items-center justify-center w-16 h-16 mb-6 mx-auto bg-gradient-to-br from-green-100 to-emerald-100 rounded-full shadow-md">
+                    <span className="text-3xl font-playfair text-green-700" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>1</span>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 text-center font-playfair" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>Upload Your Resume</h3>
+                  <p className="text-gray-600 leading-relaxed text-center italic" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, fontStyle: 'italic' }}>
                     AI analyzes your communication patterns, vocabulary, and writing style.
                   </p>
                 </div>
@@ -365,9 +369,11 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
               
               <StaggerItem>
                 <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                  <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>2️⃣</div>
-                  <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Build Your Story Bank</h3>
-                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  <div className="flex items-center justify-center w-16 h-16 mb-6 mx-auto bg-gradient-to-br from-green-100 to-emerald-100 rounded-full shadow-md">
+                    <span className="text-3xl font-playfair text-green-700" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>2</span>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 text-center font-playfair" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>Build Your Story Bank</h3>
+                  <p className="text-gray-600 leading-relaxed text-center italic" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, fontStyle: 'italic' }}>
                     Your experiences → structured STAR/Soar stories organized by competency.
                   </p>
                 </div>
@@ -375,9 +381,11 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
               
               <StaggerItem>
                 <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                  <div className="text-5xl mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>3️⃣</div>
-                  <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Generate Personalized Answers</h3>
-                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  <div className="flex items-center justify-center w-16 h-16 mb-6 mx-auto bg-gradient-to-br from-green-100 to-emerald-100 rounded-full shadow-md">
+                    <span className="text-3xl font-playfair text-green-700" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>3</span>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 text-center font-playfair" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>Personalized Answers</h3>
+                  <p className="text-gray-600 leading-relaxed text-center italic" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, fontStyle: 'italic' }}>
                     Every answer matches your tone + strengths. Sound authentically you.
                   </p>
                 </div>
@@ -447,7 +455,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* Testimonial Section */}
-      <div className="bg-gradient-to-br from-green-50/50 to-emerald-50/50 py-20">
+      <div className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-extrabold text-center mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
@@ -489,23 +497,18 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* Big Gradient CTA Band */}
-      <div className="gradient-green-cta py-16 relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-6xl opacity-20 float-element">🌿</span>
-          <span className="text-6xl opacity-20 float-element ml-20" style={{ animationDelay: '1s' }}>✨</span>
-          <span className="text-6xl opacity-20 float-element ml-20" style={{ animationDelay: '2s' }}>📘</span>
-        </div>
+      <div className="py-16 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
               Ready to Master Your Behavioral Interviews?
             </h2>
-            <p className="text-xl text-white/90 mb-8" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+            <p className="text-xl text-gray-700 mb-8" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
               Get AI answers in your authentic voice.
             </p>
             <motion.button
               onClick={onStartOnboarding}
-              className="bg-white text-green-600 rounded-full px-8 py-4 text-lg shadow-2xl flex items-center gap-2 mx-auto"
+              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full px-8 py-4 text-lg shadow-2xl flex items-center gap-2 mx-auto"
               style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.98 }}
@@ -513,7 +516,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
               Get Started - It's Free
               <ArrowRight className="w-5 h-5" />
             </motion.button>
-            <p className="text-white/80 text-sm mt-4">
+            <p className="text-gray-600 text-sm mt-4">
               Takes ~3 minutes • No account required • All data processed locally
             </p>
           </div>
@@ -521,7 +524,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-b from-white to-green-50/30 py-12 border-t border-green-100">
+      <footer className="py-12 border-t border-green-100/50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-4 gap-8 mb-8">
@@ -560,7 +563,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
               </div>
             </div>
             <div className="pt-8 border-t border-green-100 text-center text-sm text-gray-500">
-              <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>© 2024 BehavAced. Made with 💚 for students and job seekers.</p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>© 2025 BehavAced. Made with 💚 for students and job seekers.</p>
             </div>
           </div>
         </div>
