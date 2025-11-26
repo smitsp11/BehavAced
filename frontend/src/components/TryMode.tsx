@@ -395,61 +395,130 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
         </div>
       </div>
 
-      {/* Value Prop Section - Single Floating Card */}
-      <div className="py-20">
+      {/* Value Prop Section - Floating Cards */}
+      <div className="pt-24 pb-28">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <HoverCard>
-              <Card className="card-floating bg-white/80 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-12">
-                <h2 className="text-4xl font-extrabold text-center mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
-                  Why Choose BehavAced?
-                </h2>
-                <div className="grid md:grid-cols-3 gap-8">
-                  <div className="text-center">
-                    <div className="bg-gradient-to-br from-green-100 to-emerald-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                      <span className="text-4xl">✨</span>
-                    </div>
-                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                      ✨ AI-Powered Personalization
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      Our AI analyzes your communication style and creates answers that sound authentically like you.
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="bg-gradient-to-br from-purple-100 to-pink-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                      <span className="text-4xl">📚</span>
-                    </div>
-                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                      📚 Smart Story Bank
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      Extract and organize your professional stories into a searchable bank for instant retrieval.
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="bg-gradient-to-br from-green-100 to-teal-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                      <span className="text-4xl">🎯</span>
-                    </div>
-                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                      🎯 Behavioral Interview Focus
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      Specifically designed for behavioral interviews with STAR/SOAR structure and quantifiable results.
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-8 pt-8 border-t border-green-100 flex items-center justify-center gap-4 flex-wrap">
-                  <span className="text-sm text-gray-500">✨</span>
-                  <span className="text-sm text-gray-500">•</span>
-                  <span className="text-sm text-gray-500">Matches your authentic voice</span>
-                  <span className="text-sm text-gray-500">•</span>
-                  <span className="text-sm text-gray-500">No generic templates</span>
-                  <span className="text-sm text-gray-500">•</span>
-                  <span className="text-sm text-gray-500">Ready in seconds</span>
-                </div>
-              </Card>
-            </HoverCard>
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-5xl font-extrabold text-center mb-14 tracking-tight" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, maxWidth: '80%', marginLeft: 'auto', marginRight: 'auto' }}>
+              Why Choose BehavAced?
+            </h2>
+            
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {/* Feature Card 1 */}
+              <motion.div
+                className="bg-gradient-to-br from-green-50/80 to-emerald-50/60 backdrop-blur-sm border border-green-200/40 rounded-3xl p-8 text-center shadow-[0_12px_40px_rgba(0,180,90,0.15)] hover:shadow-[0_16px_50px_rgba(0,180,90,0.2)] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
+                whileHover={{ scale: 1.02, y: -4 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <motion.div
+                  className="bg-gradient-to-br from-green-200 via-emerald-200 to-lime-200 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_8px_30px_rgba(120,255,190,0.35)] relative overflow-hidden"
+                  whileHover={{ rotate: 1, scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <motion.span
+                    className="text-5xl relative z-10"
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    ✨
+                  </motion.span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent animate-pulse" />
+                </motion.div>
+                <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+                  AI That Sounds Like You
+                </h3>
+                <div className="w-12 h-1 bg-gradient-to-r from-green-300 to-emerald-300 mx-auto mb-6 rounded-full shadow-[0_0_10px_rgba(120,255,190,0.5)]" />
+                <p className="text-gray-700 leading-relaxed text-sm" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  Our AI analyzes your communication style and creates answers that sound authentically like you.
+                </p>
+              </motion.div>
+
+              {/* Feature Card 2 */}
+              <motion.div
+                className="bg-gradient-to-br from-green-50/80 to-emerald-50/60 backdrop-blur-sm border border-green-200/40 rounded-3xl p-8 text-center shadow-[0_12px_40px_rgba(0,180,90,0.15)] hover:shadow-[0_16px_50px_rgba(0,180,90,0.2)] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
+                whileHover={{ scale: 1.02, y: -4 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <motion.div
+                  className="bg-gradient-to-br from-green-200 via-emerald-200 to-lime-200 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_8px_30px_rgba(120,255,190,0.35)] relative overflow-hidden"
+                  whileHover={{ rotate: 1, scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <motion.span
+                    className="text-5xl relative z-10"
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                  >
+                    📚
+                  </motion.span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent animate-pulse" />
+                </motion.div>
+                <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+                  Your Personal Story Bank
+                </h3>
+                <div className="w-12 h-1 bg-gradient-to-r from-green-300 to-emerald-300 mx-auto mb-6 rounded-full shadow-[0_0_10px_rgba(120,255,190,0.5)]" />
+                <p className="text-gray-700 leading-relaxed text-sm" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  Extract and organize your professional stories into a searchable bank for instant retrieval.
+                </p>
+              </motion.div>
+
+              {/* Feature Card 3 */}
+              <motion.div
+                className="bg-gradient-to-br from-green-50/80 to-emerald-50/60 backdrop-blur-sm border border-green-200/40 rounded-3xl p-8 text-center shadow-[0_12px_40px_rgba(0,180,90,0.15)] hover:shadow-[0_16px_50px_rgba(0,180,90,0.2)] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
+                whileHover={{ scale: 1.02, y: -4 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <motion.div
+                  className="bg-gradient-to-br from-green-200 via-emerald-200 to-lime-200 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_8px_30px_rgba(120,255,190,0.35)] relative overflow-hidden"
+                  whileHover={{ rotate: 1, scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <motion.span
+                    className="text-5xl relative z-10"
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+                  >
+                    🎯
+                  </motion.span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent animate-pulse" />
+                </motion.div>
+                <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+                  Made for Interviews
+                </h3>
+                <div className="w-12 h-1 bg-gradient-to-r from-green-300 to-emerald-300 mx-auto mb-6 rounded-full shadow-[0_0_10px_rgba(120,255,190,0.5)]" />
+                <p className="text-gray-700 leading-relaxed text-sm" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  Specifically designed for behavioral interviews with STAR/SOAR structure and quantifiable results.
+                </p>
+              </motion.div>
+            </div>
+
+            {/* Bullet Points as Pills */}
+            <div className="flex items-center justify-center gap-3 flex-wrap mt-8">
+              <motion.div
+                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
+                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <span>✨</span>
+                <span className="text-gray-700">Matches your authentic voice</span>
+              </motion.div>
+              <motion.div
+                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
+                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <span>⚡</span>
+                <span className="text-gray-700">No generic templates</span>
+              </motion.div>
+              <motion.div
+                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
+                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <span>🔍</span>
+                <span className="text-gray-700">Ready in seconds</span>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -497,28 +566,109 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* Big Gradient CTA Band */}
-      <div className="py-16 relative overflow-hidden">
+      <div className="py-20 relative overflow-hidden">
+        {/* Strengthened Background Gradient */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.85),_rgba(200,255,230,0.3))] -z-10" />
+        <motion.div
+          className="absolute inset-0 -z-10"
+          animate={{
+            background: [
+              'radial-gradient(circle at 30% 50%, rgba(120,255,190,0.15), transparent)',
+              'radial-gradient(circle at 70% 50%, rgba(120,255,190,0.15), transparent)',
+              'radial-gradient(circle at 30% 50%, rgba(120,255,190,0.15), transparent)',
+            ],
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
-              Ready to Master Your Behavioral Interviews?
-            </h2>
-            <p className="text-xl text-gray-700 mb-8" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+            {/* Floating Emoji Above Title */}
+            <motion.div
+              className="mb-4"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <motion.span
+                className="text-4xl block"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                ✨
+              </motion.span>
+            </motion.div>
+
+            {/* Improved Headline */}
+            <motion.h2
+              className="text-5xl md:text-6xl font-extrabold text-gray-800 mb-4 leading-tight tracking-tight"
+              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              Ready to Master Your{' '}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#28d98a] to-[#6fffc5]">
+                Behavioral Interviews
+              </span>
+              ?
+            </motion.h2>
+            
+            <motion.p
+              className="text-xl text-gray-700 mb-6"
+              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
               Get AI answers in your authentic voice.
-            </p>
+            </motion.p>
+
+            {/* Subtle Divider Line */}
+            <motion.div
+              className="h-[1px] w-24 mx-auto bg-gradient-to-r from-transparent via-[#28d98a] to-transparent opacity-40 my-8"
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 0.4, scaleX: 1 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            />
+
+            {/* Improved CTA Button */}
             <motion.button
               onClick={onStartOnboarding}
-              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full px-8 py-4 text-lg shadow-2xl flex items-center gap-2 mx-auto"
+              className="bg-gradient-to-r from-[#7fffd2] to-[#28d98a] text-white rounded-full px-10 py-5 text-lg font-semibold shadow-[0_8px_25px_rgba(40,217,138,0.35)] flex items-center gap-2 mx-auto hover:shadow-[0_12px_35px_rgba(40,217,138,0.45)] transition-all duration-300"
               style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
-              whileHover={{ scale: 1.05, y: -2 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
               Get Started - It's Free
-              <ArrowRight className="w-5 h-5" />
+              <motion.div
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <ArrowRight className="w-5 h-5" />
+              </motion.div>
             </motion.button>
-            <p className="text-gray-600 text-sm mt-4">
-              Takes ~3 minutes • No account required • All data processed locally
-            </p>
+
+            {/* Improved Subtitle as Pills */}
+            <motion.div
+              className="flex items-center justify-center gap-3 flex-wrap mt-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+            >
+              <span className="px-3 py-1.5 rounded-full bg-white/50 backdrop-blur-sm shadow-sm text-xs text-gray-700 font-medium" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+                • Takes 3 minutes
+              </span>
+              <span className="px-3 py-1.5 rounded-full bg-white/50 backdrop-blur-sm shadow-sm text-xs text-gray-700 font-medium" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+                • No account required
+              </span>
+              <span className="px-3 py-1.5 rounded-full bg-white/50 backdrop-blur-sm shadow-sm text-xs text-gray-700 font-medium" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+                • Local processing
+              </span>
+            </motion.div>
           </div>
         </div>
       </div>
