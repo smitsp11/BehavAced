@@ -90,27 +90,50 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <FadeIn className="mb-12 text-center">
-          <div className="mb-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-4">
-              <span className="text-2xl">🎯</span>
+    <div className="min-h-screen relative">
+      {/* Unified Background Gradient - Same as TryMode */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50/30 to-white" />
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-10 left-10 w-[600px] h-[600px] bg-gradient-to-br from-green-200/20 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-40 right-20 w-[700px] h-[700px] bg-gradient-to-bl from-emerald-200/15 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-40 left-1/4 w-[550px] h-[550px] bg-gradient-to-tr from-green-200/18 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-1/2 right-1/3 w-[500px] h-[500px] bg-gradient-to-br from-emerald-200/12 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-[650px] h-[650px] bg-gradient-to-tl from-green-200/15 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-1/3 left-1/2 w-[450px] h-[450px] bg-gradient-to-r from-green-200/10 to-transparent rounded-full blur-3xl" />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        {/* Premium Hero Section */}
+        <FadeIn className="mb-16 text-center">
+          <div className="mb-8">
+            {/* Friendly Icon */}
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full mb-6 shadow-lg">
+              <span className="text-4xl">✨</span>
             </div>
-            <h1 className="text-5xl font-bold text-gradient mb-4">
+            
+            {/* Big Playfair Display Headline */}
+            <h1 className="text-5xl md:text-6xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
               Welcome to BehavAced
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Let's build your personalized behavioral interview cognition engine with AI-powered insights
+            
+            {/* One-line Supportive Tagline */}
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+              Let's build your personalized behavioral interview voice.
             </p>
           </div>
 
-          {/* Progress */}
+          {/* Soft Mint Progress Bar */}
           {!isProcessing && (
             <div className="max-w-md mx-auto">
-              <Progress value={getProgress()} className="h-3 mb-3" />
-              <div className="flex justify-between text-sm text-muted-foreground">
+              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden mb-3">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#28d98a] to-[#6fffc5] rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${getProgress()}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                 <span>Step {getStepNumber()} of {getTotalSteps()}</span>
                 <span>{Math.round(getProgress())}% Complete</span>
               </div>
@@ -118,10 +141,12 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           )}
         </FadeIn>
 
-        {/* Current Step Component with Animation */}
+        {/* Current Step Component with Animation - Floating Card */}
         <AnimatePresence mode="wait">
-          <SlideIn key={currentStep} className="card-floating">
-            {renderCurrentStep()}
+          <SlideIn key={currentStep}>
+            <div className="bg-white/90 backdrop-blur-sm border border-green-200/40 rounded-3xl p-8 md:p-12 shadow-[0_12px_40px_rgba(0,180,90,0.15)] max-w-2xl mx-auto">
+              {renderCurrentStep()}
+            </div>
           </SlideIn>
         </AnimatePresence>
       </div>
