@@ -98,8 +98,9 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 1:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-              How would you describe your work style? <span className="text-green-600">*</span>
+            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+              <span className="text-lg">✍️</span>
+              <span>How would you describe your work style? <span className="text-green-600">*</span></span>
             </label>
             <Textarea
               placeholder="e.g., I'm analytical and detail-oriented, preferring structured approaches with clear goals and metrics..."
@@ -114,8 +115,9 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 2:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-              How do you typically communicate in professional settings? <span className="text-green-600">*</span>
+            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+              <span className="text-lg">🗣️</span>
+              <span>How do you typically communicate in professional settings? <span className="text-green-600">*</span></span>
             </label>
             <Textarea
               placeholder="e.g., I'm direct and concise, focusing on key points and actionable outcomes..."
@@ -130,8 +132,9 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 3:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-              What are your key strengths?
+            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+              <span className="text-lg">⚡</span>
+              <span>What are your key strengths?</span>
             </label>
             <Textarea
               placeholder="e.g., Problem-solving, leadership, adaptability, attention to detail..."
@@ -146,8 +149,9 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 4:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-              What areas are you working to improve?
+            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+              <span className="text-lg">🌱</span>
+              <span>What areas are you working to improve?</span>
             </label>
             <Textarea
               placeholder="e.g., Public speaking, delegation, time management..."
@@ -162,8 +166,9 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 5:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-              Optional: Writing sample (helps match your voice)
+            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+              <span className="text-lg">📄</span>
+              <span>Optional: Writing sample (helps match your voice)</span>
             </label>
             <Textarea
               placeholder="Paste any professional writing - email, report, presentation, blog post..."
@@ -185,14 +190,18 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
 
   return (
     <div className="w-full">
-      <div className="mb-10">
-        <h2 className="text-2xl font-bold mb-2 flex items-center gap-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-          <span className="text-2xl">📝</span>
-          Tell Us About Yourself
-        </h2>
-        <p className="text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, color: '#7D8B92' }}>
-          We'll use this to learn how you communicate and shape answers that sound authentically like you.
-        </p>
+      <div className="mb-10 relative">
+        {/* Soft Green Light Gradient Behind Title */}
+        <div className="absolute -inset-4 bg-gradient-to-r from-green-50/60 via-emerald-50/40 to-green-50/60 rounded-2xl blur-xl -z-10" />
+        <div className="relative">
+          <h2 className="text-2xl font-bold mb-2 flex items-center gap-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+            <span className="text-2xl">📝</span>
+            Tell Us About Yourself
+          </h2>
+          <p className="text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, color: '#7D8B92' }}>
+            We'll use this to learn how you communicate and shape answers that sound authentically like you.
+          </p>
+        </div>
       </div>
 
       {/* Step Indicator */}
