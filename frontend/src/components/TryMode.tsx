@@ -134,7 +134,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
       
       {/* Hero Section - Two Column Layout */}
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 pb-[140px]">
         <div className="max-w-7xl mx-auto">
           {/* Top Bar with Logo */}
           <FadeIn>
@@ -349,7 +349,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* How It Works Section */}
-      <div className="py-20">
+      <div className="pt-[120px] pb-[140px]">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl font-extrabold text-center mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
@@ -399,7 +399,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* Value Prop Section - Floating Cards */}
-      <div className="pt-24 pb-28">
+      <div className="pt-[120px] pb-[140px]">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl font-extrabold text-center mb-14 tracking-tight" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, maxWidth: '80%', marginLeft: 'auto', marginRight: 'auto' }}>
@@ -527,7 +527,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* Testimonial Section */}
-      <div className="py-20">
+      <div className="pt-[120px] pb-[140px]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-extrabold text-center mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
@@ -569,7 +569,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
 
       {/* Big Gradient CTA Band */}
-      <div className="py-20 relative overflow-hidden">
+      <div className="pt-[120px] pb-[140px] relative overflow-hidden">
         {/* Strengthened Background Gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.85),_rgba(200,255,230,0.3))] -z-10" />
         <motion.div
@@ -618,7 +618,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             </motion.h2>
             
             <motion.p
-              className="text-lg text-gray-700 mb-6"
+              className="text-lg text-gray-700 mb-8"
               style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -626,14 +626,6 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             >
               Get AI answers in your authentic voice.
             </motion.p>
-
-            {/* Subtle Divider Line */}
-            <motion.div
-              className="h-[1px] w-24 mx-auto bg-gradient-to-r from-transparent via-[#28d98a] to-transparent opacity-40 my-8"
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={{ opacity: 0.4, scaleX: 1 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-            />
 
             {/* Improved CTA Button */}
             <motion.button
