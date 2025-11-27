@@ -158,9 +158,12 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             <FadeIn>
               <div className="space-y-6">
                 <h1 className="text-[56px] md:text-[64px] leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-                  Ace Your Behavioral Interviews With AI That{' '}
-                  <span className="bg-gradient-to-r from-[#28d98a] to-[#6fffc5] bg-clip-text text-transparent italic" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}>
-                    Sounds Like You
+                  Ace Your Behavioral Interviews With AI<br />
+                  That <span className="bg-gradient-to-r from-[#28d98a] to-[#6fffc5] bg-clip-text text-transparent italic inline-block" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', letterSpacing: '0.02em', paddingLeft: '4px', paddingRight: '4px', backgroundSize: '100% 100%' }}>
+                    Sounds
+                  </span><br />
+                  <span className="bg-gradient-to-r from-[#28d98a] to-[#6fffc5] bg-clip-text text-transparent italic inline-block" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', letterSpacing: '0.02em', paddingLeft: '4px', paddingRight: '4px', backgroundSize: '100% 100%' }}>
+                    Like You
                   </span>
                 </h1>
                 <p className="text-lg text-gray-700 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
