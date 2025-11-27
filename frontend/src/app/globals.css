@@ -341,4 +341,9 @@
   .text-responsive {
     @apply text-base;
   }
+
+  /* Warmer placeholder color for chat-style inputs */
+  .placeholder-warm::placeholder {
+    color: #A8B2BD;
+  }
 }

@@ -59,8 +59,18 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
             value={formData.work_style}
             onChange={(e) => handleChange('work_style', e.target.value)}
             rows={3}
-            className="resize-none rounded-2xl border-2 border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
+            className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
+            style={{ 
+              fontFamily: 'Inter, sans-serif', 
+              fontWeight: 400,
+              border: '1px solid #E3F3E7',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(12px)',
+              padding: '16px 18px',
+              borderRadius: '14px',
+              lineHeight: '1.6',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
+            }}
           />
         </div>
 
@@ -73,8 +83,18 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
             value={formData.communication}
             onChange={(e) => handleChange('communication', e.target.value)}
             rows={3}
-            className="resize-none rounded-2xl border-2 border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
+            className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
+            style={{ 
+              fontFamily: 'Inter, sans-serif', 
+              fontWeight: 400,
+              border: '1px solid #E3F3E7',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(12px)',
+              padding: '16px 18px',
+              borderRadius: '14px',
+              lineHeight: '1.6',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
+            }}
           />
         </div>
 
@@ -87,8 +107,18 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
             value={formData.strengths}
             onChange={(e) => handleChange('strengths', e.target.value)}
             rows={2}
-            className="resize-none rounded-2xl border-2 border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
+            className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
+            style={{ 
+              fontFamily: 'Inter, sans-serif', 
+              fontWeight: 400,
+              border: '1px solid #E3F3E7',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(12px)',
+              padding: '16px 18px',
+              borderRadius: '14px',
+              lineHeight: '1.6',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
+            }}
           />
         </div>
 
@@ -101,8 +131,18 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
             value={formData.challenges}
             onChange={(e) => handleChange('challenges', e.target.value)}
             rows={2}
-            className="resize-none rounded-2xl border-2 border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
+            className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
+            style={{ 
+              fontFamily: 'Inter, sans-serif', 
+              fontWeight: 400,
+              border: '1px solid #E3F3E7',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(12px)',
+              padding: '16px 18px',
+              borderRadius: '14px',
+              lineHeight: '1.6',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
+            }}
           />
         </div>
 
@@ -115,8 +155,18 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
             value={formData.writing_sample}
             onChange={(e) => handleChange('writing_sample', e.target.value)}
             rows={4}
-            className="resize-none rounded-2xl border-2 border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
+            className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
+            style={{ 
+              fontFamily: 'Inter, sans-serif', 
+              fontWeight: 400,
+              border: '1px solid #E3F3E7',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(12px)',
+              padding: '16px 18px',
+              borderRadius: '14px',
+              lineHeight: '1.6',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
+            }}
           />
           <p className="text-xs mt-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, color: '#7D8B92' }}>
             This helps our AI better understand your writing style and vocabulary level
