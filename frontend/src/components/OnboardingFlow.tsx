@@ -144,7 +144,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         {/* Current Step Component with Animation - Floating Card */}
         <AnimatePresence mode="wait">
           <SlideIn key={currentStep}>
-            <div className="bg-white/90 backdrop-blur-sm border border-green-200/40 rounded-3xl p-8 md:p-12 shadow-[0_12px_40px_rgba(0,180,90,0.15)] max-w-2xl mx-auto">
+            <div className="bg-white/95 backdrop-blur-sm border-[0.5px] border-green-300/60 rounded-2xl shadow-[0_8px_30px_rgba(0,180,90,0.12)] max-w-2xl mx-auto" style={{ paddingTop: '48px', paddingLeft: '40px', paddingRight: '40px', paddingBottom: '40px' }}>
               {renderCurrentStep()}
             </div>
           </SlideIn>
