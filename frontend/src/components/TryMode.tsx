@@ -570,19 +570,6 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
 
       {/* Big Gradient CTA Band */}
       <div className="pt-[120px] pb-[140px] relative overflow-hidden">
-        {/* Strengthened Background Gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.85),_rgba(200,255,230,0.3))] -z-10" />
-        <motion.div
-          className="absolute inset-0 -z-10"
-          animate={{
-            background: [
-              'radial-gradient(circle at 30% 50%, rgba(120,255,190,0.15), transparent)',
-              'radial-gradient(circle at 70% 50%, rgba(120,255,190,0.15), transparent)',
-              'radial-gradient(circle at 30% 50%, rgba(120,255,190,0.15), transparent)',
-            ],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
