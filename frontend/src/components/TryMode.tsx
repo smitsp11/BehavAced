@@ -352,10 +352,10 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       <div className="pt-[120px] pb-[140px]">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-4xl font-extrabold text-center mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
+            <h2 className="text-5xl md:text-6xl font-bold text-center mb-12" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
               How It Works
             </h2>
-            <p className="text-center text-gray-600 text-base mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Super simple. Super powerful.</p>
+            <p className="text-center text-gray-700 text-lg mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Super simple. Super powerful.</p>
             
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <StaggerItem>
