@@ -85,6 +85,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
     const inputStyle = {
       fontFamily: 'Inter, sans-serif' as const,
       fontWeight: 400,
+      fontSize: '16px',
       border: '1px solid #E3F3E7',
       background: 'rgba(255,255,255,0.9)',
       backdropFilter: 'blur(12px)',
@@ -98,7 +99,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 1:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
               <span className="text-lg">✍️</span>
               <span>How would you describe your work style? <span className="text-green-600">*</span></span>
             </label>
@@ -115,7 +116,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 2:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
               <span className="text-lg">🗣️</span>
               <span>How do you typically communicate in professional settings? <span className="text-green-600">*</span></span>
             </label>
@@ -132,7 +133,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 3:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
               <span className="text-lg">⚡</span>
               <span>What are your key strengths?</span>
             </label>
@@ -149,7 +150,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 4:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
               <span className="text-lg">🌱</span>
               <span>What areas are you working to improve?</span>
             </label>
@@ -166,7 +167,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 5:
         return (
           <div>
-            <label className="block text-sm font-medium mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
               <span className="text-lg">📄</span>
               <span>Optional: Writing sample (helps match your voice)</span>
             </label>
@@ -178,7 +179,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
               className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
               style={inputStyle}
             />
-            <p className="text-xs mt-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, color: '#7D8B92' }}>
+            <p className="mt-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '15px', color: '#7D8B92' }}>
               This helps our AI better understand your writing style and vocabulary level
             </p>
           </div>
@@ -194,11 +195,11 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
         {/* Soft Green Light Gradient Behind Title */}
         <div className="absolute -inset-4 bg-gradient-to-r from-green-50/60 via-emerald-50/40 to-green-50/60 rounded-2xl blur-xl -z-10" />
         <div className="relative">
-          <h2 className="text-2xl font-bold mb-2 flex items-center gap-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-            <span className="text-2xl">📝</span>
+          <h2 className="mb-2 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '20px' }}>
+            <span className="text-xl">📝</span>
             Tell Us About Yourself
           </h2>
-          <p className="text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, color: '#7D8B92' }}>
+          <p className="leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '15px', color: '#7D8B92' }}>
             We'll use this to learn how you communicate and shape answers that sound authentically like you.
           </p>
         </div>
@@ -260,7 +261,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       </div>
 
       {currentStep <= 2 && (
-        <p className="text-xs text-gray-500 text-center mt-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+        <p className="text-center mt-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '15px', color: '#7D8B92' }}>
           * Required fields
         </p>
       )}

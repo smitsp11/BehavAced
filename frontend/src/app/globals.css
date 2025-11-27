@@ -342,8 +342,10 @@
     @apply text-base;
   }
 
-  /* Warmer placeholder color for chat-style inputs */
+  /* Warmer placeholder color for chat-style inputs - mint/gray tint */
   .placeholder-warm::placeholder {
-    color: #A8B2BD;
+    color: #9CA3AF;
+    font-size: 15px;
+    font-weight: 400;
   }
 }
