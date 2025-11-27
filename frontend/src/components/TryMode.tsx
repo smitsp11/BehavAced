@@ -325,11 +325,11 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             </SlideUp>
           </div>
 
-          {/* Sample Questions - Horizontal Scroll Pills */}
-          <SlideUp>
-            <div className="mb-16">
+          {/* Sample Questions - Integrated into Hero */}
+          <FadeIn>
+            <div className="mt-12">
               <p className="text-base font-medium text-gray-600 mb-4 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Try these sample questions:</p>
-              <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide justify-center" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {SAMPLE_QUESTIONS.map((sampleQ, index) => (
                   <motion.button
                     key={index}
@@ -344,7 +344,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
                 ))}
               </div>
             </div>
-          </SlideUp>
+          </FadeIn>
         </div>
       </div>
 
