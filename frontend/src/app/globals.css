@@ -25,6 +25,8 @@
     --muted-foreground: 215.4 20.2% 65.1%;
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
+    /* Override accent to prevent yellow tint */
+    --accent-hover: 210 40% 94%;
 
     /* Status colors - softer */
     --success: 142 76% 36%;
@@ -34,7 +36,7 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 252 100% 67%;
+    --ring: 199 89% 48%; /* Blue instead of yellow-tinted */
     --radius: 0.75rem; /* Softer border radius */
   }
 

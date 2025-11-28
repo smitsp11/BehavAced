@@ -59,11 +59,10 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
 
     setPersonalityData(formData)
     
-    // TEMPORARILY DISABLED: Background processing for design testing
     // Start personality snapshot processing in background if userId exists
-    // if (userId) {
-    //   startPersonalitySnapshotBackground(formData)
-    // }
+    if (userId) {
+      startPersonalitySnapshotBackground(formData)
+    }
     
     onNext()
   }
