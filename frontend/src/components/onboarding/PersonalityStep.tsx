@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
 import { ArrowRight, ArrowLeft } from 'lucide-react'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
+import { createPersonalitySnapshot } from '@/lib/api'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface PersonalityStepProps {
@@ -15,7 +16,12 @@ interface PersonalityStepProps {
 const TOTAL_STEPS = 5
 
 export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps) {
-  const { personalityData, setPersonalityData } = useOnboardingStore()
+  const { 
+    personalityData, 
+    setPersonalityData, 
+    userId,
+    setBackgroundTaskStatus 
+  } = useOnboardingStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     work_style: personalityData?.work_style || '',
@@ -52,7 +58,51 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
     }
 
     setPersonalityData(formData)
+    
+    // Start personality snapshot processing in background if userId exists
+    if (userId) {
+      startPersonalitySnapshotBackground(formData)
+    }
+    
     onNext()
+  }
+
+  // Start background processing when personality data changes and userId exists
+  useEffect(() => {
+    if (personalityData && userId && formData.work_style && formData.communication) {
+      const taskStatus = useOnboardingStore.getState().getBackgroundTaskStatus('personalitySnapshot')
+      if (taskStatus.status === 'idle') {
+        startPersonalitySnapshotBackground(personalityData)
+      }
+    }
+  }, [userId])
+
+  const startPersonalitySnapshotBackground = async (data: typeof formData) => {
+    // Mark as processing
+    setBackgroundTaskStatus('personalitySnapshot', 'processing')
+    
+    try {
+      // Convert to API format
+      const responses = {
+        work_style: data.work_style,
+        communication: data.communication,
+        strengths: data.strengths,
+        challenges: data.challenges,
+      }
+      
+      // Fire and forget - don't await
+      createPersonalitySnapshot(userId!, responses, data.writing_sample)
+        .then(() => {
+          setBackgroundTaskStatus('personalitySnapshot', 'completed')
+        })
+        .catch((error: any) => {
+          console.error('Background personality snapshot failed:', error)
+          setBackgroundTaskStatus('personalitySnapshot', 'error', error.message || 'Failed to create personality snapshot')
+        })
+    } catch (error: any) {
+      console.error('Error starting personality snapshot:', error)
+      setBackgroundTaskStatus('personalitySnapshot', 'error', error.message || 'Failed to start personality snapshot')
+    }
   }
 
   const canProceed = () => {

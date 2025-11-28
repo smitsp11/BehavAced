@@ -25,7 +25,7 @@ const ANALYZING_PHRASES = [
 ]
 
 export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepProps) {
-  const { resumeFile, setResumeFile, setUserId } = useOnboardingStore()
+  const { resumeFile, setResumeFile, setUserId, setBackgroundTaskStatus } = useOnboardingStore()
   const [uploading, setUploading] = useState(false)
   const [uploadComplete, setUploadComplete] = useState(false)
   const [error, setError] = useState('')
@@ -93,18 +93,22 @@ export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepPro
       const base64Content = await fileToBase64(resumeFile)
       const fileExt = getFileExtension(resumeFile.name)
 
+      // Mark resume processing as in progress
+      setBackgroundTaskStatus('resumeProcessing', 'processing')
+      
       const response = await uploadResume(base64Content, resumeFile.name, fileExt)
 
       if (response.success) {
         setUserId(response.user_id)
         setUploadComplete(true)
-        // Auto-advance after a short delay
-        setTimeout(() => {
-          onNext()
-        }, 1500)
+        // Mark as completed - resume processing continues in background (already handled by backend)
+        setBackgroundTaskStatus('resumeProcessing', 'completed')
+        // Proceed to next step immediately
+        onNext()
       }
     } catch (err: any) {
       setError(err.message || 'Failed to upload resume')
+      setBackgroundTaskStatus('resumeProcessing', 'error', err.message || 'Failed to upload resume')
     } finally {
       setUploading(false)
     }

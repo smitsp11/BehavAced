@@ -36,6 +36,19 @@ export type OnboardingStep =
   | 'processing'
   | 'complete'
 
+export type BackgroundTaskStatus = 'idle' | 'processing' | 'completed' | 'error'
+
+export interface BackgroundTask {
+  status: BackgroundTaskStatus
+  error?: string
+}
+
+export interface BackgroundTasks {
+  personalitySnapshot: BackgroundTask
+  resumeProcessing: BackgroundTask
+  storyBrain: BackgroundTask
+}
+
 export interface OnboardingState {
   // Current step
   currentStep: OnboardingStep
@@ -60,6 +73,9 @@ export interface OnboardingState {
   // Error handling
   error: string | null
 
+  // Background tasks
+  backgroundTasks: BackgroundTasks
+
   // Actions
   setStep: (step: OnboardingStep) => void
   completeStep: (step: OnboardingStep) => void
@@ -72,6 +88,8 @@ export interface OnboardingState {
   setSkipVoice: (skip: boolean) => void
   setProcessing: (isProcessing: boolean, step?: string, progress?: number) => void
   setError: (error: string | null) => void
+  setBackgroundTaskStatus: (task: keyof BackgroundTasks, status: BackgroundTaskStatus, error?: string) => void
+  getBackgroundTaskStatus: (task: keyof BackgroundTasks) => BackgroundTask
   reset: () => void
 
   // Computed properties
@@ -79,6 +97,12 @@ export interface OnboardingState {
   canProceedToStep: (step: OnboardingStep) => boolean
   getNextStep: () => OnboardingStep | null
   getPrevStep: () => OnboardingStep | null
+}
+
+const initialBackgroundTasks: BackgroundTasks = {
+  personalitySnapshot: { status: 'idle' },
+  resumeProcessing: { status: 'idle' },
+  storyBrain: { status: 'idle' },
 }
 
 const initialState = {
@@ -95,6 +119,7 @@ const initialState = {
   processingStep: '',
   processingProgress: 0,
   error: null as string | null,
+  backgroundTasks: initialBackgroundTasks,
 }
 
 export const useOnboardingStore = create<OnboardingState>()(
@@ -132,7 +157,19 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       setError: (error) => set({ error }),
 
-      reset: () => set(initialState),
+      setBackgroundTaskStatus: (task, status, error) => set((state) => ({
+        backgroundTasks: {
+          ...state.backgroundTasks,
+          [task]: {
+            status,
+            error: error || undefined,
+          },
+        },
+      })),
+
+      getBackgroundTaskStatus: (task) => get().backgroundTasks[task],
+
+      reset: () => set({ ...initialState, backgroundTasks: initialBackgroundTasks }),
 
       isStepCompleted: (step) => get().completedSteps.includes(step),
 

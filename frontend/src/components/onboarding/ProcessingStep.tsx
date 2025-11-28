@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Progress } from '@/components/ui/Progress'
-import { Sparkles, CheckCircle2, Brain, BookOpen, ArrowRight } from 'lucide-react'
+import { Sparkles, CheckCircle2, Brain, BookOpen, ArrowRight, CircleCheck, MinusCircle } from 'lucide-react'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
 import { createPersonalitySnapshot, processManualExperience, generateStoryBrain, generateStories } from '@/lib/api'
 
@@ -22,12 +22,17 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
     voiceFile,
     setProcessing,
     setError,
-    completeStep
+    completeStep,
+    backgroundTasks,
+    getBackgroundTaskStatus
   } = useOnboardingStore()
 
   const [currentStep, setCurrentStep] = useState('')
   const [progress, setProgress] = useState(0)
   const [completedTasks, setCompletedTasks] = useState<string[]>([])
+  const [taskStatus, setTaskStatus] = useState<Record<string, 'completed' | 'skipped'>>({})
+  const [failedTasks, setFailedTasks] = useState<string[]>([])
+  const [retryAttempts, setRetryAttempts] = useState<Record<string, number>>({})
 
   const processingSteps = [
     { id: 'personality', label: 'Creating personality snapshot', duration: 2000 },
@@ -37,6 +42,27 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
     { id: 'finalizing', label: 'Finalizing profile', duration: 1000 }
   ]
 
+  // Helper function to wait for background task completion
+  const waitForBackgroundTask = async (
+    task: 'personalitySnapshot' | 'resumeProcessing' | 'storyBrain',
+    intervalMs: number = 1000,
+    maxAttempts: number = 30
+  ): Promise<void> => {
+    let attempts = 0
+    while (attempts < maxAttempts) {
+      const taskStatus = getBackgroundTaskStatus(task)
+      if (taskStatus.status === 'completed') {
+        return
+      }
+      if (taskStatus.status === 'error') {
+        throw new Error(taskStatus.error || 'Background task failed')
+      }
+      await new Promise(resolve => setTimeout(resolve, intervalMs))
+      attempts++
+    }
+    throw new Error('Background task timeout')
+  }
+
   useEffect(() => {
     startProcessing()
   }, [])
@@ -45,12 +71,31 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
     setProcessing(true, 'Initializing...', 0)
 
     try {
-      // Step 1: Personality Snapshot
-      setCurrentStep('Creating personality snapshot...')
-      setProgress(10)
+      // Check background task status
+      const personalityTask = getBackgroundTaskStatus('personalitySnapshot')
+      const resumeTask = getBackgroundTaskStatus('resumeProcessing')
 
-      if (personalityData) {
-        // Convert personalityData to the format expected by the API
+      // Step 1: Personality Snapshot
+      if (personalityTask.status === 'completed') {
+        // Already completed in background
+        setCurrentStep('Personality snapshot already completed')
+        setProgress(10)
+        completeStep('personality')
+        setCompletedTasks(prev => [...prev, 'Personality profile created'])
+        setTaskStatus(prev => ({ ...prev, 'Personality profile created': 'completed' }))
+      } else if (personalityTask.status === 'processing') {
+        // Still processing in background, wait for it
+        setCurrentStep('Waiting for personality snapshot to complete...')
+        setProgress(10)
+        // Poll for completion
+        await waitForBackgroundTask('personalitySnapshot', 2000, 10)
+        completeStep('personality')
+        setCompletedTasks(prev => [...prev, 'Personality profile created'])
+        setTaskStatus(prev => ({ ...prev, 'Personality profile created': 'completed' }))
+      } else if (personalityData && personalityTask.status !== 'error') {
+        // Not started yet, process now
+        setCurrentStep('Creating personality snapshot...')
+        setProgress(10)
         const responses = {
           work_style: personalityData.work_style,
           communication: personalityData.communication,
@@ -60,16 +105,66 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
         await createPersonalitySnapshot(userId!, responses, personalityData.writing_sample)
         completeStep('personality')
         setCompletedTasks(prev => [...prev, 'Personality profile created'])
+        setTaskStatus(prev => ({ ...prev, 'Personality profile created': 'completed' }))
+      } else if (personalityTask.status === 'error') {
+        // Task failed, try to retry once
+        const retryCount = retryAttempts['personalitySnapshot'] || 0
+        if (retryCount < 1 && personalityData) {
+          setCurrentStep('Retrying personality snapshot...')
+          setProgress(10)
+          setRetryAttempts(prev => ({ ...prev, 'personalitySnapshot': retryCount + 1 }))
+          try {
+            const responses = {
+              work_style: personalityData.work_style,
+              communication: personalityData.communication,
+              strengths: personalityData.strengths,
+              challenges: personalityData.challenges,
+            }
+            await createPersonalitySnapshot(userId!, responses, personalityData.writing_sample)
+            completeStep('personality')
+            setCompletedTasks(prev => [...prev, 'Personality profile created'])
+            setTaskStatus(prev => ({ ...prev, 'Personality profile created': 'completed' }))
+          } catch (error: any) {
+            // Retry failed, mark as skipped
+            setFailedTasks(prev => [...prev, 'Personality snapshot'])
+            setCompletedTasks(prev => [...prev, 'Personality snapshot skipped'])
+            setTaskStatus(prev => ({ ...prev, 'Personality snapshot skipped': 'skipped' }))
+          }
+        } else {
+          // Already retried or no data, mark as skipped
+          setFailedTasks(prev => [...prev, 'Personality snapshot'])
+          setCurrentStep('Skipping personality snapshot (error)')
+          setProgress(10)
+          setCompletedTasks(prev => [...prev, 'Personality snapshot skipped'])
+          setTaskStatus(prev => ({ ...prev, 'Personality snapshot skipped': 'skipped' }))
+        }
       }
 
       // Step 2: Experience Processing
-      setCurrentStep(experienceChoice === 'resume' ? 'Analyzing resume...' : 'Processing experience...')
-      setProgress(35)
-
       if (experienceChoice === 'resume' && resumeFile) {
-        // Resume already uploaded in previous step
-        setCompletedTasks(prev => [...prev, 'Resume analyzed'])
+        if (resumeTask.status === 'completed') {
+          // Already completed in background
+          setCurrentStep('Resume already processed')
+          setProgress(35)
+          setCompletedTasks(prev => [...prev, 'Resume analyzed'])
+          setTaskStatus(prev => ({ ...prev, 'Resume analyzed': 'completed' }))
+        } else if (resumeTask.status === 'processing') {
+          // Still processing, wait for it
+          setCurrentStep('Waiting for resume processing to complete...')
+          setProgress(35)
+          await waitForBackgroundTask('resumeProcessing', 2000, 10)
+          setCompletedTasks(prev => [...prev, 'Resume analyzed'])
+          setTaskStatus(prev => ({ ...prev, 'Resume analyzed': 'completed' }))
+        } else {
+          // Already uploaded, mark as completed
+          setCurrentStep('Resume analyzed')
+          setProgress(35)
+          setCompletedTasks(prev => [...prev, 'Resume analyzed'])
+          setTaskStatus(prev => ({ ...prev, 'Resume analyzed': 'completed' }))
+        }
       } else if (experienceChoice === 'manual' && manualExperienceData) {
+        setCurrentStep('Processing experience...')
+        setProgress(35)
         await processManualExperience(
           userId!,
           manualExperienceData.experiences,
@@ -77,6 +172,7 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
           manualExperienceData.additional_skills
         )
         setCompletedTasks(prev => [...prev, 'Experience data processed'])
+        setTaskStatus(prev => ({ ...prev, 'Experience data processed': 'completed' }))
       }
 
       completeStep(experienceChoice === 'resume' ? 'resume-upload' : 'manual-experience')
@@ -89,8 +185,10 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
         // TODO: Implement voice upload when backend is ready
         // await uploadVoice(userId!, voiceFile, duration)
         setCompletedTasks(prev => [...prev, 'Voice sample analyzed'])
+        setTaskStatus(prev => ({ ...prev, 'Voice sample analyzed': 'completed' }))
       } else {
         setCompletedTasks(prev => [...prev, 'Voice analysis skipped'])
+        setTaskStatus(prev => ({ ...prev, 'Voice analysis skipped': 'skipped' }))
       }
 
       completeStep('voice-upload')
@@ -102,10 +200,12 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
       try {
         await generateStories(userId!)
         setCompletedTasks(prev => [...prev, 'Stories extracted'])
+        setTaskStatus(prev => ({ ...prev, 'Stories extracted': 'completed' }))
       } catch (error: any) {
         // If stories can't be generated (e.g., no experiences), log but continue
         console.warn('Could not generate stories:', error.message)
         setCompletedTasks(prev => [...prev, 'Story extraction skipped'])
+        setTaskStatus(prev => ({ ...prev, 'Story extraction skipped': 'skipped' }))
       }
 
       // Step 5: Story Brain Generation
@@ -115,10 +215,12 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
       try {
         await generateStoryBrain(userId!)
         setCompletedTasks(prev => [...prev, 'Story brain generated'])
+        setTaskStatus(prev => ({ ...prev, 'Story brain generated': 'completed' }))
       } catch (error: any) {
         // If story brain can't be generated (e.g., no stories), log but continue
         console.warn('Could not generate story brain:', error.message)
         setCompletedTasks(prev => [...prev, 'Story brain generation skipped'])
+        setTaskStatus(prev => ({ ...prev, 'Story brain generation skipped': 'skipped' }))
       }
 
       // Step 5: Finalizing
@@ -194,18 +296,41 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
 
         {/* Completed Tasks Summary */}
         {completedTasks.length > 0 && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
-              <BookOpen className="w-4 h-4" />
-              What's Been Created
+          <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/60 border border-blue-200/60 rounded-xl p-5 shadow-sm">
+            <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
+              <BookOpen className="w-5 h-5 text-blue-600" />
+              Progress Summary
             </h4>
-            <ul className="text-sm text-green-800 space-y-1">
-              {completedTasks.map((task, index) => (
-                <li key={index} className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3 h-3" />
-                  {task}
-                </li>
-              ))}
+            <ul className="space-y-2.5">
+              {completedTasks.map((task, index) => {
+                const status = taskStatus[task] || 'completed'
+                const isCompleted = status === 'completed'
+                const isSkipped = status === 'skipped'
+                
+                return (
+                  <li key={index} className="flex items-center gap-3">
+                    {isCompleted ? (
+                      <CircleCheck className="w-5 h-5 text-blue-600 flex-shrink-0" strokeWidth={2.5} />
+                    ) : isSkipped ? (
+                      <MinusCircle className="w-5 h-5 text-gray-400 flex-shrink-0" strokeWidth={2} />
+                    ) : (
+                      <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                    )}
+                    <span 
+                      className={`text-sm flex-1 ${
+                        isCompleted 
+                          ? 'text-blue-700 font-medium' 
+                          : isSkipped 
+                            ? 'text-gray-500 italic' 
+                            : 'text-gray-700'
+                      }`}
+                      style={{ fontFamily: 'Inter, sans-serif', fontWeight: isCompleted ? 500 : 400 }}
+                    >
+                      {task}
+                    </span>
+                  </li>
+                )
+              })}
             </ul>
           </div>
         )}
@@ -232,6 +357,30 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
               Enter Dashboard
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
+          </div>
+        )}
+
+        {/* Failed Tasks Warning */}
+        {failedTasks.length > 0 && progress === 100 && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <h4 className="font-semibold text-yellow-900 mb-2 flex items-center gap-2">
+              <span className="text-lg">⚠️</span>
+              Some tasks failed
+            </h4>
+            <p className="text-sm text-yellow-800 mb-3">
+              The following tasks could not be completed, but you can still proceed:
+            </p>
+            <ul className="text-sm text-yellow-800 space-y-1 mb-3">
+              {failedTasks.map((task, index) => (
+                <li key={index} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full" />
+                  {task}
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-yellow-700">
+              You can retry these tasks later from your dashboard.
+            </p>
           </div>
         )}
 
