@@ -170,32 +170,38 @@ export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepPro
           <Button
             onClick={onPrev}
             variant="outline"
-            className="flex-1"
+            className="px-6 py-6 rounded-full border-2 border-gray-200 hover:border-green-400 transition-all"
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
             disabled={uploading}
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-5 h-5 mr-2" />
             Back
           </Button>
           <Button
             onClick={handleUpload}
             disabled={!resumeFile || uploading || uploadComplete}
-            className="flex-1"
-            size="lg"
+            className={`flex-1 bg-gradient-to-r from-[#7fffd2] to-[#28d98a] text-white rounded-full px-8 py-6 text-lg font-semibold shadow-[0_8px_25px_rgba(40,217,138,0.35)] hover:shadow-[0_12px_35px_rgba(40,217,138,0.45)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
           >
             {uploading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 Analyzing Resume...
               </>
             ) : uploadComplete ? (
               <>
-                <CheckCircle className="w-4 h-4 mr-2" />
+                <CheckCircle className="w-5 h-5 mr-2" />
                 Upload Complete
+              </>
+            ) : resumeFile ? (
+              <>
+                Upload & Analyze
+                <ArrowRight className="w-5 h-5 ml-2" />
               </>
             ) : (
               <>
-                Upload & Analyze
-                <ArrowRight className="w-4 h-4 ml-2" />
+                Next
+                <ArrowRight className="w-5 h-5 ml-2" />
               </>
             )}
           </Button>

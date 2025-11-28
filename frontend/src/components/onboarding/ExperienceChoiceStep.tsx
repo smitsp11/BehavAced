@@ -112,19 +112,20 @@ export default function ExperienceChoiceStep({ onNext, onPrev }: ExperienceChoic
           <Button
             onClick={onPrev}
             variant="outline"
-            className="flex-1"
+            className="px-6 py-6 rounded-full border-2 border-gray-200 hover:border-green-400 transition-all"
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-5 h-5 mr-2" />
             Back
           </Button>
           <Button
             onClick={handleContinue}
             disabled={!experienceChoice}
-            className="flex-1"
-            size="lg"
+            className={`flex-1 bg-gradient-to-r from-[#7fffd2] to-[#28d98a] text-white rounded-full px-8 py-6 text-lg font-semibold shadow-[0_8px_25px_rgba(40,217,138,0.35)] hover:shadow-[0_12px_35px_rgba(40,217,138,0.45)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
           >
-            Continue
-            <ArrowRight className="w-4 h-4 ml-2" />
+            {experienceChoice ? 'Continue' : 'Next'}
+            <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
       </CardContent>

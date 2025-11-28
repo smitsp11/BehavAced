@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
@@ -8,10 +9,6 @@ import { FadeIn, SlideUp, HoverCard, StaggerContainer, StaggerItem } from '@/com
 import { motion } from 'framer-motion'
 import { Sparkles, MessageSquare, ArrowRight, Play, Star, Clock, Target, Upload, FileText, Brain, CheckCircle2 } from 'lucide-react'
 import { generateDemoAnswer } from '@/lib/api'
-
-interface TryModeProps {
-  onStartOnboarding: () => void
-}
 
 interface DemoAnswer {
   success: boolean
@@ -29,7 +26,8 @@ const SAMPLE_QUESTIONS = [
   { text: "Describe a time you had to work with a difficult team member" }
 ]
 
-export default function TryMode({ onStartOnboarding }: TryModeProps) {
+export default function TryMode() {
+  const router = useRouter()
   const [question, setQuestion] = useState('')
   const [demoAnswer, setDemoAnswer] = useState<DemoAnswer | null>(null)
   const [loading, setLoading] = useState(false)
@@ -139,16 +137,11 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
           {/* Top Bar with Logo */}
           <FadeIn>
             <div className="flex items-center justify-center mb-12">
-              <div className="flex items-center gap-3">
-                <div className="gradient-green p-3 rounded-2xl shadow-lg green-glow">
-                  <span className="text-3xl">🧠</span>
-                </div>
-                <h1 className="text-5xl md:text-6xl font-playfair" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontStyle: 'normal', letterSpacing: 'normal' }}>
-                  <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-                    BehavAced
-                  </span>
-                </h1>
-              </div>
+              <h1 className="text-6xl md:text-7xl font-playfair" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontStyle: 'normal', letterSpacing: 'normal' }}>
+                <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+                  BehavAced
+                </span>
+              </h1>
             </div>
           </FadeIn>
 
@@ -157,7 +150,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
             {/* Left Column: Headline + Input */}
             <FadeIn>
               <div className="space-y-6">
-                <h1 className="text-[56px] md:text-[64px] leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+                <h1 className="text-[44px] md:text-[52px] leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
                   Ace Your Behavioral Interviews With AI<br />
                   That <span className="bg-gradient-to-r from-[#28d98a] to-[#6fffc5] bg-clip-text text-transparent italic inline-block" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', letterSpacing: '0.02em', paddingLeft: '4px', paddingRight: '4px', backgroundSize: '100% 100%' }}>
                     Sounds
@@ -616,7 +609,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
 
             {/* Improved CTA Button */}
             <motion.button
-              onClick={onStartOnboarding}
+              onClick={() => router.push('/onboarding')}
               className="bg-gradient-to-r from-[#7fffd2] to-[#28d98a] text-white rounded-full px-10 py-5 text-lg font-semibold shadow-[0_8px_25px_rgba(40,217,138,0.35)] flex items-center gap-2 mx-auto hover:shadow-[0_12px_35px_rgba(40,217,138,0.45)] transition-all duration-300"
               style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
               initial={{ opacity: 0, y: 20 }}
