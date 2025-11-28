@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Upload, FileText, X, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
@@ -31,6 +31,7 @@ export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepPro
   const [error, setError] = useState('')
   const [analyzingPhrase, setAnalyzingPhrase] = useState(ANALYZING_PHRASES[0])
   const [phraseIndex, setPhraseIndex] = useState(0)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   // Rotate through analyzing phrases while uploading
   useEffect(() => {
@@ -141,13 +142,14 @@ export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepPro
         {!resumeFile && (
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
             <input
+              ref={fileInputRef}
               type="file"
               accept=".pdf,.docx,.doc,.txt"
               onChange={handleFileSelect}
               className="hidden"
               id="resume-upload"
             />
-            <label htmlFor="resume-upload" className="cursor-pointer">
+            <div className="cursor-pointer" onClick={() => fileInputRef.current?.click()}>
               <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
               <p className="text-lg font-medium mb-2">
                 Click to upload or drag and drop
@@ -155,10 +157,19 @@ export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepPro
               <p className="text-sm text-gray-500 mb-4">
                 PDF, DOCX, or TXT (max 10MB)
               </p>
-              <Button variant="outline" size="lg">
+              <Button 
+                variant="outline" 
+                size="lg"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  fileInputRef.current?.click()
+                }}
+              >
                 Choose File
               </Button>
-            </label>
+            </div>
           </div>
         )}
 

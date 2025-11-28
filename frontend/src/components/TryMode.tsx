@@ -235,7 +235,7 @@ export default function TryMode() {
                     <div className="p-6 rounded-3xl border-2 border-green-200 bg-white/90 backdrop-blur-sm shadow-xl">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                          <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                          <Star className="w-6 h-6 text-green-500 fill-green-500" />
                           <h3 className="text-[22px] font-bold" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Demo Answer</h3>
                         </div>
                         <div className="flex items-center gap-2 text-sm">

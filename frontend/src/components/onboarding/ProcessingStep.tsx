@@ -303,23 +303,23 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
 
         {/* Failed Tasks Warning */}
         {failedTasks.length > 0 && progress === 100 && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h4 className="font-semibold text-yellow-900 mb-2 flex items-center gap-2">
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+            <h4 className="font-semibold text-orange-900 mb-2 flex items-center gap-2">
               <span className="text-lg">⚠️</span>
               Some tasks failed
             </h4>
-            <p className="text-sm text-yellow-800 mb-3">
+            <p className="text-sm text-orange-800 mb-3">
               The following tasks could not be completed, but you can still proceed:
             </p>
-            <ul className="text-sm text-yellow-800 space-y-1 mb-3">
+            <ul className="text-sm text-orange-800 space-y-1 mb-3">
               {failedTasks.map((task, index) => (
                 <li key={index} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full" />
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full" />
                   {task}
                 </li>
               ))}
             </ul>
-            <p className="text-xs text-yellow-700">
+            <p className="text-xs text-orange-700">
               You can retry these tasks later from your dashboard.
             </p>
           </div>

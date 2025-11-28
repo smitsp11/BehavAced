@@ -124,7 +124,7 @@ export default function Dashboard({ userId }: DashboardProps) {
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-3xl font-bold">BehavAced Dashboard</h1>
             {isDev && (
-              <div className="flex items-center gap-2 text-xs bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
+              <div className="flex items-center gap-2 text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
                 🧪 DEV MODE
               </div>
             )}

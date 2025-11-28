@@ -195,13 +195,13 @@ export default function PracticeMode({ userId }: PracticeModeProps) {
   const ScoreCard = ({ label, score }: { label: string; score: number }) => {
     const getScoreColor = (score: number) => {
       if (score >= 80) return 'text-green-600'
-      if (score >= 60) return 'text-yellow-600'
+      if (score >= 60) return 'text-orange-600'
       return 'text-red-600'
     }
 
     const getProgressColor = (score: number) => {
       if (score >= 80) return 'bg-green-500'
-      if (score >= 60) return 'bg-yellow-500'
+      if (score >= 60) return 'bg-orange-500'
       return 'bg-red-500'
     }
 
@@ -490,7 +490,7 @@ export default function PracticeMode({ userId }: PracticeModeProps) {
                   <ul className="space-y-2">
                     {result.attempt.improvements.map((improvement: string, idx: number) => (
                       <li key={idx} className="flex gap-2 text-sm">
-                        <span className="text-yellow-500">→</span>
+                        <span className="text-green-500">→</span>
                         {improvement}
                       </li>
                     ))}
