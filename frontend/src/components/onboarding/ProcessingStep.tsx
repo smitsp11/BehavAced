@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Progress } from '@/components/ui/Progress'
-import { Sparkles, CheckCircle2, Brain, BookOpen, ArrowRight, CircleCheck, MinusCircle } from 'lucide-react'
+import { Sparkles, CheckCircle2, Brain, BookOpen, ArrowRight, MinusCircle } from 'lucide-react'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
 import { createPersonalitySnapshot, processManualExperience, generateStoryBrain, generateStories } from '@/lib/api'
 
@@ -251,7 +251,7 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
                 return (
                   <li key={index} className="flex items-center gap-3">
                     {isCompleted ? (
-                      <CircleCheck className="w-5 h-5 text-blue-600 flex-shrink-0" strokeWidth={2.5} />
+                      <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0" strokeWidth={2.5} />
                     ) : isSkipped ? (
                       <MinusCircle className="w-5 h-5 text-gray-400 flex-shrink-0" strokeWidth={2} />
                     ) : (

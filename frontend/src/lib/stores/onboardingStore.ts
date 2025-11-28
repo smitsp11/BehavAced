@@ -125,7 +125,7 @@ const initialState = {
 export const useOnboardingStore = create<OnboardingState>()(
   // Temporarily disabled persistence for design testing
   // persist(
-    (set, get) => ({
+  (set, get) => ({
       ...initialState,
 
       setStep: (step) => set({ currentStep: step }),
@@ -279,18 +279,17 @@ export const useOnboardingStore = create<OnboardingState>()(
         return null
       },
     })
-    // Temporarily disabled persistence for design testing
-    // {
-    //   name: 'behavaced-onboarding',
-    //   partialize: (state) => ({
-    //     currentStep: state.currentStep,
-    //     completedSteps: state.completedSteps,
-    //     userId: state.userId,
-    //     personalityData: state.personalityData,
-    //     experienceChoice: state.experienceChoice,
-    //     manualExperienceData: state.manualExperienceData,
-    //     skipVoice: state.skipVoice,
-    //   }),
-    // }
-  )
+  // Temporarily disabled persistence for design testing
+  // {
+  //   name: 'behavaced-onboarding',
+  //   partialize: (state) => ({
+  //     currentStep: state.currentStep,
+  //     completedSteps: state.completedSteps,
+  //     userId: state.userId,
+  //     personalityData: state.personalityData,
+  //     experienceChoice: state.experienceChoice,
+  //     manualExperienceData: state.manualExperienceData,
+  //     skipVoice: state.skipVoice,
+  //   }),
+  // }
 )
