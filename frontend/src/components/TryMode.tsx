@@ -134,7 +134,7 @@ export default function TryMode({ onStartOnboarding }: TryModeProps) {
       </div>
       
       {/* Hero Section - Two Column Layout */}
-      <div className="container mx-auto px-4 pb-[140px]">
+      <div className="container mx-auto px-4 pb-[140px] pt-16">
         <div className="max-w-7xl mx-auto">
           {/* Top Bar with Logo */}
           <FadeIn>
