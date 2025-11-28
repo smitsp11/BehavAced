@@ -22,9 +22,10 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
     voiceFile,
     setProcessing,
     setError,
-    completeStep,
-    backgroundTasks,
-    getBackgroundTaskStatus
+    completeStep
+    // TEMPORARILY DISABLED: Background tasks for design testing
+    // backgroundTasks,
+    // getBackgroundTaskStatus
   } = useOnboardingStore()
 
   const [currentStep, setCurrentStep] = useState('')
@@ -42,26 +43,27 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
     { id: 'finalizing', label: 'Finalizing profile', duration: 1000 }
   ]
 
+  // TEMPORARILY DISABLED: Background task helper for design testing
   // Helper function to wait for background task completion
-  const waitForBackgroundTask = async (
-    task: 'personalitySnapshot' | 'resumeProcessing' | 'storyBrain',
-    intervalMs: number = 1000,
-    maxAttempts: number = 30
-  ): Promise<void> => {
-    let attempts = 0
-    while (attempts < maxAttempts) {
-      const taskStatus = getBackgroundTaskStatus(task)
-      if (taskStatus.status === 'completed') {
-        return
-      }
-      if (taskStatus.status === 'error') {
-        throw new Error(taskStatus.error || 'Background task failed')
-      }
-      await new Promise(resolve => setTimeout(resolve, intervalMs))
-      attempts++
-    }
-    throw new Error('Background task timeout')
-  }
+  // const waitForBackgroundTask = async (
+  //   task: 'personalitySnapshot' | 'resumeProcessing' | 'storyBrain',
+  //   intervalMs: number = 1000,
+  //   maxAttempts: number = 30
+  // ): Promise<void> => {
+  //   let attempts = 0
+  //   while (attempts < maxAttempts) {
+  //     const taskStatus = getBackgroundTaskStatus(task)
+  //     if (taskStatus.status === 'completed') {
+  //       return
+  //     }
+  //     if (taskStatus.status === 'error') {
+  //       throw new Error(taskStatus.error || 'Background task failed')
+  //     }
+  //     await new Promise(resolve => setTimeout(resolve, intervalMs))
+  //     attempts++
+  //   }
+  //   throw new Error('Background task timeout')
+  // }
 
   useEffect(() => {
     startProcessing()
@@ -71,31 +73,17 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
     setProcessing(true, 'Initializing...', 0)
 
     try {
+      // TEMPORARILY DISABLED: Background task checking for design testing
       // Check background task status
-      const personalityTask = getBackgroundTaskStatus('personalitySnapshot')
-      const resumeTask = getBackgroundTaskStatus('resumeProcessing')
+      // const personalityTask = getBackgroundTaskStatus('personalitySnapshot')
+      // const resumeTask = getBackgroundTaskStatus('resumeProcessing')
 
       // Step 1: Personality Snapshot
-      if (personalityTask.status === 'completed') {
-        // Already completed in background
-        setCurrentStep('Personality snapshot already completed')
-        setProgress(10)
-        completeStep('personality')
-        setCompletedTasks(prev => [...prev, 'Personality profile created'])
-        setTaskStatus(prev => ({ ...prev, 'Personality profile created': 'completed' }))
-      } else if (personalityTask.status === 'processing') {
-        // Still processing in background, wait for it
-        setCurrentStep('Waiting for personality snapshot to complete...')
-        setProgress(10)
-        // Poll for completion
-        await waitForBackgroundTask('personalitySnapshot', 2000, 10)
-        completeStep('personality')
-        setCompletedTasks(prev => [...prev, 'Personality profile created'])
-        setTaskStatus(prev => ({ ...prev, 'Personality profile created': 'completed' }))
-      } else if (personalityData && personalityTask.status !== 'error') {
-        // Not started yet, process now
-        setCurrentStep('Creating personality snapshot...')
-        setProgress(10)
+      // Process normally without background task checking
+      setCurrentStep('Creating personality snapshot...')
+      setProgress(10)
+
+      if (personalityData) {
         const responses = {
           work_style: personalityData.work_style,
           communication: personalityData.communication,
@@ -106,62 +94,15 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
         completeStep('personality')
         setCompletedTasks(prev => [...prev, 'Personality profile created'])
         setTaskStatus(prev => ({ ...prev, 'Personality profile created': 'completed' }))
-      } else if (personalityTask.status === 'error') {
-        // Task failed, try to retry once
-        const retryCount = retryAttempts['personalitySnapshot'] || 0
-        if (retryCount < 1 && personalityData) {
-          setCurrentStep('Retrying personality snapshot...')
-          setProgress(10)
-          setRetryAttempts(prev => ({ ...prev, 'personalitySnapshot': retryCount + 1 }))
-          try {
-            const responses = {
-              work_style: personalityData.work_style,
-              communication: personalityData.communication,
-              strengths: personalityData.strengths,
-              challenges: personalityData.challenges,
-            }
-            await createPersonalitySnapshot(userId!, responses, personalityData.writing_sample)
-            completeStep('personality')
-            setCompletedTasks(prev => [...prev, 'Personality profile created'])
-            setTaskStatus(prev => ({ ...prev, 'Personality profile created': 'completed' }))
-          } catch (error: any) {
-            // Retry failed, mark as skipped
-            setFailedTasks(prev => [...prev, 'Personality snapshot'])
-            setCompletedTasks(prev => [...prev, 'Personality snapshot skipped'])
-            setTaskStatus(prev => ({ ...prev, 'Personality snapshot skipped': 'skipped' }))
-          }
-        } else {
-          // Already retried or no data, mark as skipped
-          setFailedTasks(prev => [...prev, 'Personality snapshot'])
-          setCurrentStep('Skipping personality snapshot (error)')
-          setProgress(10)
-          setCompletedTasks(prev => [...prev, 'Personality snapshot skipped'])
-          setTaskStatus(prev => ({ ...prev, 'Personality snapshot skipped': 'skipped' }))
-        }
       }
 
       // Step 2: Experience Processing
       if (experienceChoice === 'resume' && resumeFile) {
-        if (resumeTask.status === 'completed') {
-          // Already completed in background
-          setCurrentStep('Resume already processed')
-          setProgress(35)
-          setCompletedTasks(prev => [...prev, 'Resume analyzed'])
-          setTaskStatus(prev => ({ ...prev, 'Resume analyzed': 'completed' }))
-        } else if (resumeTask.status === 'processing') {
-          // Still processing, wait for it
-          setCurrentStep('Waiting for resume processing to complete...')
-          setProgress(35)
-          await waitForBackgroundTask('resumeProcessing', 2000, 10)
-          setCompletedTasks(prev => [...prev, 'Resume analyzed'])
-          setTaskStatus(prev => ({ ...prev, 'Resume analyzed': 'completed' }))
-        } else {
-          // Already uploaded, mark as completed
-          setCurrentStep('Resume analyzed')
-          setProgress(35)
-          setCompletedTasks(prev => [...prev, 'Resume analyzed'])
-          setTaskStatus(prev => ({ ...prev, 'Resume analyzed': 'completed' }))
-        }
+        // Already uploaded, mark as completed
+        setCurrentStep('Resume analyzed')
+        setProgress(35)
+        setCompletedTasks(prev => [...prev, 'Resume analyzed'])
+        setTaskStatus(prev => ({ ...prev, 'Resume analyzed': 'completed' }))
       } else if (experienceChoice === 'manual' && manualExperienceData) {
         setCurrentStep('Processing experience...')
         setProgress(35)

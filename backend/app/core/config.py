@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     SUPABASE_KEY: Optional[str] = None
 
     # Application
-    ENVIRONMENT: str = "development"
-    DEBUG: bool = True
+    ENVIRONMENT: str = "production"
+    DEBUG: bool = False
 
     # File Upload
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10MB

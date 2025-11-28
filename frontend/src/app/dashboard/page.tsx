@@ -14,36 +14,40 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const loadState = async () => {
-      // First, try loading from localStorage
-      const storedUserId = localStorage.getItem(STORAGE_KEY_USER_ID)
-      const storedOnboarded = localStorage.getItem(STORAGE_KEY_ONBOARDED) === 'true'
+    // TEMPORARILY DISABLED: Persistence for design testing - always redirect to onboarding
+    // const loadState = async () => {
+    //   // First, try loading from localStorage
+    //   const storedUserId = localStorage.getItem(STORAGE_KEY_USER_ID)
+    //   const storedOnboarded = localStorage.getItem(STORAGE_KEY_ONBOARDED) === 'true'
 
-      if (storedUserId && storedOnboarded) {
-        // In dev mode, try to load cached profile from backend
-        if (process.env.NODE_ENV === 'development') {
-          try {
-            const cacheStatus = await getCacheStatus()
-            if (cacheStatus.exists && cacheStatus.user_id) {
-              setUserId(cacheStatus.user_id)
-              setIsLoading(false)
-              return
-            }
-          } catch (error) {
-            console.log('No cached profile found, using localStorage')
-          }
-        }
+    //   if (storedUserId && storedOnboarded) {
+    //     // In dev mode, try to load cached profile from backend
+    //     if (process.env.NODE_ENV === 'development') {
+    //       try {
+    //         const cacheStatus = await getCacheStatus()
+    //         if (cacheStatus.exists && cacheStatus.user_id) {
+    //           setUserId(cacheStatus.user_id)
+    //           setIsLoading(false)
+    //           return
+    //         }
+    //       } catch (error) {
+    //         console.log('No cached profile found, using localStorage')
+    //       }
+    //     }
 
-        // Fallback to localStorage
-        setUserId(storedUserId)
-        setIsLoading(false)
-      } else {
-        // Not onboarded, redirect to onboarding
-        router.push('/onboarding')
-      }
-    }
+    //     // Fallback to localStorage
+    //     setUserId(storedUserId)
+    //     setIsLoading(false)
+    //   } else {
+    //     // Not onboarded, redirect to onboarding
+    //     router.push('/onboarding')
+    //   }
+    // }
 
-    loadState()
+    // loadState()
+    
+    // Always redirect to onboarding for design testing
+    router.push('/onboarding')
   }, [router])
 
   if (isLoading) {

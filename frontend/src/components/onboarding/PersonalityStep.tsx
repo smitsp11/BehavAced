@@ -59,23 +59,25 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
 
     setPersonalityData(formData)
     
+    // TEMPORARILY DISABLED: Background processing for design testing
     // Start personality snapshot processing in background if userId exists
-    if (userId) {
-      startPersonalitySnapshotBackground(formData)
-    }
+    // if (userId) {
+    //   startPersonalitySnapshotBackground(formData)
+    // }
     
     onNext()
   }
 
+  // TEMPORARILY DISABLED: Background processing for design testing
   // Start background processing when personality data changes and userId exists
-  useEffect(() => {
-    if (personalityData && userId && formData.work_style && formData.communication) {
-      const taskStatus = useOnboardingStore.getState().getBackgroundTaskStatus('personalitySnapshot')
-      if (taskStatus.status === 'idle') {
-        startPersonalitySnapshotBackground(personalityData)
-      }
-    }
-  }, [userId])
+  // useEffect(() => {
+  //   if (personalityData && userId && formData.work_style && formData.communication) {
+  //     const taskStatus = useOnboardingStore.getState().getBackgroundTaskStatus('personalitySnapshot')
+  //     if (taskStatus.status === 'idle') {
+  //       startPersonalitySnapshotBackground(personalityData)
+  //     }
+  //   }
+  // }, [userId])
 
   const startPersonalitySnapshotBackground = async (data: typeof formData) => {
     // Mark as processing
