@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Progress } from '@/components/ui/Progress'
 import { Sparkles, CheckCircle2, Brain, BookOpen, ArrowRight } from 'lucide-react'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
-import { createPersonalitySnapshot, processManualExperience, generateStoryBrain } from '@/lib/api'
+import { createPersonalitySnapshot, processManualExperience, generateStoryBrain, generateStories } from '@/lib/api'
 
 interface ProcessingStepProps {
   onComplete: (userId: string) => void
@@ -95,12 +95,31 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
 
       completeStep('voice-upload')
 
-      // Step 4: Story Brain Generation
-      setCurrentStep('Building your story brain...')
-      setProgress(80)
+      // Step 4: Generate Stories (required before story brain)
+      setCurrentStep('Extracting stories from your experience...')
+      setProgress(70)
 
-      await generateStoryBrain(userId!)
-      setCompletedTasks(prev => [...prev, 'Story brain generated'])
+      try {
+        await generateStories(userId!)
+        setCompletedTasks(prev => [...prev, 'Stories extracted'])
+      } catch (error: any) {
+        // If stories can't be generated (e.g., no experiences), log but continue
+        console.warn('Could not generate stories:', error.message)
+        setCompletedTasks(prev => [...prev, 'Story extraction skipped'])
+      }
+
+      // Step 5: Story Brain Generation
+      setCurrentStep('Building your story brain...')
+      setProgress(85)
+
+      try {
+        await generateStoryBrain(userId!)
+        setCompletedTasks(prev => [...prev, 'Story brain generated'])
+      } catch (error: any) {
+        // If story brain can't be generated (e.g., no stories), log but continue
+        console.warn('Could not generate story brain:', error.message)
+        setCompletedTasks(prev => [...prev, 'Story brain generation skipped'])
+      }
 
       // Step 5: Finalizing
       setCurrentStep('Finalizing your profile...')
