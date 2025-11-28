@@ -50,7 +50,14 @@ export default function ProcessingStep({ onComplete }: ProcessingStepProps) {
       setProgress(10)
 
       if (personalityData) {
-        await createPersonalitySnapshot(userId!, personalityData.responses, personalityData.writing_sample)
+        // Convert personalityData to the format expected by the API
+        const responses = {
+          work_style: personalityData.work_style,
+          communication: personalityData.communication,
+          strengths: personalityData.strengths,
+          challenges: personalityData.challenges,
+        }
+        await createPersonalitySnapshot(userId!, responses, personalityData.writing_sample)
         completeStep('personality')
         setCompletedTasks(prev => [...prev, 'Personality profile created'])
       }

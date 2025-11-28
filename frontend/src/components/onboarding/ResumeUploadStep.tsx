@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Upload, FileText, X, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
@@ -13,11 +13,43 @@ interface ResumeUploadStepProps {
   onPrev: () => void
 }
 
+const ANALYZING_PHRASES = [
+  'Learning who you are',
+  'Parsing your experience',
+  'Extracting your stories',
+  'Understanding your style',
+  'Analyzing achievements',
+  'Reading your background',
+  'Processing your resume',
+  'Discovering your voice'
+]
+
 export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepProps) {
   const { resumeFile, setResumeFile, setUserId } = useOnboardingStore()
   const [uploading, setUploading] = useState(false)
   const [uploadComplete, setUploadComplete] = useState(false)
   const [error, setError] = useState('')
+  const [analyzingPhrase, setAnalyzingPhrase] = useState(ANALYZING_PHRASES[0])
+  const [phraseIndex, setPhraseIndex] = useState(0)
+
+  // Rotate through analyzing phrases while uploading
+  useEffect(() => {
+    if (uploading) {
+      const interval = setInterval(() => {
+        setPhraseIndex((prev) => {
+          const nextIndex = (prev + 1) % ANALYZING_PHRASES.length
+          setAnalyzingPhrase(ANALYZING_PHRASES[nextIndex])
+          return nextIndex
+        })
+      }, 1500) // Change phrase every 1.5 seconds
+
+      return () => clearInterval(interval)
+    } else {
+      // Reset to first phrase when not uploading
+      setPhraseIndex(0)
+      setAnalyzingPhrase(ANALYZING_PHRASES[0])
+    }
+  }, [uploading])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -186,7 +218,7 @@ export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepPro
             {uploading ? (
               <>
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                Analyzing Resume...
+                {analyzingPhrase}
               </>
             ) : uploadComplete ? (
               <>

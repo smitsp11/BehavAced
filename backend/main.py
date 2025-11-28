@@ -1,10 +1,17 @@
 """
 BehavAced Backend - Main Application Entry Point
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from app.api import profile, stories, questions, answers, practice, plans
 from app.core.config import settings
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Import dev routes only in development
 if settings.ENVIRONMENT == "development":
@@ -31,6 +38,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add validation error handler to log detailed errors
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """
+    Log detailed validation errors for debugging
+    """
+    errors = exc.errors()
+    body = await request.body()
+    
+    logger.error(f"Validation error on {request.method} {request.url}")
+    logger.error(f"Request body: {body.decode('utf-8') if body else 'No body'}")
+    logger.error(f"Validation errors: {errors}")
+    
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "detail": errors,
+            "body": body.decode('utf-8') if body else None
+        },
+    )
 
 # Import new Phase 1 routers
 from app.api import demo, onboarding, story_brain, personalized_answers
