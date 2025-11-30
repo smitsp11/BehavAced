@@ -462,7 +462,7 @@ export default function TryMode() {
       <div className="pt-[120px] pb-[120px]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-5xl md:text-7xl leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: '#1a1a1a' }}>
+            <h2 className="text-[48px] md:text-[64px] leading-[1.1] tracking-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: '#1a1a1a' }}>
               Where experience
               <br />
               <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>meets </span>
@@ -695,43 +695,80 @@ export default function TryMode() {
         </div>
       </div>
 
-      {/* Testimonial Section */}
-      <div className="pt-[120px] pb-[140px]">
+      {/* Testimonial Section - Dark Background */}
+      <div className="pt-[120px] pb-[140px] bg-gray-900">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-extrabold text-center mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-white" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
               Loved by Students & Job Seekers
             </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="bg-white/90 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-6 shadow-lg">
-                <div className="flex items-start gap-4">
-                  <div className="text-4xl">🚀</div>
-                  <div>
-                    <p className="text-[22px] font-bold text-gray-800 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                      "I finally aced my Amazon behavioral interview! 🚀"
+            <div className="grid md:grid-cols-2 gap-8 items-stretch">
+              {/* Big Testimonial Card - Left */}
+              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-xl">
+                <div className="flex items-start gap-6">
+                  {/* Photo/Silhouette */}
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center overflow-hidden">
+                      <div className="w-full h-full bg-gradient-to-br from-green-200 to-emerald-200 flex items-center justify-center text-2xl font-bold text-green-700" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        S
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xl md:text-2xl font-semibold text-gray-900 mb-4 leading-relaxed" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+                      "I finally aced my Amazon behavioral interview!"
                     </p>
-                    <p className="text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      The personalized answers matched my communication style perfectly. Felt natural and confident.
+                    <p className="text-base text-gray-600 mb-6 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                      The personalized answers matched my communication style perfectly. Felt natural and confident throughout the entire process.
                     </p>
-                    <p className="text-sm text-gray-500 mt-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>— Sarah, Software Engineer</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>Sarah</p>
+                      <span className="text-gray-400">•</span>
+                      <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Software Engineer</p>
+                    </div>
                   </div>
                 </div>
-              </Card>
+              </div>
               
-              <Card className="bg-white/90 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-6 shadow-lg">
-                <div className="flex items-start gap-4">
-                  <div className="text-4xl">⏱️</div>
-                  <div>
-                    <p className="text-[22px] font-bold text-gray-800 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                      "This saved me HOURS of prep time."
+              {/* Stats Card - Right */}
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 md:p-10 shadow-xl border border-green-100">
+                <div className="h-full flex flex-col justify-center">
+                  <div className="text-center mb-6">
+                    <div className="text-5xl md:text-6xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, background: 'linear-gradient(135deg, #28d98a 0%, #6fffc5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                      95%
+                    </div>
+                    <p className="text-lg font-semibold text-gray-800" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
+                      Report Increased Confidence
                     </p>
-                    <p className="text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      No more staring at blank pages. AI generated perfect STAR-formatted answers in seconds.
-                    </p>
-                    <p className="text-sm text-gray-500 mt-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>— Michael, MBA Student</p>
+                  </div>
+                  <div className="space-y-4 mt-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <span className="text-lg">✓</span>
+                      </div>
+                      <p className="text-base text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                        Average 3x faster prep time
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <span className="text-lg">✓</span>
+                      </div>
+                      <p className="text-base text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                        Voice-matched responses
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <span className="text-lg">✓</span>
+                      </div>
+                      <p className="text-base text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                        STAR format guaranteed
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             </div>
           </div>
         </div>
