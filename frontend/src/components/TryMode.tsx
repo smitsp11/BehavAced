@@ -149,7 +149,7 @@ export default function TryMode() {
     <div className="min-h-screen relative">
       {/* Hero Section - Clean Single Column Layout with Gradient Background */}
       <div className="relative bg-gradient-to-r from-[#A8F2C8] to-[#FFE2C7]">
-        <div className="container mx-auto px-4 pb-[140px] pt-16">
+      <div className="container mx-auto px-4 pb-[140px] pt-16">
           <div className="max-w-4xl mx-auto mb-16">
             {/* Headline + Input */}
             <FadeIn>
@@ -159,8 +159,8 @@ export default function TryMode() {
                     Ace Your Behavioural Interviews{' '}
                     <span className="text-[52px] md:text-[68px]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
                       with AI
-                    </span>
-                  </h1>
+                  </span>
+                </h1>
                   <p className="text-base text-gray-700 leading-relaxed whitespace-nowrap mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                     Upload your resume. Share your style. Get personalized answers in your voice.
                   </p>
@@ -195,8 +195,8 @@ export default function TryMode() {
                     >
                       <input
                         type="text"
-                        placeholder="Ask any behavioral question... e.g., 'Tell me about a time you led a team'"
-                        value={question}
+                      placeholder="Ask any behavioral question... e.g., 'Tell me about a time you led a team'"
+                      value={question}
                         onChange={(e) => {
                           setQuestion(e.target.value)
                           // Auto-scroll to end when typing
@@ -207,14 +207,14 @@ export default function TryMode() {
                             })
                           }
                         }}
-                        onKeyDown={(e) => {
+                      onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault()
-                            if (question.trim() && !loading) {
-                              handleGenerateDemo()
-                            }
+                          e.preventDefault()
+                          if (question.trim() && !loading) {
+                            handleGenerateDemo()
                           }
-                        }}
+                        }
+                      }}
                         className="w-full px-6 py-4 text-base border-none outline-none placeholder:text-gray-500/70 bg-transparent"
                         style={{ 
                           fontFamily: 'Inter, sans-serif', 
@@ -236,15 +236,15 @@ export default function TryMode() {
                             })
                           }
                         }}
-                      />
-                    </div>
-                    <motion.button
-                      onClick={handleGenerateDemo}
-                      disabled={!question.trim() || loading}
-                      className={`
+                    />
+                  </div>
+                  <motion.button
+                    onClick={handleGenerateDemo}
+                    disabled={!question.trim() || loading}
+                    className={`
                         relative px-8 py-4 text-base font-semibold
                         flex items-center gap-2 mr-1 group
-                        ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                      ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                         transition-all duration-200
                       `}
                       style={{ 
@@ -264,10 +264,10 @@ export default function TryMode() {
                         padding: '1rem 2rem',
                         borderRadius: 0
                       }}
-                      whileHover={!question.trim() || loading ? {} : {
+                    whileHover={!question.trim() || loading ? {} : {
                         scale: 1.02,
-                      }}
-                      whileTap={!question.trim() || loading ? {} : { scale: 0.98 }}
+                    }}
+                    whileTap={!question.trim() || loading ? {} : { scale: 0.98 }}
                     >
                       <div 
                         className="absolute inset-0 rounded-r-full transition-all duration-200 group-hover:opacity-100"
@@ -289,19 +289,19 @@ export default function TryMode() {
                         }}
                       />
                       <div className="relative z-10 flex items-center gap-2">
-                        {loading ? (
-                          <>
+                    {loading ? (
+                      <>
                             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin opacity-70" />
                             <span className="hidden sm:inline">Generating...</span>
-                          </>
-                        ) : (
-                          <>
+                      </>
+                    ) : (
+                      <>
                             <Play className="w-4 h-4" fill="currentColor" />
                             <span className="hidden sm:inline">Generate</span>
-                          </>
-                        )}
+                      </>
+                    )}
                       </div>
-                    </motion.button>
+                  </motion.button>
                   </motion.div>
                 </div>
 
@@ -356,24 +356,24 @@ export default function TryMode() {
               </div>
             </FadeIn>
 
-            {/* Sample Questions - Integrated into Hero */}
-            <FadeIn>
-              <div className="mt-12">
-                <p className="text-base font-medium text-gray-600 mb-4 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Try these sample questions:</p>
+          {/* Sample Questions - Integrated into Hero */}
+          <FadeIn>
+            <div className="mt-12">
+              <p className="text-base font-medium text-gray-600 mb-4 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Try these sample questions:</p>
                 <div 
                   ref={sampleQuestionsRef}
                   className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                  {SAMPLE_QUESTIONS.map((sampleQ, index) => (
-                    <motion.button
-                      key={index}
-                      onClick={() => handleSampleQuestionClick(sampleQ.text)}
-                      disabled={loading}
-                      className="pill-card flex items-center gap-2 whitespace-nowrap flex-shrink-0"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
+                {SAMPLE_QUESTIONS.map((sampleQ, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => handleSampleQuestionClick(sampleQ.text)}
+                    disabled={loading}
+                    className="pill-card flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                       <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, letterSpacing: '-0.01em' }}>{sampleQ.text}</span>
                     </motion.button>
                   ))}
@@ -388,230 +388,69 @@ export default function TryMode() {
                       whileTap={{ scale: 0.95 }}
                     >
                       <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, letterSpacing: '-0.01em' }}>{sampleQ.text}</span>
-                    </motion.button>
-                  ))}
-                </div>
+                  </motion.button>
+                ))}
               </div>
-            </FadeIn>
+            </div>
+          </FadeIn>
           </div>
         </div>
       </div>
 
       {/* How It Works Section */}
-      <div className="pt-[120px] pb-[140px]">
+      <div className="pt-[160px] pb-[160px]">
         <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-5xl md:text-6xl font-bold text-center mb-12" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-[48px] md:text-[64px] font-bold text-center mb-6 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
               How It Works
             </h2>
-            <p className="text-center text-gray-700 text-lg mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>Super simple. Super powerful.</p>
+            <p className="text-center text-gray-700 text-xl md:text-2xl mb-20 max-w-3xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+              Super simple. Super powerful.
+            </p>
             
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <StaggerItem>
-                <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                  <div className="flex items-center justify-center w-16 h-16 mb-6 mx-auto bg-gradient-to-br from-green-100 to-emerald-100 rounded-full shadow-md">
-                    <span className="text-3xl font-playfair text-green-700" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>1</span>
-                  </div>
-                  <h3 className="text-[22px] font-bold mb-3 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Upload Your Resume</h3>
-                  <p className="text-base text-gray-600 leading-relaxed text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                    AI analyzes your communication patterns, vocabulary, and writing style.
-                  </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+              {/* Step 1 */}
+              <div className="px-8 py-12 text-center relative">
+                <div className="text-[80px] md:text-[120px] font-semibold mb-6 leading-none" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.02em' }}>
+                  1
                 </div>
-              </StaggerItem>
-              
-              <StaggerItem>
-                <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                  <div className="flex items-center justify-center w-16 h-16 mb-6 mx-auto bg-gradient-to-br from-green-100 to-emerald-100 rounded-full shadow-md">
-                    <span className="text-3xl font-playfair text-green-700" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>2</span>
-                  </div>
-                  <h3 className="text-[22px] font-bold mb-3 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Build Your Story Bank</h3>
-                  <p className="text-base text-gray-600 leading-relaxed text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                    Your experiences → structured STAR/Soar stories organized by competency.
-                  </p>
-                </div>
-              </StaggerItem>
-              
-              <StaggerItem>
-                <div className="bg-white rounded-3xl p-8 border-2 border-green-100 shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                  <div className="flex items-center justify-center w-16 h-16 mb-6 mx-auto bg-gradient-to-br from-green-100 to-emerald-100 rounded-full shadow-md">
-                    <span className="text-3xl font-playfair text-green-700" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>3</span>
-                  </div>
-                  <h3 className="text-[22px] font-bold mb-3 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>Personalized Answers</h3>
-                  <p className="text-base text-gray-600 leading-relaxed text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                    Every answer matches your tone + strengths. Sound authentically you.
-                  </p>
-                </div>
-              </StaggerItem>
-            </StaggerContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Value Prop Section - Floating Cards */}
-      <div className="pt-[120px] pb-[140px]">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-4xl font-extrabold text-center mb-14 tracking-tight" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, maxWidth: '80%', marginLeft: 'auto', marginRight: 'auto' }}>
-              Why Choose BehavAced?
-            </h2>
-            
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {/* Feature Card 1 */}
-              <motion.div
-                className="bg-gradient-to-br from-green-50/80 to-emerald-50/60 backdrop-blur-sm border border-green-200/40 rounded-3xl p-8 text-center shadow-[0_12px_40px_rgba(0,180,90,0.15)] hover:shadow-[0_16px_50px_rgba(0,180,90,0.2)] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
-                whileHover={{ scale: 1.02, y: -4 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <motion.div
-                  className="bg-gradient-to-br from-green-200 via-emerald-200 to-lime-200 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_8px_30px_rgba(120,255,190,0.35)] relative overflow-hidden"
-                  whileHover={{ rotate: 1, scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 400 }}
-                >
-                  <motion.span
-                    className="text-5xl relative z-10"
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    ✨
-                  </motion.span>
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent animate-pulse" />
-                </motion.div>
-                <h3 className="text-[22px] font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                  AI That Sounds Like You
+                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#1a1a1a' }}>
+                  Upload Your Resume
                 </h3>
-                <div className="w-12 h-1 bg-gradient-to-r from-green-300 to-emerald-300 mx-auto mb-6 rounded-full shadow-[0_0_10px_rgba(120,255,190,0.5)]" />
-                <p className="text-base text-gray-700 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Our AI analyzes your communication style and creates answers that sound authentically like you.
+                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  AI analyzes your writing style and communication patterns.
                 </p>
-              </motion.div>
-
-              {/* Feature Card 2 */}
-              <motion.div
-                className="bg-gradient-to-br from-green-50/80 to-emerald-50/60 backdrop-blur-sm border border-green-200/40 rounded-3xl p-8 text-center shadow-[0_12px_40px_rgba(0,180,90,0.15)] hover:shadow-[0_16px_50px_rgba(0,180,90,0.2)] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
-                whileHover={{ scale: 1.02, y: -4 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <motion.div
-                  className="bg-gradient-to-br from-green-200 via-emerald-200 to-lime-200 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_8px_30px_rgba(120,255,190,0.35)] relative overflow-hidden"
-                  whileHover={{ rotate: 1, scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 400 }}
-                >
-                  <motion.span
-                    className="text-5xl relative z-10"
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-                  >
-                    📚
-                  </motion.span>
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent animate-pulse" />
-                </motion.div>
-                <h3 className="text-[22px] font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                  Your Personal Story Bank
-                </h3>
-                <div className="w-12 h-1 bg-gradient-to-r from-green-300 to-emerald-300 mx-auto mb-6 rounded-full shadow-[0_0_10px_rgba(120,255,190,0.5)]" />
-                <p className="text-base text-gray-700 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Extract and organize your professional stories into a searchable bank for instant retrieval.
-                </p>
-              </motion.div>
-
-              {/* Feature Card 3 */}
-              <motion.div
-                className="bg-gradient-to-br from-green-50/80 to-emerald-50/60 backdrop-blur-sm border border-green-200/40 rounded-3xl p-8 text-center shadow-[0_12px_40px_rgba(0,180,90,0.15)] hover:shadow-[0_16px_50px_rgba(0,180,90,0.2)] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
-                whileHover={{ scale: 1.02, y: -4 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <motion.div
-                  className="bg-gradient-to-br from-green-200 via-emerald-200 to-lime-200 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_8px_30px_rgba(120,255,190,0.35)] relative overflow-hidden"
-                  whileHover={{ rotate: 1, scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 400 }}
-                >
-                  <motion.span
-                    className="text-5xl relative z-10"
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-                  >
-                    🎯
-                  </motion.span>
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent animate-pulse" />
-                </motion.div>
-                <h3 className="text-[22px] font-bold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                  Made for Interviews
-                </h3>
-                <div className="w-12 h-1 bg-gradient-to-r from-green-300 to-emerald-300 mx-auto mb-6 rounded-full shadow-[0_0_10px_rgba(120,255,190,0.5)]" />
-                <p className="text-base text-gray-700 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Specifically designed for behavioral interviews with STAR/SOAR structure and quantifiable results.
-                </p>
-              </motion.div>
-            </div>
-
-            {/* Bullet Points as Pills */}
-            <div className="flex items-center justify-center gap-3 flex-wrap mt-8">
-              <motion.div
-                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <span>✨</span>
-                <span className="text-gray-700">Matches your authentic voice</span>
-              </motion.div>
-              <motion.div
-                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <span>⚡</span>
-                <span className="text-gray-700">No generic templates</span>
-              </motion.div>
-              <motion.div
-                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <span>🔍</span>
-                <span className="text-gray-700">Ready in seconds</span>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Testimonial Section */}
-      <div className="pt-[120px] pb-[140px]">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-extrabold text-center mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
-              Loved by Students & Job Seekers
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="bg-white/90 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-6 shadow-lg">
-                <div className="flex items-start gap-4">
-                  <div className="text-4xl">🚀</div>
-                  <div>
-                    <p className="text-[22px] font-bold text-gray-800 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                      "I finally aced my Amazon behavioral interview! 🚀"
-                    </p>
-                    <p className="text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      The personalized answers matched my communication style perfectly. Felt natural and confident.
-                    </p>
-                    <p className="text-sm text-gray-500 mt-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>— Sarah, Software Engineer</p>
-                  </div>
-                </div>
-              </Card>
+                {/* Vertical divider */}
+                <div className="hidden md:block absolute top-0 right-0 bottom-0 w-[1px] bg-[#E6E6E6]" />
+              </div>
               
-              <Card className="bg-white/90 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-6 shadow-lg">
-                <div className="flex items-start gap-4">
-                  <div className="text-4xl">⏱️</div>
-                  <div>
-                    <p className="text-[22px] font-bold text-gray-800 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                      "This saved me HOURS of prep time."
-                    </p>
-                    <p className="text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                      No more staring at blank pages. AI generated perfect STAR-formatted answers in seconds.
-                    </p>
-                    <p className="text-sm text-gray-500 mt-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>— Michael, MBA Student</p>
-                  </div>
+              {/* Step 2 */}
+              <div className="px-8 py-12 text-center relative">
+                <div className="text-[80px] md:text-[120px] font-semibold mb-6 leading-none" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.02em' }}>
+                  2
                 </div>
-              </Card>
+                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#1a1a1a' }}>
+                  Build Your Story Bank
+                </h3>
+                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  Organize experiences into structured STAR stories.
+                </p>
+                {/* Vertical divider */}
+                <div className="hidden md:block absolute top-0 right-0 bottom-0 w-[1px] bg-[#E6E6E6]" />
+              </div>
+              
+              {/* Step 3 */}
+              <div className="px-8 py-12 text-center relative">
+                <div className="text-[80px] md:text-[120px] font-semibold mb-6 leading-none" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.02em' }}>
+                  3
+                </div>
+                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#1a1a1a' }}>
+                  Personalized Answers
+                </h3>
+                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  Voice-matched, structured responses in your authentic style.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -700,6 +539,184 @@ export default function TryMode() {
                 • Local processing
               </span>
             </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Value Prop Section - Floating Cards */}
+      <div className="pt-[60px] pb-[140px]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            {/* Metrics Row */}
+            <div className="grid grid-cols-3 gap-8 mb-16">
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-bold mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, background: 'linear-gradient(135deg, #28d98a 0%, #6fffc5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: '1.1', paddingBottom: '4px' }}>
+                  +200
+                </div>
+                <p className="text-sm md:text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  answers generated
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-bold mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, background: 'linear-gradient(135deg, #28d98a 0%, #6fffc5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: '1.1', paddingBottom: '4px' }}>
+                  +150
+                </div>
+                <p className="text-sm md:text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  students helped
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-bold mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, background: 'linear-gradient(135deg, #28d98a 0%, #6fffc5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: '1.1', paddingBottom: '4px' }}>
+                  95%
+                </div>
+                <p className="text-sm md:text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  report increased confidence
+                </p>
+              </div>
+            </div>
+
+            {/* Headline */}
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 tracking-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+              Your Interview Prep, Reimagined With AI
+            </h2>
+            
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {/* Feature Card 1 */}
+              <motion.div
+                className="bg-white rounded-2xl p-8 text-center border border-gray-100 transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
+                }}
+                whileHover={{
+                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)'
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6 bg-gradient-to-br from-green-50 to-emerald-50">
+                  <span className="text-3xl">✨</span>
+                </div>
+                <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+                  AI That Sounds Like You
+                </h3>
+                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  Our AI analyzes your communication style and creates answers that sound authentically like you.
+                </p>
+              </motion.div>
+
+              {/* Feature Card 2 */}
+              <motion.div
+                className="bg-white rounded-2xl p-8 text-center border border-gray-100 transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
+                }}
+                whileHover={{
+                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)'
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6 bg-gradient-to-br from-green-50 to-emerald-50">
+                  <span className="text-3xl">📚</span>
+                </div>
+                <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+                  Your Personal Story Bank
+                </h3>
+                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  Extract and organize your professional stories into a searchable bank for instant retrieval.
+                </p>
+              </motion.div>
+
+              {/* Feature Card 3 */}
+              <motion.div
+                className="bg-white rounded-2xl p-8 text-center border border-gray-100 transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
+                }}
+                whileHover={{
+                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)'
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6 bg-gradient-to-br from-green-50 to-emerald-50">
+                  <span className="text-3xl">🎯</span>
+                </div>
+                <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+                  Made for Interviews
+                </h3>
+                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                  Specifically designed for behavioral interviews with STAR/SOAR structure and quantifiable results.
+                </p>
+              </motion.div>
+            </div>
+
+            {/* Bullet Points as Pills */}
+            <div className="flex items-center justify-center gap-3 flex-wrap mt-8">
+              <motion.div
+                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
+                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <span>✨</span>
+                <span className="text-gray-700">Matches your authentic voice</span>
+              </motion.div>
+              <motion.div
+                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
+                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <span>⚡</span>
+                <span className="text-gray-700">No generic templates</span>
+              </motion.div>
+              <motion.div
+                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
+                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <span>🔍</span>
+                <span className="text-gray-700">Ready in seconds</span>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Testimonial Section */}
+      <div className="pt-[120px] pb-[140px]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl font-extrabold text-center mb-12" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
+              Loved by Students & Job Seekers
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-6 shadow-lg">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">🚀</div>
+                  <div>
+                    <p className="text-[22px] font-bold text-gray-800 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+                      "I finally aced my Amazon behavioral interview! 🚀"
+                    </p>
+                    <p className="text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                      The personalized answers matched my communication style perfectly. Felt natural and confident.
+                    </p>
+                    <p className="text-sm text-gray-500 mt-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>— Sarah, Software Engineer</p>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="bg-white/90 backdrop-blur-sm border-2 border-green-100 rounded-3xl p-6 shadow-lg">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">⏱️</div>
+                  <div>
+                    <p className="text-[22px] font-bold text-gray-800 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+                      "This saved me HOURS of prep time."
+                    </p>
+                    <p className="text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                      No more staring at blank pages. AI generated perfect STAR-formatted answers in seconds.
+                    </p>
+                    <p className="text-sm text-gray-500 mt-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>— Michael, MBA Student</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
