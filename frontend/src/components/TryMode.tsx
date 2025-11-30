@@ -132,14 +132,24 @@ export default function TryMode() {
                       with AI
                     </span>
                   </h1>
-                  <p className="text-xl text-gray-700 leading-relaxed max-w-xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                    Upload your resume. Share your style. Get personalized answers that match your authentic voice.
+                  <p className="text-base text-gray-700 leading-relaxed whitespace-nowrap mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                    Upload your resume. Share your style. Get personalized answers in your voice.
                   </p>
                 </div>
 
-                {/* Premium Newsletter-Style Input Bar */}
+                {/* Liquid Glass Input Bar */}
                 <div className="relative max-w-2xl mx-auto">
-                  <div className="flex items-center bg-white rounded-full shadow-lg border border-gray-200/50 overflow-hidden focus-within:shadow-xl focus-within:border-green-300 transition-all duration-300">
+                  <motion.div 
+                    className="flex items-center rounded-full overflow-hidden backdrop-blur-2xl border border-white/20 shadow-2xl"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%)',
+                      boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.4)',
+                    }}
+                    whileHover={{
+                      boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.5)',
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
                     <input
                       type="text"
                       placeholder="Ask any behavioral question... e.g., 'Tell me about a time you led a team'"
@@ -153,21 +163,34 @@ export default function TryMode() {
                           }
                         }
                       }}
-                      className="flex-1 px-6 py-4 text-base bg-transparent border-none outline-none placeholder:text-gray-400"
-                      style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
+                      className="flex-1 px-6 py-4 text-base bg-transparent border-none outline-none placeholder:text-gray-500/70 backdrop-blur-sm"
+                      style={{ 
+                        fontFamily: 'Inter, sans-serif', 
+                        fontWeight: 400,
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+                      }}
                     />
                     <motion.button
                       onClick={handleGenerateDemo}
                       disabled={!question.trim() || loading}
                       className={`
-                        relative gradient-green rounded-full px-8 py-4 text-black text-base font-semibold
-                        shadow-md flex items-center gap-2 mr-1
-                        ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'}
+                        relative rounded-full px-8 py-4 text-black text-base font-semibold
+                        flex items-center gap-2 mr-1 backdrop-blur-sm
+                        ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                         transition-all duration-200
                       `}
-                      style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+                      style={{ 
+                        fontFamily: 'Inter, sans-serif', 
+                        fontWeight: 600,
+                        background: !question.trim() || loading 
+                          ? 'linear-gradient(135deg, rgba(40, 217, 138, 0.3) 0%, rgba(111, 255, 197, 0.3) 100%)'
+                          : 'linear-gradient(135deg, rgba(40, 217, 138, 0.8) 0%, rgba(111, 255, 197, 0.8) 100%)',
+                        boxShadow: '0 4px 15px 0 rgba(40, 217, 138, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.3)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)'
+                      }}
                       whileHover={!question.trim() || loading ? {} : {
                         scale: 1.02,
+                        boxShadow: '0 6px 20px 0 rgba(40, 217, 138, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4)',
                       }}
                       whileTap={!question.trim() || loading ? {} : { scale: 0.98 }}
                     >
@@ -183,7 +206,7 @@ export default function TryMode() {
                         </>
                       )}
                     </motion.button>
-                  </div>
+                  </motion.div>
                 </div>
 
                 {/* Output Display - Show below input */}
@@ -237,29 +260,27 @@ export default function TryMode() {
               </div>
             </FadeIn>
 
-          </div>
-
-          {/* Sample Questions - Integrated into Hero */}
-          <FadeIn>
-            <div className="mt-12">
-              <p className="text-base font-medium text-gray-600 mb-4 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Try these sample questions:</p>
-              <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide justify-center" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                {SAMPLE_QUESTIONS.map((sampleQ, index) => (
-                  <motion.button
-                    key={index}
-                    onClick={() => handleSampleQuestionClick(sampleQ.text)}
-                    disabled={loading}
-                    className="pill-card flex items-center gap-2 whitespace-nowrap flex-shrink-0"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="text-sm font-medium text-gray-700" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500 }}>{sampleQ.text}</span>
-                  </motion.button>
-                ))}
+            {/* Sample Questions - Integrated into Hero */}
+            <FadeIn>
+              <div className="mt-12">
+                <p className="text-base font-medium text-gray-600 mb-4 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Try these sample questions:</p>
+                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide justify-center" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  {SAMPLE_QUESTIONS.map((sampleQ, index) => (
+                    <motion.button
+                      key={index}
+                      onClick={() => handleSampleQuestionClick(sampleQ.text)}
+                      disabled={loading}
+                      className="pill-card flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span className="text-sm font-medium text-gray-700" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500 }}>{sampleQ.text}</span>
+                    </motion.button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </FadeIn>
-        </div>
+            </FadeIn>
+          </div>
         </div>
       </div>
 
