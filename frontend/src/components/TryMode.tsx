@@ -118,107 +118,72 @@ export default function TryMode() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Seamless Background Gradient */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50/30 to-white" />
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-10 left-10 w-[600px] h-[600px] bg-gradient-to-br from-green-200/20 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-40 right-20 w-[700px] h-[700px] bg-gradient-to-bl from-emerald-200/15 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-40 left-1/4 w-[550px] h-[550px] bg-gradient-to-tr from-green-200/18 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-1/2 right-1/3 w-[500px] h-[500px] bg-gradient-to-br from-emerald-200/12 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-[650px] h-[650px] bg-gradient-to-tl from-green-200/15 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-1/3 left-1/2 w-[450px] h-[450px] bg-gradient-to-r from-green-200/10 to-transparent rounded-full blur-3xl" />
-        </div>
-      </div>
-      
-      {/* Hero Section - Two Column Layout */}
-      <div className="container mx-auto px-4 pb-[140px] pt-16">
-        <div className="max-w-7xl mx-auto">
-          {/* Top Bar with Logo */}
-          <FadeIn>
-            <div className="flex items-center justify-center mb-12">
-              <h1 className="text-6xl md:text-7xl font-playfair" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontStyle: 'normal', letterSpacing: 'normal' }}>
-                <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-                  BehavAced
-                </span>
-              </h1>
-            </div>
-          </FadeIn>
-
-          {/* Two Column Hero Layout */}
-          <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
-            {/* Left Column: Headline + Input */}
+      {/* Hero Section - Clean Single Column Layout with Gradient Background */}
+      <div className="relative bg-gradient-to-r from-[#A8F2C8] to-[#FFE2C7]">
+        <div className="container mx-auto px-4 pb-[140px] pt-16">
+          <div className="max-w-4xl mx-auto mb-16">
+            {/* Headline + Input */}
             <FadeIn>
-              <div className="space-y-6">
-                <h1 className="text-[44px] md:text-[52px] leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-                  Ace Your Behavioral Interviews With AI<br />
-                  That <span className="bg-gradient-to-r from-[#28d98a] to-[#6fffc5] bg-clip-text text-transparent italic inline-block" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', letterSpacing: '0.02em', paddingLeft: '4px', paddingRight: '4px', backgroundSize: '100% 100%' }}>
-                    Sounds
-                  </span><br />
-                  <span className="bg-gradient-to-r from-[#28d98a] to-[#6fffc5] bg-clip-text text-transparent italic inline-block" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', letterSpacing: '0.02em', paddingLeft: '4px', paddingRight: '4px', backgroundSize: '100% 100%' }}>
-                    Like You
-                  </span>
-                </h1>
-                <p className="text-lg text-gray-700 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Upload your resume. Share your style. Get personalized answers that match your authentic voice.
-                </p>
+              <div className="space-y-8">
+                <div className="space-y-6 text-center">
+                  <h1 className="text-[48px] md:text-[64px] leading-[1.1] tracking-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+                    Ace Your Behavioural Interviews{' '}
+                    <span className="text-[52px] md:text-[68px]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                      with AI
+                    </span>
+                  </h1>
+                  <p className="text-xl text-gray-700 leading-relaxed max-w-xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+                    Upload your resume. Share your style. Get personalized answers that match your authentic voice.
+                  </p>
+                </div>
 
-                {/* Try It Input Box - Glassmorphic */}
-                <div className="space-y-4">
-                  <div className="relative">
-                    <Textarea
+                {/* Premium Newsletter-Style Input Bar */}
+                <div className="relative max-w-2xl mx-auto">
+                  <div className="flex items-center bg-white rounded-full shadow-lg border border-gray-200/50 overflow-hidden focus-within:shadow-xl focus-within:border-green-300 transition-all duration-300">
+                    <input
+                      type="text"
                       placeholder="Ask any behavioral question... e.g., 'Tell me about a time you led a team'"
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault()
                           if (question.trim() && !loading) {
                             handleGenerateDemo()
                           }
                         }
                       }}
-                      rows={4}
-                      className="glassmorphic-input rounded-3xl p-6 text-lg resize-none w-full"
+                      className="flex-1 px-6 py-4 text-base bg-transparent border-none outline-none placeholder:text-gray-400"
                       style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
                     />
+                    <motion.button
+                      onClick={handleGenerateDemo}
+                      disabled={!question.trim() || loading}
+                      className={`
+                        relative gradient-green rounded-full px-8 py-4 text-black text-base font-semibold
+                        shadow-md flex items-center gap-2 mr-1
+                        ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'}
+                        transition-all duration-200
+                      `}
+                      style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+                      whileHover={!question.trim() || loading ? {} : {
+                        scale: 1.02,
+                      }}
+                      whileTap={!question.trim() || loading ? {} : { scale: 0.98 }}
+                    >
+                      {loading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                          <span className="hidden sm:inline">Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4" fill="currentColor" />
+                          <span className="hidden sm:inline">Generate</span>
+                        </>
+                      )}
+                    </motion.button>
                   </div>
-
-                  {/* Play Button - Green Gradient with Sparkles */}
-                  <motion.button
-                    onClick={handleGenerateDemo}
-                    disabled={!question.trim() || loading}
-                    className={`
-                      relative gradient-green rounded-full px-7 py-4 text-black text-lg
-                      shadow-lg shadow-green-400/40 flex items-center gap-2 mx-auto
-                      ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                      ${!question.trim() || loading ? '' : 'sparkle'}
-                    `}
-                    style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
-                    whileHover={!question.trim() || loading ? {} : {
-                      scale: 1.05,
-                      y: -2,
-                      boxShadow: '0 20px 25px -5px rgba(40, 217, 138, 0.4), 0 10px 10px -5px rgba(40, 217, 138, 0.2)',
-                    }}
-                    whileTap={!question.trim() || loading ? {} : { scale: 0.98 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 400,
-                      damping: 17
-                    }}
-                  >
-                    {loading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-5 h-5" fill="currentColor" />
-                        Generate Answer
-                      </>
-                    )}
-                  </motion.button>
                 </div>
 
                 {/* Output Display - Show below input */}
@@ -272,50 +237,6 @@ export default function TryMode() {
               </div>
             </FadeIn>
 
-            {/* Right Column: Playful Floating Elements */}
-            <SlideUp>
-              <div className="relative h-full min-h-[500px]">
-                {/* Floating Speech Bubbles */}
-                <motion.div
-                  className="absolute top-[10%] right-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-6 shadow-xl border-2 border-green-200 float-element"
-                  style={{ animationDelay: '0s' }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                    <div>
-                      <p className="font-medium text-gray-800" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500 }}>Your personal story bank</p>
-                      <p className="text-sm text-gray-600" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400 }}>is ready</p>
-                    </div>
-                </motion.div>
-
-                <motion.div
-                  className="absolute top-[45%] right-20 bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border-2 border-emerald-100 float-element"
-                  style={{ animationDelay: '1s' }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                    <div>
-                      <p className="font-medium text-gray-800" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500 }}>Analysis Complete</p>
-                      <p className="text-sm text-gray-600" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400 }}>Voice matched</p>
-                    </div>
-                </motion.div>
-
-                <motion.div
-                  className="absolute bottom-[10%] right-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 shadow-xl border-2 border-green-200 float-element"
-                  style={{ animationDelay: '2s' }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                >
-                  <div className="text-center">
-                    <p className="font-bold text-gray-800 text-lg" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 700 }}>STAR Format</p>
-                    <p className="text-sm text-gray-600 mt-1" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400 }}>Perfect every time</p>
-                  </div>
-                </motion.div>
-              </div>
-            </SlideUp>
           </div>
 
           {/* Sample Questions - Integrated into Hero */}
@@ -338,6 +259,7 @@ export default function TryMode() {
               </div>
             </div>
           </FadeIn>
+        </div>
         </div>
       </div>
 
