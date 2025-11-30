@@ -456,6 +456,20 @@ export default function TryMode() {
         </div>
       </div>
 
+      {/* Slogan Section */}
+      <div className="pt-[120px] pb-[120px]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-5xl md:text-7xl leading-tight" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+              Where experience
+              <br />
+              <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>meets </span>
+              <span style={{ fontFamily: "'Allura', cursive", fontStyle: 'italic', fontWeight: 400 }}>excellence</span>
+            </h2>
+          </div>
+        </div>
+      </div>
+
       {/* Big Gradient CTA Band */}
       <div className="pt-[120px] pb-[140px] relative overflow-hidden">
         
