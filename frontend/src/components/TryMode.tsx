@@ -161,8 +161,8 @@ export default function TryMode() {
                     Interviews{' '}
                     <span style={{ fontFamily: "'Allura', cursive", fontStyle: 'italic', fontWeight: 400 }}>
                       with AI
-                    </span>
-                  </h1>
+                  </span>
+                </h1>
                   <p className="text-base text-gray-700 leading-relaxed whitespace-nowrap mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                     Upload your resume. Share your style. Get personalized answers in your voice.
                   </p>
@@ -400,7 +400,7 @@ export default function TryMode() {
       </div>
 
       {/* How It Works Section */}
-      <div className="pt-[160px] pb-[160px]">
+      <div id="how-it-works" className="pt-[160px] pb-[160px]">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-[48px] md:text-[64px] font-bold text-center mb-6 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
@@ -472,89 +472,67 @@ export default function TryMode() {
         </div>
       </div>
 
-      {/* Big Gradient CTA Band */}
-      <div className="pt-[120px] pb-[140px] relative overflow-hidden">
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            {/* Floating Emoji Above Title */}
-            <motion.div
-              className="mb-4"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+      {/* CTA Section - Dark Rounded Container with Two Buttons */}
+      <div className="pt-[120px] pb-[120px]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Dark Rounded Rectangle Container */}
+            <div 
+              className="rounded-3xl p-12 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8"
+              style={{
+                background: '#0F1011'
+              }}
             >
-              <motion.span
-                className="text-4xl block"
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              >
-                ✨
-              </motion.span>
-            </motion.div>
+              {/* Left: Headline */}
+              <div className="flex-1">
+                <h2
+                  className="text-3xl md:text-4xl lg:text-5xl font-medium text-white leading-tight mb-2"
+                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+                >
+                  Experience AI That Sounds Like You.
+                </h2>
+                <h2
+                  className="text-3xl md:text-4xl lg:text-5xl font-medium text-white leading-tight"
+                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+                >
+                  Start Preparing With Your Authentic Voice.
+                </h2>
+              </div>
 
-            {/* Improved Headline */}
-            <motion.h2
-              className="text-4xl font-extrabold text-gray-800 mb-4 leading-tight tracking-tight"
-              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              Ready to Master Your{' '}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#28d98a] to-[#6fffc5] font-bold">
-                Behavioral Interviews
-              </span>
-              ?
-            </motion.h2>
-            
-            <motion.p
-              className="text-lg text-gray-700 mb-8"
-              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              Get AI answers in your authentic voice.
-            </motion.p>
+              {/* Right: Two Pill Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 flex-shrink-0">
+                {/* Filled Button */}
+                <motion.button
+                  onClick={() => router.push('/onboarding')}
+                  className="bg-white text-gray-900 rounded-full px-8 py-5 text-lg font-semibold flex items-center gap-3 hover:bg-gray-100 transition-all duration-300"
+                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Try It Now
+                  <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4 text-white" />
+                  </div>
+                </motion.button>
 
-            {/* Improved CTA Button */}
-            <motion.button
-              onClick={() => router.push('/onboarding')}
-              className="bg-gradient-to-r from-[#7fffd2] to-[#28d98a] text-white rounded-full px-10 py-5 text-lg font-semibold shadow-[0_8px_25px_rgba(40,217,138,0.35)] flex items-center gap-2 mx-auto hover:shadow-[0_12px_35px_rgba(40,217,138,0.45)] transition-all duration-300"
-              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Get Started - It's Free
-              <motion.div
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <ArrowRight className="w-5 h-5" />
-              </motion.div>
-            </motion.button>
-
-            {/* Improved Subtitle as Pills */}
-            <motion.div
-              className="flex items-center justify-center gap-3 flex-wrap mt-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-            >
-              <span className="px-3 py-1.5 rounded-full bg-white/50 backdrop-blur-sm shadow-sm text-sm text-gray-700 font-medium" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}>
-                • Takes 3 minutes
-              </span>
-              <span className="px-3 py-1.5 rounded-full bg-white/50 backdrop-blur-sm shadow-sm text-sm text-gray-700 font-medium" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}>
-                • No account required
-              </span>
-              <span className="px-3 py-1.5 rounded-full bg-white/50 backdrop-blur-sm shadow-sm text-sm text-gray-700 font-medium" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}>
-                • Local processing
-              </span>
-            </motion.div>
+                {/* Outlined Button */}
+                <motion.button
+                  onClick={() => {
+                    const element = document.getElementById('how-it-works')
+                    element?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                  className="border-2 border-white/30 text-white rounded-full px-8 py-5 text-lg font-semibold flex items-center gap-3 hover:border-white/50 hover:bg-white/5 transition-all duration-300"
+                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  See How It Works
+                  <div className="w-8 h-8 rounded-full border-2 border-white/30 flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4 text-white" />
+                  </div>
+                </motion.button>
+              </div>
+                </div>
           </div>
         </div>
       </div>
