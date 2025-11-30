@@ -32,6 +32,7 @@ export default function TryMode() {
   const [demoAnswer, setDemoAnswer] = useState<DemoAnswer | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const sampleQuestionsRef = useRef<HTMLDivElement>(null)
   
   // Diagnostic: Log API URL on mount and test backend connection
   useEffect(() => {
@@ -47,6 +48,33 @@ export default function TryMode() {
         console.error('❌ Backend health check failed:', err)
         console.error('   This means the frontend cannot reach the backend at:', apiUrl)
       })
+  }, [])
+
+  // Infinite scroll wheel effect - seamless looping on manual scroll
+  useEffect(() => {
+    if (!sampleQuestionsRef.current) return
+
+    const container = sampleQuestionsRef.current
+    const singleSetWidth = container.scrollWidth / 2 // Since we duplicate items, half is one full set
+
+    const handleScroll = () => {
+      const scrollLeft = container.scrollLeft
+      
+      // If scrolled past the first set, reset to equivalent position in first set
+      if (scrollLeft >= singleSetWidth) {
+        container.scrollLeft = scrollLeft - singleSetWidth
+      }
+      // If scrolled before start (can happen with momentum scrolling), jump to equivalent position in second set
+      else if (scrollLeft < 0) {
+        container.scrollLeft = singleSetWidth + scrollLeft
+      }
+    }
+
+    container.addEventListener('scroll', handleScroll)
+    
+    return () => {
+      container.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
 
@@ -333,6 +361,7 @@ export default function TryMode() {
               <div className="mt-12">
                 <p className="text-base font-medium text-gray-600 mb-4 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Try these sample questions:</p>
                 <div 
+                  ref={sampleQuestionsRef}
                   className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
