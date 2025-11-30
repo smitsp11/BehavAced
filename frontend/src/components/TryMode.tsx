@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -48,6 +48,7 @@ export default function TryMode() {
         console.error('   This means the frontend cannot reach the backend at:', apiUrl)
       })
   }, [])
+
 
   const handleGenerateDemo = async () => {
     if (!question.trim()) return
@@ -137,74 +138,141 @@ export default function TryMode() {
                   </p>
                 </div>
 
-                {/* Liquid Glass Input Bar */}
+                {/* Liquid Glass Input Bar - Unified Background */}
                 <div className="relative max-w-2xl mx-auto">
                   <motion.div 
-                    className="flex items-center rounded-full overflow-hidden backdrop-blur-2xl border border-white/20 shadow-2xl"
+                    className="flex items-center rounded-full overflow-hidden"
                     style={{
                       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%)',
+                      backdropFilter: 'blur(18px) saturate(180%)',
+                      WebkitBackdropFilter: 'blur(18px) saturate(180%)',
                       boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.4)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
                     }}
                     whileHover={{
                       boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.5)',
                     }}
                     transition={{ duration: 0.3 }}
                   >
-                    <input
-                      type="text"
-                      placeholder="Ask any behavioral question... e.g., 'Tell me about a time you led a team'"
-                      value={question}
-                      onChange={(e) => setQuestion(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
+                    <div 
+                      className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide" 
+                      style={{ minWidth: 0 }}
+                      onWheel={(e) => {
+                        // Enable horizontal scrolling with mouse wheel (Shift + wheel or just wheel)
+                        if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
                           e.preventDefault()
-                          if (question.trim() && !loading) {
-                            handleGenerateDemo()
-                          }
+                          e.currentTarget.scrollLeft += e.deltaY || e.deltaX
                         }
                       }}
-                      className="flex-1 px-6 py-4 text-base bg-transparent border-none outline-none placeholder:text-gray-500/70 backdrop-blur-sm"
-                      style={{ 
-                        fontFamily: 'Inter, sans-serif', 
-                        fontWeight: 400,
-                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
-                      }}
-                    />
+                    >
+                      <input
+                        type="text"
+                        placeholder="Ask any behavioral question... e.g., 'Tell me about a time you led a team'"
+                        value={question}
+                        onChange={(e) => {
+                          setQuestion(e.target.value)
+                          // Auto-scroll to end when typing
+                          const container = e.target.parentElement
+                          if (container) {
+                            requestAnimationFrame(() => {
+                              container.scrollLeft = container.scrollWidth - container.clientWidth
+                            })
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault()
+                            if (question.trim() && !loading) {
+                              handleGenerateDemo()
+                            }
+                          }
+                        }}
+                        className="w-full px-6 py-4 text-base border-none outline-none placeholder:text-gray-500/70 bg-transparent"
+                        style={{ 
+                          fontFamily: 'Inter, sans-serif', 
+                          fontWeight: 400,
+                          backgroundColor: 'transparent',
+                          background: 'transparent',
+                          textShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                          whiteSpace: 'nowrap',
+                          minWidth: 'max-content'
+                        }}
+                        onFocus={(e) => {
+                          // Auto-scroll to end when focused if text is long
+                          const container = e.target.parentElement
+                          if (container) {
+                            requestAnimationFrame(() => {
+                              if (container.scrollWidth > container.clientWidth) {
+                                container.scrollLeft = container.scrollWidth - container.clientWidth
+                              }
+                            })
+                          }
+                        }}
+                      />
+                    </div>
                     <motion.button
                       onClick={handleGenerateDemo}
                       disabled={!question.trim() || loading}
                       className={`
-                        relative rounded-full px-8 py-4 text-black text-base font-semibold
-                        flex items-center gap-2 mr-1 backdrop-blur-sm
+                        relative px-8 py-4 text-base font-semibold
+                        flex items-center gap-2 mr-1 group
                         ${!question.trim() || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                         transition-all duration-200
                       `}
                       style={{ 
                         fontFamily: 'Inter, sans-serif', 
                         fontWeight: 600,
-                        background: !question.trim() || loading 
-                          ? 'linear-gradient(135deg, rgba(40, 217, 138, 0.3) 0%, rgba(111, 255, 197, 0.3) 100%)'
-                          : 'linear-gradient(135deg, rgba(40, 217, 138, 0.8) 0%, rgba(111, 255, 197, 0.8) 100%)',
-                        boxShadow: '0 4px 15px 0 rgba(40, 217, 138, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.3)',
-                        border: '1px solid rgba(255, 255, 255, 0.2)'
+                        backgroundColor: 'transparent',
+                        background: 'transparent',
+                        backdropFilter: 'none',
+                        WebkitBackdropFilter: 'none',
+                        boxShadow: 'none',
+                        border: 'none',
+                        color: '#1f2937',
+                        outline: 'none',
+                        WebkitAppearance: 'none',
+                        appearance: 'none',
+                        margin: 0,
+                        padding: '1rem 2rem',
+                        borderRadius: 0
                       }}
                       whileHover={!question.trim() || loading ? {} : {
                         scale: 1.02,
-                        boxShadow: '0 6px 20px 0 rgba(40, 217, 138, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4)',
                       }}
                       whileTap={!question.trim() || loading ? {} : { scale: 0.98 }}
                     >
-                      {loading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                          <span className="hidden sm:inline">Generating...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4" fill="currentColor" />
-                          <span className="hidden sm:inline">Generate</span>
-                        </>
-                      )}
+                      <div 
+                        className="absolute inset-0 rounded-r-full transition-all duration-200 group-hover:opacity-100"
+                        style={{
+                          background: !question.trim() || loading 
+                            ? 'linear-gradient(135deg, rgba(168, 242, 200, 0.2) 0%, rgba(40, 217, 138, 0.15) 100%)'
+                            : 'linear-gradient(135deg, rgba(168, 242, 200, 0.3) 0%, rgba(40, 217, 138, 0.25) 100%)',
+                          pointerEvents: 'none',
+                          zIndex: 0,
+                          opacity: 1
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!question.trim() || loading) return;
+                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168, 242, 200, 0.4) 0%, rgba(40, 217, 138, 0.35) 100%)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!question.trim() || loading) return;
+                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168, 242, 200, 0.3) 0%, rgba(40, 217, 138, 0.25) 100%)';
+                        }}
+                      />
+                      <div className="relative z-10 flex items-center gap-2">
+                        {loading ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin opacity-70" />
+                            <span className="hidden sm:inline">Generating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4" fill="currentColor" />
+                            <span className="hidden sm:inline">Generate</span>
+                          </>
+                        )}
+                      </div>
                     </motion.button>
                   </motion.div>
                 </div>
@@ -264,7 +332,10 @@ export default function TryMode() {
             <FadeIn>
               <div className="mt-12">
                 <p className="text-base font-medium text-gray-600 mb-4 text-center" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Try these sample questions:</p>
-                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide justify-center" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div 
+                  className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
                   {SAMPLE_QUESTIONS.map((sampleQ, index) => (
                     <motion.button
                       key={index}
@@ -274,7 +345,20 @@ export default function TryMode() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <span className="text-sm font-medium text-gray-700" style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 500 }}>{sampleQ.text}</span>
+                      <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, letterSpacing: '-0.01em' }}>{sampleQ.text}</span>
+                    </motion.button>
+                  ))}
+                  {/* Duplicate items for seamless loop */}
+                  {SAMPLE_QUESTIONS.map((sampleQ, index) => (
+                    <motion.button
+                      key={`duplicate-${index}`}
+                      onClick={() => handleSampleQuestionClick(sampleQ.text)}
+                      disabled={loading}
+                      className="pill-card flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, letterSpacing: '-0.01em' }}>{sampleQ.text}</span>
                     </motion.button>
                   ))}
                 </div>
