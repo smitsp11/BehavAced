@@ -155,12 +155,14 @@ export default function TryMode() {
             <FadeIn>
               <div className="space-y-8">
                 <div className="space-y-6 text-center">
-                  <h1 className="text-[48px] md:text-[64px] leading-[1.1] tracking-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-                    Ace Your Behavioural Interviews{' '}
-                    <span className="text-[52px] md:text-[68px]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}>
+                  <h1 className="text-[48px] md:text-[64px] leading-[1.1] tracking-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: '#1a1a1a' }}>
+                    Ace Your Behavioural
+                    <br />
+                    Interviews{' '}
+                    <span style={{ fontFamily: "'Allura', cursive", fontStyle: 'italic', fontWeight: 400 }}>
                       with AI
-                  </span>
-                </h1>
+                    </span>
+                  </h1>
                   <p className="text-base text-gray-700 leading-relaxed whitespace-nowrap mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
                     Upload your resume. Share your style. Get personalized answers in your voice.
                   </p>
@@ -460,10 +462,10 @@ export default function TryMode() {
       <div className="pt-[120px] pb-[120px]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-5xl md:text-7xl leading-tight" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+            <h2 className="text-5xl md:text-7xl leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: '#1a1a1a' }}>
               Where experience
               <br />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>meets </span>
+              <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>meets </span>
               <span style={{ fontFamily: "'Allura', cursive", fontStyle: 'italic', fontWeight: 400 }}>excellence</span>
             </h2>
           </div>
