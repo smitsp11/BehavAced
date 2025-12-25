@@ -1,6 +1,7 @@
 """
 Supabase PostgreSQL Database Client
 Secure connection to Supabase for persistent data storage
+Updated for supabase-py v2.27.0
 """
 from supabase import create_client, Client
 from app.core.config import settings
@@ -27,11 +28,15 @@ def get_supabase() -> Client:
         if not settings.SUPABASE_SERVICE_ROLE_KEY:
             raise ValueError("SUPABASE_SERVICE_ROLE_KEY environment variable is not set")
         
-        _supabase_client = create_client(
-            settings.SUPABASE_URL,
-            settings.SUPABASE_SERVICE_ROLE_KEY
-        )
-        logger.info("✓ Supabase client initialized")
+        try:
+            _supabase_client = create_client(
+                settings.SUPABASE_URL,
+                settings.SUPABASE_SERVICE_ROLE_KEY
+            )
+            logger.info("✓ Supabase client initialized")
+        except Exception as e:
+            logger.error(f"Failed to create Supabase client: {e}")
+            raise
     
     return _supabase_client
 
@@ -186,4 +191,3 @@ def check_database_connection() -> dict:
         return {"status": "connected", "message": "Database connection successful"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
-
