@@ -13,10 +13,12 @@ class Settings(BaseSettings):
     CLAUDE_API_KEY: Optional[str] = None  # Claude/Anthropic API key (preferred when available)
     OPENAI_API_KEY: Optional[str] = None
 
-    # Database
+    # Database - Supabase PostgreSQL
     DATABASE_URL: Optional[str] = None
     SUPABASE_URL: Optional[str] = None
-    SUPABASE_KEY: Optional[str] = None
+    SUPABASE_KEY: Optional[str] = None  # Legacy name (for backwards compatibility)
+    SUPABASE_ANON_KEY: Optional[str] = None
+    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
 
     # Application
     ENVIRONMENT: str = "production"

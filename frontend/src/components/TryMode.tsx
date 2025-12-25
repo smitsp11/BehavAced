@@ -26,6 +26,18 @@ const SAMPLE_QUESTIONS = [
   { text: "Describe a time you had to work with a difficult team member" }
 ]
 
+// Helper function to parse markdown-style formatting to HTML
+function parseMarkdown(text: string): string {
+  return text
+    // Bold: **text** -> <strong>text</strong>
+    .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+    // Also handle single asterisks for emphasis
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    // Convert newlines to proper spacing
+    .replace(/\n\n/g, '</p><p class="mt-3">')
+    .replace(/\n/g, '<br/>')
+}
+
 export default function TryMode() {
   const router = useRouter()
   const [question, setQuestion] = useState('')
@@ -317,8 +329,8 @@ export default function TryMode() {
                 )}
 
                 {demoAnswer && (
-                  <FadeIn>
-                    <div className="p-6 rounded-3xl border-2 border-green-200 bg-white/90 backdrop-blur-sm shadow-xl">
+                  <SlideUp>
+                    <div className="p-6 rounded-3xl border-2 border-green-200 bg-white/90 backdrop-blur-sm shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-700">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                           <Star className="w-6 h-6 text-green-500 fill-green-500" />
@@ -335,9 +347,11 @@ export default function TryMode() {
                         </div>
                       </div>
                       <div className="bg-gray-50 p-5 rounded-2xl mb-4">
-                        <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                          {demoAnswer.answer}
-                        </p>
+                        <div 
+                          className="text-base text-gray-700 leading-relaxed prose prose-sm max-w-none" 
+                          style={{ fontFamily: 'Inter, sans-serif' }}
+                          dangerouslySetInnerHTML={{ __html: `<p>${parseMarkdown(demoAnswer.answer)}</p>` }}
+                        />
                       </div>
                       {demoAnswer.key_points && demoAnswer.key_points.length > 0 && (
                         <div className="border-t border-gray-200 pt-4">
@@ -353,7 +367,7 @@ export default function TryMode() {
                         </div>
                       )}
                     </div>
-                  </FadeIn>
+                  </SlideUp>
                 )}
               </div>
             </FadeIn>

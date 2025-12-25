@@ -9,11 +9,38 @@ ENV/
 .venv
 pip-log.txt
 pip-delete-this-directory.txt
+
+# Environment files - NEVER commit these!
 .env
 .env.local
+.env.production
+.env.development
+*.env
+
+# Secrets and keys
+*.pem
+*.key
+*secret*
+*password*
+
+# Logs
 *.log
+logs/
+
+# OS files
 .DS_Store
-uploads/
+Thumbs.db
+
+# Database files
 *.db
 *.sqlite3
+
+# Uploads
+uploads/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
 
