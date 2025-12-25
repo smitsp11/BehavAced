@@ -41,13 +41,11 @@ export default function OnboardingPage() {
   // }, [router])
 
   const handleOnboardingComplete = (newUserId: string) => {
-    // TEMPORARILY DISABLED: Persistence for design testing
-    // Save to localStorage
-    // localStorage.setItem(STORAGE_KEY_USER_ID, newUserId)
-    // localStorage.setItem(STORAGE_KEY_ONBOARDED, 'true')
+    // Save to sessionStorage for persistence across navigation
+    sessionStorage.setItem('behavaced_user_id', newUserId)
     
-    // Redirect to dashboard
-    router.push('/dashboard')
+    // Redirect to dashboard with userId
+    router.push(`/dashboard?userId=${newUserId}`)
   }
 
   return (

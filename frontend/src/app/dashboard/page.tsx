@@ -1,61 +1,40 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Dashboard from '@/components/Dashboard'
-import { getCacheStatus } from '@/lib/api'
+import { useOnboardingStore } from '@/lib/stores/onboardingStore'
 
-const STORAGE_KEY_USER_ID = 'behavaced_user_id'
-const STORAGE_KEY_ONBOARDED = 'behavaced_onboarded'
-
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [userId, setUserId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Get userId from onboarding store
+  const storeUserId = useOnboardingStore((state) => state.userId)
+
   useEffect(() => {
-    // TEMPORARILY DISABLED: Persistence for design testing - always redirect to onboarding
-    // const loadState = async () => {
-    //   // First, try loading from localStorage
-    //   const storedUserId = localStorage.getItem(STORAGE_KEY_USER_ID)
-    //   const storedOnboarded = localStorage.getItem(STORAGE_KEY_ONBOARDED) === 'true'
+    // Check for userId from URL params, sessionStorage, or store
+    const urlUserId = searchParams.get('userId')
+    const sessionUserId = typeof window !== 'undefined' ? sessionStorage.getItem('behavaced_user_id') : null
+    const finalUserId = urlUserId || sessionUserId || storeUserId
 
-    //   if (storedUserId && storedOnboarded) {
-    //     // In dev mode, try to load cached profile from backend
-    //     if (process.env.NODE_ENV === 'development') {
-    //       try {
-    //         const cacheStatus = await getCacheStatus()
-    //         if (cacheStatus.exists && cacheStatus.user_id) {
-    //           setUserId(cacheStatus.user_id)
-    //           setIsLoading(false)
-    //           return
-    //         }
-    //       } catch (error) {
-    //         console.log('No cached profile found, using localStorage')
-    //       }
-    //     }
-
-    //     // Fallback to localStorage
-    //     setUserId(storedUserId)
-    //     setIsLoading(false)
-    //   } else {
-    //     // Not onboarded, redirect to onboarding
-    //     router.push('/onboarding')
-    //   }
-    // }
-
-    // loadState()
-    
-    // Always redirect to onboarding for design testing
-    router.push('/onboarding')
-  }, [router])
+    if (finalUserId) {
+      setUserId(finalUserId)
+      setIsLoading(false)
+    } else {
+      // No userId found, redirect to onboarding
+      router.push('/onboarding')
+    }
+  }, [router, searchParams, storeUserId])
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <main className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading...</p>
         </div>
       </main>
     )
@@ -66,9 +45,24 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <main className="min-h-screen">
       <Dashboard userId={userId} />
     </main>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </main>
+    }>
+      <DashboardContent />
+    </Suspense>
   )
 }
 
