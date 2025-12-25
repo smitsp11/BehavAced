@@ -83,25 +83,34 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   // Handle completing onboarding - skip processing step and go directly to dashboard
   const handleCompleteOnboarding = () => {
+    // Get or generate userId
+    let finalUserId = userId
+    if (!finalUserId) {
+      // Generate a new UUID if one doesn't exist (fallback)
+      finalUserId = crypto.randomUUID()
+      console.log('Generated fallback userId:', finalUserId)
+    }
+
     // Mark steps as complete
     completeStep('voice-upload')
     completeStep('processing')
     completeStep('complete')
 
     // Start background processing (non-blocking)
-    if (userId) {
+    // Use setTimeout to ensure it runs after redirect
+    setTimeout(() => {
       startBackgroundProcessing({
-        userId,
+        userId: finalUserId,
         personalityData,
         experienceChoice,
         resumeFile,
         manualExperienceData,
         voiceFile,
       })
-    }
+    }, 100)
 
     // Immediately redirect to dashboard
-    onComplete(userId!)
+    onComplete(finalUserId)
   }
 
   const renderCurrentStep = () => {

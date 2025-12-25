@@ -20,12 +20,22 @@ interface ProcessingData {
   voiceFile: File | null
 }
 
+// Track if processing has already started to prevent duplicates
+let processingStarted = false
+
 /**
  * Start all background processing tasks
  * This runs personality snapshot, experience processing, stories, and story brain generation
  * all in parallel where possible
  */
 export async function startBackgroundProcessing(data: ProcessingData): Promise<void> {
+  // Prevent duplicate runs
+  if (processingStarted) {
+    console.log('⚠️ Background processing already started, skipping duplicate call')
+    return
+  }
+  processingStarted = true
+
   const { 
     userId, 
     personalityData, 
@@ -35,6 +45,12 @@ export async function startBackgroundProcessing(data: ProcessingData): Promise<v
 
   const store = useOnboardingStore.getState()
   
+  // Check if already completed
+  if (store.backgroundTasks.overall.status === 'completed') {
+    console.log('⚠️ Background processing already completed, skipping')
+    return
+  }
+
   // Mark overall processing as started
   store.setBackgroundTaskStatus('overall', 'processing')
 

@@ -110,8 +110,8 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
   }
 
   const handleContinue = () => {
-    // Generate a user ID if we don't have one
-    const userId = Date.now().toString() // Simple ID generation
+    // Generate a UUID-like user ID if we don't have one
+    const userId = crypto.randomUUID()
     setUserId(userId)
     onNext()
   }
