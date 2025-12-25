@@ -90,9 +90,24 @@ def analyze_user_voice_task(profile_id: str, inputs: ProfileInput):
             writing_sample=inputs.writing_sample or inputs.raw_resume_text or "Not provided"
         )
         
-        # Call Gemini AI
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        response = model.generate_content(prompt)
+        # Try multiple models in case of quota issues
+        models_to_try = ['gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest']
+        response = None
+        
+        for model_name in models_to_try:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt)
+                logger.info(f"✅ Used model: {model_name}")
+                break
+            except Exception as model_error:
+                if "429" in str(model_error) or "quota" in str(model_error).lower():
+                    logger.warning(f"⚠️ Quota exceeded for {model_name}, trying next...")
+                    continue
+                raise model_error
+        
+        if response is None:
+            raise Exception("All models failed due to quota limits")
         
         # Parse the JSON response
         response_text = response.text.strip()
@@ -138,6 +153,23 @@ def analyze_user_voice_task(profile_id: str, inputs: ProfileInput):
 # ============================================
 # API Endpoints
 # ============================================
+
+# IMPORTANT: Static routes MUST come before dynamic routes like /{profile_id}
+
+@router.get("/health")
+async def profile_engine_health():
+    """Health check for profile engine"""
+    from app.core.database import check_database_connection
+    
+    db_status = check_database_connection()
+    gemini_configured = bool(settings.GOOGLE_API_KEY)
+    
+    return {
+        "status": "healthy" if db_status["status"] == "connected" and gemini_configured else "degraded",
+        "database": db_status,
+        "gemini_configured": gemini_configured
+    }
+
 
 @router.post("/create", response_model=ProfileResponse)
 async def create_profile(data: ProfileInput, background_tasks: BackgroundTasks):
@@ -264,19 +296,3 @@ async def get_analysis_status(profile_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/health")
-async def profile_engine_health():
-    """Health check for profile engine"""
-    from app.core.database import check_database_connection
-    
-    db_status = check_database_connection()
-    gemini_configured = bool(settings.GOOGLE_API_KEY)
-    
-    return {
-        "status": "healthy" if db_status["status"] == "connected" and gemini_configured else "degraded",
-        "database": db_status,
-        "gemini_configured": gemini_configured
-    }
-
