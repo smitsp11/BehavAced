@@ -623,18 +623,34 @@ function SimulationView({
         </p>
       </div>
 
-      {/* Recording Area */}
-      <div className="aspect-video max-w-2xl mx-auto rounded-2xl bg-stone-100 border border-stone-200 overflow-hidden relative">
+      {/* Recording Area - Styled like a real camera/screen */}
+      <div className="aspect-video max-w-2xl mx-auto rounded-2xl bg-gradient-to-b from-stone-800 to-stone-900 border border-stone-700 overflow-hidden relative shadow-2xl">
+        {/* Screen reflection effect */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none" />
+        
+        {/* Corner camera indicator */}
+        <div className="absolute top-4 left-4 flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-rose-500 animate-pulse' : 'bg-stone-600'}`} />
+          <span className="text-xs text-stone-500 font-medium uppercase tracking-wide">
+            {isRecording ? 'Live' : 'Camera Off'}
+          </span>
+        </div>
+        
         <div className="absolute inset-0 flex items-center justify-center">
           {!isRecording ? (
             <div className="text-center">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-white border-2 border-stone-200 flex items-center justify-center shadow-lg">
-                <Video className="w-10 h-10 text-stone-400" />
+              {/* Camera icon with glow effect */}
+              <div className="relative mb-6">
+                <div className="absolute inset-0 w-28 h-28 mx-auto rounded-full bg-emerald-500/20 blur-xl" />
+                <div className="relative w-28 h-28 mx-auto rounded-full bg-stone-800 border-2 border-stone-600 flex items-center justify-center">
+                  <Video className="w-12 h-12 text-stone-400" />
+                </div>
               </div>
-              <p className="text-stone-500 mb-6">Ready to record your answer</p>
+              <p className="text-stone-400 mb-2 font-medium">Camera Preview</p>
+              <p className="text-stone-500 text-sm mb-8">Click below to begin your practice session</p>
               <button 
                 onClick={startSimulation}
-                className="bg-stone-900 hover:bg-stone-800 text-white px-8 py-3 rounded-full font-medium shadow-lg transition-all active:scale-95"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full font-medium shadow-lg shadow-emerald-900/30 transition-all active:scale-95"
               >
                 <Play className="w-5 h-5 inline mr-2" />
                 Start Recording
@@ -644,10 +660,10 @@ function SimulationView({
             <div className="text-center">
               {/* Audio Wave Visualization */}
               <div className="flex items-center justify-center gap-1 mb-6">
-                {[...Array(20)].map((_, i) => (
+                {[...Array(24)].map((_, i) => (
                   <div
                     key={i}
-                    className="w-1 bg-gradient-to-t from-rose-500 to-amber-400 rounded-full animate-pulse"
+                    className="w-1.5 bg-gradient-to-t from-emerald-500 to-emerald-300 rounded-full animate-pulse"
                     style={{
                       height: `${Math.random() * 60 + 20}px`,
                       animationDelay: `${i * 0.05}s`,
@@ -657,26 +673,26 @@ function SimulationView({
                 ))}
               </div>
               
-              <div className="text-5xl font-mono text-stone-900 mb-6 font-bold">
+              <div className="text-6xl font-mono text-white mb-6 font-bold tracking-wider">
                 {formatTime(recordingTime)}
               </div>
               
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <div className="w-3 h-3 rounded-full bg-rose-500 animate-pulse" />
-                <span className="text-rose-600 font-medium">Recording</span>
+              <div className="flex items-center justify-center gap-2 mb-8">
+                <div className="w-3 h-3 rounded-full bg-rose-500 animate-pulse shadow-lg shadow-rose-500/50" />
+                <span className="text-rose-400 font-medium">Recording in progress</span>
               </div>
 
               <div className="flex items-center justify-center gap-4">
                 <button 
                   onClick={stopSimulation}
-                  className="bg-rose-500 hover:bg-rose-600 text-white px-6 py-3 rounded-full font-medium transition-all"
+                  className="bg-rose-500 hover:bg-rose-400 text-white px-6 py-3 rounded-full font-medium transition-all shadow-lg shadow-rose-900/30"
                 >
                   <Pause className="w-5 h-5 inline mr-2" />
                   Stop
                 </button>
                 <button 
                   onClick={resetSimulation}
-                  className="bg-white hover:bg-stone-50 text-stone-600 px-6 py-3 rounded-full font-medium border border-stone-200 transition-all"
+                  className="bg-stone-700 hover:bg-stone-600 text-stone-300 px-6 py-3 rounded-full font-medium border border-stone-600 transition-all"
                 >
                   <RotateCcw className="w-5 h-5 inline mr-2" />
                   Reset
@@ -687,7 +703,7 @@ function SimulationView({
         </div>
 
         {isRecording && (
-          <div className="absolute inset-0 border-4 border-rose-400 rounded-2xl animate-pulse pointer-events-none" />
+          <div className="absolute inset-0 border-2 border-rose-500/50 rounded-2xl pointer-events-none" />
         )}
       </div>
 
@@ -760,7 +776,7 @@ function QuickActionCard({
       <div className="mb-3 text-emerald-600 group-hover:scale-110 transition-transform">
         {icon}
       </div>
-      <h4 className="font-semibold text-stone-900 mb-1 group-hover:text-emerald-700 transition-colors">{title}</h4>
+      <h4 className="font-serif font-semibold text-stone-900 mb-1 group-hover:text-emerald-700 transition-colors">{title}</h4>
       <p className="text-xs text-stone-500">{description}</p>
     </button>
   )
@@ -790,7 +806,7 @@ function StoryCard({ story, isMatched }: { story: typeof allStories[0], isMatche
         </div>
       </div>
       
-      <h4 className="font-serif text-lg font-semibold text-stone-900 mb-2 group-hover:text-emerald-700 transition-colors">
+      <h4 className="font-serif text-lg font-semibold text-stone-900 mb-2 group-hover:text-emerald-700 transition-colors leading-snug">
         {story.title}
       </h4>
       
