@@ -767,17 +767,20 @@ function QuickActionCard({
     <button
       onClick={onClick}
       className="
-        p-6 rounded-2xl border border-stone-200 bg-white
-        transition-all text-left group
-        hover:shadow-lg hover:shadow-stone-200/50 hover:-translate-y-0.5 
-        hover:border-emerald-200
+        bg-white border border-stone-200 p-6 rounded-2xl
+        hover:shadow-lg hover:shadow-stone-200/50 hover:border-emerald-200 
+        hover:-translate-y-1
+        transition-all text-left group cursor-pointer
       "
     >
-      <div className="mb-3 text-emerald-600 group-hover:scale-110 transition-transform">
-        {icon}
+      {/* Icon in circular badge */}
+      <div className="bg-emerald-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition-colors">
+        <div className="text-emerald-700">
+          {icon}
+        </div>
       </div>
-      <h4 className="font-serif font-semibold text-stone-900 mb-1 group-hover:text-emerald-700 transition-colors">{title}</h4>
-      <p className="text-xs text-stone-500">{description}</p>
+      <h4 className="font-serif text-lg font-semibold text-stone-900 mb-1 group-hover:text-emerald-700 transition-colors">{title}</h4>
+      <p className="text-sm text-stone-500">{description}</p>
     </button>
   )
 }
