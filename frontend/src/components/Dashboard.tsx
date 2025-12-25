@@ -468,21 +468,18 @@ function BrainstormView({
           icon={<Zap className="w-6 h-6" />}
           title="Surprise Me"
           description="Random question"
-          color="amber"
           onClick={() => onQuickAction('surprise')}
         />
         <QuickActionCard
           icon={<History className="w-6 h-6" />}
           title="Review Last"
           description="Continue practicing"
-          color="purple"
           onClick={() => onQuickAction('review')}
         />
         <QuickActionCard
           icon={<Target className="w-6 h-6" />}
           title="Weakness Drill"
           description="Practice weak areas"
-          color="rose"
           onClick={() => onQuickAction('weakness')}
         />
       </div>
@@ -743,34 +740,27 @@ function QuickActionCard({
   icon, 
   title, 
   description, 
-  color,
   onClick 
 }: { 
   icon: React.ReactNode
   title: string
   description: string
-  color: 'amber' | 'purple' | 'rose'
   onClick: () => void
 }) {
-  const colorClasses = {
-    amber: 'bg-amber-50 border-amber-100 hover:border-amber-200 text-amber-600',
-    purple: 'bg-purple-50 border-purple-100 hover:border-purple-200 text-purple-600',
-    rose: 'bg-rose-50 border-rose-100 hover:border-rose-200 text-rose-600'
-  }
-
   return (
     <button
       onClick={onClick}
-      className={`
-        p-6 rounded-2xl border transition-all text-left group
-        hover:shadow-md hover:-translate-y-0.5
-        ${colorClasses[color]}
-      `}
+      className="
+        p-6 rounded-2xl border border-stone-200 bg-white
+        transition-all text-left group
+        hover:shadow-lg hover:shadow-stone-200/50 hover:-translate-y-0.5 
+        hover:border-emerald-200
+      "
     >
-      <div className="mb-3 group-hover:scale-110 transition-transform">
+      <div className="mb-3 text-emerald-600 group-hover:scale-110 transition-transform">
         {icon}
       </div>
-      <h4 className="font-semibold text-stone-900 mb-1">{title}</h4>
+      <h4 className="font-semibold text-stone-900 mb-1 group-hover:text-emerald-700 transition-colors">{title}</h4>
       <p className="text-xs text-stone-500">{description}</p>
     </button>
   )
