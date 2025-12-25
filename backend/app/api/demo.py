@@ -287,7 +287,9 @@ async def check_demo_health():
     health = {
         "status": "healthy",
         "gemini_configured": bool(settings.GOOGLE_API_KEY),
-        "database_configured": is_database_configured()
+        "database_configured": is_database_configured(),
+        "supabase_url": settings.SUPABASE_URL[:30] + "..." if settings.SUPABASE_URL else None,
+        "service_key_set": bool(settings.SUPABASE_SERVICE_ROLE_KEY),
     }
     
     if is_database_configured():
@@ -295,8 +297,43 @@ async def check_demo_health():
             from app.core.database import check_database_connection
             db_health = check_database_connection()
             health["database_status"] = db_health["status"]
+            if "message" in db_health:
+                health["database_message"] = db_health["message"]
         except Exception as e:
             health["database_status"] = "error"
             health["database_error"] = str(e)
     
     return health
+
+
+@router.post("/test-db")
+async def test_database_write():
+    """Test writing to database"""
+    if not is_database_configured():
+        return {"success": False, "error": "Database not configured"}
+    
+    try:
+        from app.core.database import get_supabase
+        supabase = get_supabase()
+        
+        # Try to insert a test record
+        test_question = f"__TEST_QUESTION_{__import__('time').time()}__"
+        result = supabase.table("demo_cache").insert({
+            "question": test_question,
+            "answer": "Test answer for database verification"
+        }).execute()
+        
+        # Clean up
+        supabase.table("demo_cache").delete().eq("question", test_question).execute()
+        
+        return {
+            "success": True,
+            "message": "Database write test successful",
+            "inserted_id": result.data[0]["id"] if result.data else None
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "error_type": type(e).__name__
+        }
