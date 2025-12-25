@@ -229,24 +229,27 @@ function NavItem({
       onClick={onClick}
       title={collapsed ? label : undefined}
       className={`
-        w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
+        w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all
         ${collapsed ? 'justify-center' : ''}
         ${active 
-          ? 'bg-stone-900 text-white shadow-md' 
+          ? 'bg-stone-900 text-white shadow-lg shadow-stone-900/30 font-medium' 
           : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'
         }
       `}
     >
-      <span>{icon}</span>
+      <span className={active ? 'text-white' : ''}>{icon}</span>
       {!collapsed && (
         <>
-          <span className="flex-1 text-left font-medium text-sm">{label}</span>
+          <span className={`flex-1 text-left text-sm ${active ? 'font-semibold' : 'font-medium'}`}>{label}</span>
           {badge !== undefined && badge > 0 && (
             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
               active ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'
             }`}>
               {badge}
             </span>
+          )}
+          {active && (
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
           )}
         </>
       )}
