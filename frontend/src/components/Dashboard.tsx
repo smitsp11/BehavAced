@@ -256,7 +256,7 @@ export default function Dashboard({ userId }: DashboardProps) {
       storiesCount={allStories.length}
     >
       {activeView === 'dashboard' ? (
-        <div className="flex h-screen">
+        <div className="flex min-h-screen">
           {/* Main Stage */}
           <div className="flex-1 p-8 lg:p-12 overflow-y-auto">
             {/* Mode Toggle */}
