@@ -7,8 +7,9 @@ import QuestionAsker from '@/components/QuestionAsker'
 import StoryBank from '@/components/StoryBank'
 import PracticeMode from '@/components/PracticeMode'
 import PracticePlan from '@/components/PracticePlan'
-import { BookOpen, MessageSquare, Mic, Trophy, Save, Download, Trash2, Sparkles } from 'lucide-react'
+import { BookOpen, MessageSquare, Mic, Trophy, Save, Download, Trash2, Sparkles, Loader2, CheckCircle2 } from 'lucide-react'
 import { saveCachedProfile, loadCachedProfile, clearCache, getCacheStatus, getProfile } from '@/lib/api'
+import { useOnboardingStore } from '@/lib/stores/onboardingStore'
 
 interface DashboardProps {
   userId: string
@@ -21,6 +22,39 @@ export default function Dashboard({ userId }: DashboardProps) {
   const [profileData, setProfileData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const isDev = process.env.NODE_ENV === 'development'
+
+  // Background processing state
+  const { 
+    isBackgroundProcessingComplete, 
+    getBackgroundProcessingProgress,
+    backgroundTasks 
+  } = useOnboardingStore()
+  
+  const [processingComplete, setProcessingComplete] = useState(false)
+  const [processingProgress, setProcessingProgress] = useState({ completed: 0, total: 4, percentage: 0 })
+
+  // Poll for background processing status
+  useEffect(() => {
+    const checkProcessing = () => {
+      const complete = isBackgroundProcessingComplete()
+      const progress = getBackgroundProcessingProgress()
+      setProcessingComplete(complete)
+      setProcessingProgress(progress)
+    }
+
+    // Check immediately
+    checkProcessing()
+
+    // Poll every second until complete
+    const interval = setInterval(() => {
+      checkProcessing()
+      if (isBackgroundProcessingComplete()) {
+        clearInterval(interval)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [isBackgroundProcessingComplete, getBackgroundProcessingProgress])
 
   // Load profile data and cache status on mount
   useEffect(() => {
@@ -123,11 +157,26 @@ export default function Dashboard({ userId }: DashboardProps) {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-3xl font-bold">BehavAced Dashboard</h1>
-            {isDev && (
-              <div className="flex items-center gap-2 text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                🧪 DEV MODE
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              {/* Background Processing Indicator */}
+              {!processingComplete && backgroundTasks.overall.status === 'processing' && (
+                <div className="flex items-center gap-2 text-xs bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200 animate-pulse">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Setting up your profile... {processingProgress.percentage}%</span>
+                </div>
+              )}
+              {processingComplete && backgroundTasks.overall.status === 'completed' && (
+                <div className="flex items-center gap-2 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full border border-green-200">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Profile ready!</span>
+                </div>
+              )}
+              {isDev && (
+                <div className="flex items-center gap-2 text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                  🧪 DEV MODE
+                </div>
+              )}
+            </div>
           </div>
           <p className="text-muted-foreground">
             Your AI-powered behavioral interview coach

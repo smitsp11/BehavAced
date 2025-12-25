@@ -10,7 +10,7 @@ import ExperienceChoiceStep from '@/components/onboarding/ExperienceChoiceStep'
 import ResumeUploadStep from '@/components/onboarding/ResumeUploadStep'
 import ManualExperienceStep from '@/components/onboarding/ManualExperienceStep'
 import VoiceUploadStep from '@/components/onboarding/VoiceUploadStep'
-import ProcessingStep from '@/components/onboarding/ProcessingStep'
+import { startBackgroundProcessing } from '@/lib/backgroundProcessing'
 
 interface OnboardingFlowProps {
   onComplete: (userId: string) => void
@@ -25,19 +25,30 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     setStep,
     canProceedToStep,
     experienceChoice,
-    isProcessing
+    isProcessing,
+    userId,
+    personalityData,
+    resumeFile,
+    manualExperienceData,
+    voiceFile,
+    completeStep
   } = useOnboardingStore()
 
-  // Calculate progress
+  // Calculate progress (processing step is now skipped - happens in background)
   const getProgress = () => {
-    const steps = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload', 'processing', 'complete']
-    const currentIndex = steps.indexOf(currentStep)
-    return Math.max(0, Math.min(100, ((currentIndex + 1) / steps.length) * 100))
+    const steps = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload']
+    const visibleSteps = steps.filter(step => {
+      if (step === 'resume-upload' && experienceChoice === 'manual') return false
+      if (step === 'manual-experience' && experienceChoice === 'resume') return false
+      return true
+    })
+    const currentIndex = visibleSteps.indexOf(currentStep)
+    return Math.max(0, Math.min(100, ((currentIndex + 1) / visibleSteps.length) * 100))
   }
 
   // Calculate step number for display
   const getStepNumber = () => {
-    const stepOrder = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload', 'processing']
+    const stepOrder = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload']
     const visibleSteps = stepOrder.filter(step => {
       if (step === 'resume-upload' && experienceChoice === 'manual') return false
       if (step === 'manual-experience' && experienceChoice === 'resume') return false
@@ -47,7 +58,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   }
 
   const getTotalSteps = () => {
-    const stepOrder = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload', 'processing']
+    const stepOrder = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload']
     const visibleSteps = stepOrder.filter(step => {
       if (step === 'resume-upload' && experienceChoice === 'manual') return false
       if (step === 'manual-experience' && experienceChoice === 'resume') return false
@@ -70,6 +81,29 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     }
   }
 
+  // Handle completing onboarding - skip processing step and go directly to dashboard
+  const handleCompleteOnboarding = () => {
+    // Mark steps as complete
+    completeStep('voice-upload')
+    completeStep('processing')
+    completeStep('complete')
+
+    // Start background processing (non-blocking)
+    if (userId) {
+      startBackgroundProcessing({
+        userId,
+        personalityData,
+        experienceChoice,
+        resumeFile,
+        manualExperienceData,
+        voiceFile,
+      })
+    }
+
+    // Immediately redirect to dashboard
+    onComplete(userId!)
+  }
+
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 'personality':
@@ -81,9 +115,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       case 'manual-experience':
         return <ManualExperienceStep onNext={handleNext} onPrev={handlePrev} />
       case 'voice-upload':
-        return <VoiceUploadStep onNext={handleNext} onPrev={handlePrev} />
-      case 'processing':
-        return <ProcessingStep onComplete={onComplete} />
+        return <VoiceUploadStep onNext={handleCompleteOnboarding} onPrev={handlePrev} />
       default:
         return <PersonalityStep onNext={handleNext} onPrev={handlePrev} />
     }

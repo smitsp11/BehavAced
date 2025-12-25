@@ -47,6 +47,8 @@ export interface BackgroundTasks {
   personalitySnapshot: BackgroundTask
   resumeProcessing: BackgroundTask
   storyBrain: BackgroundTask
+  stories: BackgroundTask
+  overall: BackgroundTask  // Tracks overall processing status
 }
 
 export interface OnboardingState {
@@ -90,6 +92,8 @@ export interface OnboardingState {
   setError: (error: string | null) => void
   setBackgroundTaskStatus: (task: keyof BackgroundTasks, status: BackgroundTaskStatus, error?: string) => void
   getBackgroundTaskStatus: (task: keyof BackgroundTasks) => BackgroundTask
+  isBackgroundProcessingComplete: () => boolean
+  getBackgroundProcessingProgress: () => { completed: number; total: number; percentage: number }
   reset: () => void
 
   // Computed properties
@@ -103,6 +107,8 @@ const initialBackgroundTasks: BackgroundTasks = {
   personalitySnapshot: { status: 'idle' },
   resumeProcessing: { status: 'idle' },
   storyBrain: { status: 'idle' },
+  stories: { status: 'idle' },
+  overall: { status: 'idle' },
 }
 
 const initialState = {
@@ -169,6 +175,30 @@ export const useOnboardingStore = create<OnboardingState>()(
       })),
 
       getBackgroundTaskStatus: (task) => get().backgroundTasks[task],
+
+      isBackgroundProcessingComplete: () => {
+        const tasks = get().backgroundTasks
+        // Check if overall is completed or if all individual tasks are done
+        if (tasks.overall.status === 'completed') return true
+        const relevantTasks = ['personalitySnapshot', 'stories', 'storyBrain'] as const
+        return relevantTasks.every(
+          task => tasks[task].status === 'completed' || tasks[task].status === 'error'
+        )
+      },
+
+      getBackgroundProcessingProgress: () => {
+        const tasks = get().backgroundTasks
+        const relevantTasks = ['personalitySnapshot', 'resumeProcessing', 'stories', 'storyBrain'] as const
+        const completed = relevantTasks.filter(
+          task => tasks[task].status === 'completed' || tasks[task].status === 'error'
+        ).length
+        const total = relevantTasks.length
+        return {
+          completed,
+          total,
+          percentage: Math.round((completed / total) * 100)
+        }
+      },
 
       reset: () => set({ ...initialState, backgroundTasks: initialBackgroundTasks }),
 
