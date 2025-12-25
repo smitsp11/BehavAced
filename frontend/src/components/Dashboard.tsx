@@ -256,9 +256,9 @@ export default function Dashboard({ userId }: DashboardProps) {
       storiesCount={allStories.length}
     >
       {activeView === 'dashboard' ? (
-        <div className="flex h-full">
+        <div className="flex h-screen">
           {/* Main Stage */}
-          <div className="flex-1 p-8 lg:p-12">
+          <div className="flex-1 p-8 lg:p-12 overflow-y-auto">
             {/* Mode Toggle */}
             <div className="flex justify-center mb-10">
               <div className="inline-flex bg-white rounded-full p-1.5 shadow-lg shadow-stone-200/50 border border-stone-100">
@@ -315,7 +315,7 @@ export default function Dashboard({ userId }: DashboardProps) {
           </div>
 
           {/* Right Context Panel */}
-          <aside className="w-[360px] bg-white/60 backdrop-blur-sm border-l border-stone-200 p-6 overflow-y-auto">
+          <aside className="w-[360px] bg-stone-100/80 border-l-2 border-stone-200 p-6 overflow-y-auto">
             {mode === 'brainstorm' ? (
               <BrainstormPanel 
                 searchQuery={searchQuery}
