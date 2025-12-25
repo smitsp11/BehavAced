@@ -119,52 +119,122 @@ def clear_demo_cache() -> int:
 
 
 # ============================================
-# User Profile Operations
+# User Profile Operations (Profile Vault)
 # ============================================
 
-def save_user_profile(user_id: str, data: dict) -> bool:
-    """Save or update user profile"""
+def create_user_profile(
+    work_style: Optional[str] = None,
+    communication_style: Optional[str] = None,
+    raw_resume_text: Optional[str] = None
+) -> Optional[str]:
+    """
+    Create a new user profile in the Profile Vault
+    Returns the generated UUID if successful, None otherwise
+    """
     try:
         supabase = get_supabase()
-        supabase.table("user_profiles").upsert({
-            "user_id": user_id,
-            "updated_at": datetime.utcnow().isoformat(),
-            **data
-        }, on_conflict="user_id").execute()
+        result = supabase.table("user_profiles").insert({
+            "work_style": work_style,
+            "communication_style": communication_style,
+            "raw_resume_text": raw_resume_text,
+            "is_processed": False
+        }).execute()
+        
+        if result.data and len(result.data) > 0:
+            profile_id = result.data[0]["id"]
+            logger.info(f"✓ Created user profile: {profile_id}")
+            return profile_id
+        return None
+    except Exception as e:
+        logger.error(f"Profile creation failed: {e}")
+        return None
+
+
+def update_user_profile(profile_id: str, data: dict) -> bool:
+    """Update an existing user profile"""
+    try:
+        supabase = get_supabase()
+        supabase.table("user_profiles").update({
+            **data,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", profile_id).execute()
+        
+        logger.info(f"✓ Updated user profile: {profile_id}")
         return True
     except Exception as e:
-        logger.error(f"Profile save failed: {e}")
+        logger.error(f"Profile update failed: {e}")
         return False
 
 
-def get_user_profile(user_id: str) -> Optional[dict]:
-    """Get user profile by user_id"""
+def get_user_profile(profile_id: str) -> Optional[dict]:
+    """Get user profile by ID"""
     try:
         supabase = get_supabase()
-        result = supabase.table("user_profiles").select("*").eq("user_id", user_id).execute()
+        result = supabase.table("user_profiles").select("*").eq("id", profile_id).execute()
         return result.data[0] if result.data else None
     except Exception as e:
         logger.error(f"Profile fetch failed: {e}")
         return None
 
 
+def get_unprocessed_profiles() -> list:
+    """Get all profiles that haven't been processed yet"""
+    try:
+        supabase = get_supabase()
+        result = supabase.table("user_profiles").select("*").eq("is_processed", False).execute()
+        return result.data or []
+    except Exception as e:
+        logger.error(f"Unprocessed profiles fetch failed: {e}")
+        return []
+
+
+def mark_profile_processed(profile_id: str) -> bool:
+    """Mark a profile as processed"""
+    try:
+        supabase = get_supabase()
+        supabase.table("user_profiles").update({
+            "is_processed": True,
+            "processed_at": datetime.utcnow().isoformat()
+        }).eq("id", profile_id).execute()
+        
+        logger.info(f"✓ Marked profile as processed: {profile_id}")
+        return True
+    except Exception as e:
+        logger.error(f"Profile mark processed failed: {e}")
+        return False
+
+
 # ============================================
 # Story Operations
 # ============================================
 
-def save_story(user_id: str, story_data: dict) -> bool:
-    """Save a story to the database"""
+def create_story(
+    user_id: str,
+    title: str,
+    star_response: dict,
+    tags: list
+) -> Optional[str]:
+    """
+    Create a new story linked to a user profile
+    Returns the story ID if successful
+    """
     try:
         supabase = get_supabase()
-        supabase.table("stories").upsert({
+        result = supabase.table("stories").insert({
             "user_id": user_id,
-            "updated_at": datetime.utcnow().isoformat(),
-            **story_data
-        }, on_conflict="story_id").execute()
-        return True
+            "title": title,
+            "star_response": star_response,
+            "tags": tags
+        }).execute()
+        
+        if result.data and len(result.data) > 0:
+            story_id = result.data[0]["id"]
+            logger.info(f"✓ Created story: {story_id}")
+            return story_id
+        return None
     except Exception as e:
-        logger.error(f"Story save failed: {e}")
-        return False
+        logger.error(f"Story creation failed: {e}")
+        return None
 
 
 def get_user_stories(user_id: str) -> list:
@@ -175,6 +245,17 @@ def get_user_stories(user_id: str) -> list:
         return result.data or []
     except Exception as e:
         logger.error(f"Stories fetch failed: {e}")
+        return []
+
+
+def get_stories_by_tag(user_id: str, tag: str) -> list:
+    """Get stories filtered by tag"""
+    try:
+        supabase = get_supabase()
+        result = supabase.table("stories").select("*").eq("user_id", user_id).contains("tags", [tag]).execute()
+        return result.data or []
+    except Exception as e:
+        logger.error(f"Stories by tag fetch failed: {e}")
         return []
 
 

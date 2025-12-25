@@ -61,7 +61,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 # Import new Phase 1 routers
-from app.api import demo, onboarding, story_brain, personalized_answers
+from app.api import demo, onboarding, story_brain, personalized_answers, profile_vault
 
 # Include routers
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
@@ -76,6 +76,9 @@ app.include_router(demo.router, prefix="/api/demo", tags=["demo"])
 app.include_router(onboarding.router, prefix="/api/onboarding", tags=["onboarding"])
 app.include_router(story_brain.router, prefix="/api/story-brain", tags=["story-brain"])
 app.include_router(personalized_answers.router, prefix="/api/answers", tags=["personalized-answers"])
+
+# Profile Vault (Supabase-backed onboarding)
+app.include_router(profile_vault.router, prefix="/api/vault", tags=["profile-vault"])
 
 # Include dev routes only in development
 if settings.ENVIRONMENT == "development":
