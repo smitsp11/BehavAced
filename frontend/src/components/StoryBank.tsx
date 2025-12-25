@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { BookOpen, ChevronDown, ChevronUp, Filter, Eye, Star, X } from 'lucide-react'
+import { BookOpen, ChevronDown, ChevronUp, Filter, Eye, Star, X, Upload, PenLine, Sparkles } from 'lucide-react'
 import { getStories } from '@/lib/api'
+import { useRouter } from 'next/navigation'
 
 interface StoryBankProps {
   userId: string
@@ -88,20 +89,76 @@ export default function StoryBank({ userId }: StoryBankProps) {
 
   if (stories.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Story Bank</CardTitle>
-          <CardDescription>
-            No stories found. Please complete the onboarding flow to generate your story bank.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="py-12">
-          <div className="text-center text-muted-foreground">
-            <BookOpen className="w-16 h-16 mx-auto mb-4" />
-            <p>Your personalized stories will appear here</p>
+      <div className="max-w-2xl mx-auto">
+        {/* Empty State Hero */}
+        <div className="text-center mb-10">
+          <div className="relative inline-block mb-6">
+            <div className="absolute inset-0 w-24 h-24 mx-auto rounded-full bg-emerald-100 blur-xl opacity-60" />
+            <div className="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-emerald-50 to-stone-100 border-2 border-stone-200 flex items-center justify-center">
+              <BookOpen className="w-10 h-10 text-emerald-600" />
+            </div>
           </div>
-        </CardContent>
-      </Card>
+          <h1 className="font-serif text-3xl font-semibold text-stone-900 mb-3">
+            Your Story Bank is Empty
+          </h1>
+          <p className="text-stone-500 text-lg max-w-md mx-auto">
+            Build your collection of interview-ready stories. We'll help you structure them using the STAR method.
+          </p>
+        </div>
+
+        {/* CTA Cards */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Upload Resume CTA */}
+          <button
+            onClick={() => window.location.href = '/onboarding'}
+            className="bg-white border border-stone-200 p-6 rounded-2xl hover:shadow-lg hover:shadow-stone-200/50 hover:border-emerald-200 hover:-translate-y-1 transition-all text-left group"
+          >
+            <div className="bg-emerald-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition-colors">
+              <Upload className="w-6 h-6 text-emerald-700" />
+            </div>
+            <h3 className="font-serif text-lg font-semibold text-stone-900 mb-2 group-hover:text-emerald-700 transition-colors">
+              Upload Your Resume
+            </h3>
+            <p className="text-sm text-stone-500">
+              We'll automatically extract and structure stories from your work experience.
+            </p>
+            <div className="mt-4 flex items-center text-emerald-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+              Get started <span className="ml-1">→</span>
+            </div>
+          </button>
+
+          {/* Write Manually CTA */}
+          <button
+            onClick={() => {/* TODO: Open manual story form */}}
+            className="bg-white border border-stone-200 p-6 rounded-2xl hover:shadow-lg hover:shadow-stone-200/50 hover:border-emerald-200 hover:-translate-y-1 transition-all text-left group"
+          >
+            <div className="bg-stone-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-stone-200 transition-colors">
+              <PenLine className="w-6 h-6 text-stone-700" />
+            </div>
+            <h3 className="font-serif text-lg font-semibold text-stone-900 mb-2 group-hover:text-emerald-700 transition-colors">
+              Write Your First Story
+            </h3>
+            <p className="text-sm text-stone-500">
+              Manually add a story using our guided STAR framework template.
+            </p>
+            <div className="mt-4 flex items-center text-emerald-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+              Start writing <span className="ml-1">→</span>
+            </div>
+          </button>
+        </div>
+
+        {/* Tips Section */}
+        <div className="mt-8 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-5 h-5 text-amber-600" />
+            <h4 className="font-semibold text-amber-800">Pro Tip</h4>
+          </div>
+          <p className="text-sm text-amber-900">
+            The best interview stories come from <strong>challenging situations</strong> where you made a real impact. 
+            Think about times you solved problems, led initiatives, or overcame obstacles.
+          </p>
+        </div>
+      </div>
     )
   }
 
