@@ -4,18 +4,30 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Dashboard from '@/components/Dashboard'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 function DashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { user, loading: authLoading } = useAuth()
   const [userId, setUserId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Get userId from onboarding store
+  // Get userId from onboarding store (legacy support)
   const storeUserId = useOnboardingStore((state) => state.userId)
 
   useEffect(() => {
-    // Check for userId from URL params, sessionStorage, or store
+    // Wait for auth to finish loading
+    if (authLoading) return
+
+    // If user is authenticated via Supabase, use their ID
+    if (user) {
+      setUserId(user.id)
+      setIsLoading(false)
+      return
+    }
+
+    // Fallback: Check for userId from URL params, sessionStorage, or store (legacy)
     const urlUserId = searchParams.get('userId')
     const sessionUserId = typeof window !== 'undefined' ? sessionStorage.getItem('behavaced_user_id') : null
     const finalUserId = urlUserId || sessionUserId || storeUserId
@@ -24,12 +36,12 @@ function DashboardContent() {
       setUserId(finalUserId)
       setIsLoading(false)
     } else {
-      // No userId found, redirect to onboarding
-      router.push('/onboarding')
+      // No userId found, redirect to login
+      router.push('/login')
     }
-  }, [router, searchParams, storeUserId])
+  }, [router, searchParams, storeUserId, user, authLoading])
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <main className="min-h-screen bg-stone-50 flex items-center justify-center">
         <div className="text-center">

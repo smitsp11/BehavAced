@@ -21,23 +21,23 @@ class PersonalityTraits(str, Enum):
 
 class CommunicationStyle(BaseModel):
     """User's communication style profile"""
-    vocabulary_level: str = Field(..., description="simple, moderate, advanced")
-    sentence_complexity: str = Field(..., description="short, medium, complex")
-    tone: str = Field(..., description="formal, conversational, enthusiastic")
-    pace: str = Field(..., description="slow, moderate, fast")
-    detail_preference: str = Field(..., description="high-level, balanced, detailed")
-    storytelling_style: str = Field(..., description="direct, narrative, reflective")
+    vocabulary_level: str = Field(default="moderate", description="simple, moderate, advanced")
+    sentence_complexity: str = Field(default="medium", description="short, medium, complex")
+    tone: str = Field(default="conversational", description="formal, conversational, enthusiastic")
+    pace: str = Field(default="moderate", description="slow, moderate, fast")
+    detail_preference: str = Field(default="balanced", description="high-level, balanced, detailed")
+    storytelling_style: str = Field(default="narrative", description="direct, narrative, reflective")
 
 
 class UserProfile(BaseModel):
     """Complete user cognitive profile"""
     user_id: str
-    personality_traits: List[PersonalityTraits]
-    communication_style: CommunicationStyle
-    strengths: List[str]
-    weaknesses: List[str]
-    confidence_level: int = Field(..., ge=1, le=10)
-    experience_level: str = Field(..., description="student, entry, mid, senior")
+    personality_traits: List[PersonalityTraits] = Field(default_factory=list)
+    communication_style: Optional[CommunicationStyle] = None
+    strengths: List[str] = Field(default_factory=list)
+    weaknesses: List[str] = Field(default_factory=list)
+    confidence_level: int = Field(default=5, ge=1, le=10)
+    experience_level: str = Field(default="entry", description="student, entry, mid, senior")
     created_at: datetime = Field(default_factory=datetime.now)
 
 
@@ -196,7 +196,7 @@ class ProfileResponse(BaseModel):
     """Response after profile creation"""
     success: bool
     user_id: str
-    profile: UserProfile
+    profile: Optional[UserProfile] = None
     message: str
 
 

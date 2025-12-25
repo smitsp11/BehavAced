@@ -352,13 +352,18 @@ async def get_profile(user_id: str):
     if personality_traits and isinstance(personality_traits[0], str):
         personality_traits = normalize_personality_traits(personality_traits)
     
+    # Handle empty or missing communication_style
+    comm_style = profile_data.get("communication_style")
+    if not comm_style or comm_style == {}:
+        comm_style = None  # Will use defaults from CommunicationStyle model
+    
     return ProfileResponse(
         success=True,
         user_id=user_id,
         profile={
             "user_id": user_id,
             "personality_traits": personality_traits,
-            "communication_style": profile_data.get("communication_style", {}),
+            "communication_style": comm_style,
             "strengths": profile_data.get("strengths", []),
             "weaknesses": profile_data.get("weaknesses", []),
             "confidence_level": profile_data.get("confidence_level", 5),

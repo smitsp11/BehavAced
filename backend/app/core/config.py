@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     SUPABASE_KEY: Optional[str] = None  # Legacy name (for backwards compatibility)
     SUPABASE_ANON_KEY: Optional[str] = None
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
+    SUPABASE_JWT_SECRET: Optional[str] = None  # For verifying auth tokens
 
     # Application
     ENVIRONMENT: str = "production"
