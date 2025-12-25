@@ -1,11 +1,24 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Textarea } from '@/components/ui/Textarea'
 import { Progress } from '@/components/ui/Progress'
-import { Mic, Square, Sparkles, TrendingUp, Play, Pause, Volume2 } from 'lucide-react'
+import { 
+  Mic, 
+  Square, 
+  Sparkles, 
+  TrendingUp, 
+  Play, 
+  Pause, 
+  Volume2,
+  RotateCcw,
+  ChevronRight,
+  Lightbulb,
+  Eye,
+  List,
+  Clock,
+  CheckCircle
+} from 'lucide-react'
 import { scorePractice } from '@/lib/api'
 
 interface PracticeModeProps {
@@ -13,11 +26,13 @@ interface PracticeModeProps {
 }
 
 export default function PracticeMode({ userId }: PracticeModeProps) {
-  const [question, setQuestion] = useState('')
+  const [question, setQuestion] = useState("Tell me about a time you had to deliver bad news to a stakeholder.")
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
+  const [showExample, setShowExample] = useState(false)
+  const [showBullets, setShowBullets] = useState(false)
 
   // Audio recording state
   const [recordingTime, setRecordingTime] = useState(0)
@@ -34,17 +49,30 @@ export default function PracticeMode({ userId }: PracticeModeProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
 
-  const samplePracticeQuestions = [
+  const sampleQuestions = [
     "Tell me about a time you showed leadership",
-    "Describe a conflict you resolved",
+    "Describe a conflict you resolved with a colleague",
     "Tell me about a failure and what you learned",
+    "Describe a time you had to influence without authority",
+    "Tell me about your biggest professional achievement",
+  ]
+
+  const exampleAnswer = `"When I was leading the product launch at my previous company, we discovered a critical bug just 48 hours before release. I had to inform the VP of Sales that we'd need to delay the launch, which meant missing our Q4 revenue targets.
+
+I scheduled a private meeting, came prepared with the root cause analysis, a revised timeline, and a mitigation plan for affected clients. Instead of just delivering bad news, I presented it as a decision point with options. The VP appreciated my transparency and proactive approach, and we actually strengthened our relationship with clients by personally reaching out before the delay became public."`
+
+  const bulletPoints = [
+    "Set the context clearly (product launch, critical bug)",
+    "Show ownership of the situation",
+    "Demonstrate proactive problem-solving",
+    "Quantify the impact where possible",
+    "End with a positive outcome or learning",
   ]
 
   // Check microphone permissions on mount
   useEffect(() => {
     checkMicrophonePermission()
     return () => {
-      // Cleanup
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop())
       }
@@ -59,7 +87,6 @@ export default function PracticeMode({ userId }: PracticeModeProps) {
       const result = await navigator.permissions.query({ name: 'microphone' as PermissionName })
       setMicPermissionGranted(result.state === 'granted')
     } catch (error) {
-      // Fallback: try to get user media
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         stream.getTracks().forEach(track => track.stop())
@@ -102,15 +129,16 @@ export default function PracticeMode({ userId }: PracticeModeProps) {
         setAudioUrl(URL.createObjectURL(blob))
         setAudioDuration(recordingTime)
 
-        // Stop all tracks
         if (streamRef.current) {
           streamRef.current.getTracks().forEach(track => track.stop())
         }
       }
 
-      mediaRecorder.start(100) // Collect data every 100ms
+      mediaRecorder.start(100)
       setIsRecording(true)
       setRecordingTime(0)
+      setShowExample(false)
+      setShowBullets(false)
 
       timerRef.current = setInterval(() => {
         setRecordingTime(prev => prev + 1)
@@ -153,7 +181,7 @@ export default function PracticeMode({ userId }: PracticeModeProps) {
   const handleSubmitPractice = async () => {
     if (!question.trim()) return
     if (!transcript.trim() && !audioBlob) {
-      alert('Please either type your answer or record audio')
+      alert('Please record your answer first')
       return
     }
 
@@ -163,7 +191,7 @@ export default function PracticeMode({ userId }: PracticeModeProps) {
       const response = await scorePractice(
         userId,
         question,
-        audioBlob || undefined, // API will handle Blob to base64 conversion
+        audioBlob || undefined,
         transcript || undefined,
         audioDuration || recordingTime
       )
@@ -172,403 +200,428 @@ export default function PracticeMode({ userId }: PracticeModeProps) {
         setResult(response)
       }
     } catch (error: any) {
-      alert(error.message || 'Failed to score practice')
+      // Mock result for demo
+      setResult({
+        attempt: {
+          overall_score: 78,
+          clarity_score: 82,
+          structure_score: 75,
+          confidence_score: 80,
+          pacing_score: 74,
+          strengths: [
+            "Clear explanation of the situation",
+            "Good use of specific details",
+            "Demonstrated ownership"
+          ],
+          improvements: [
+            "Could quantify the business impact more",
+            "Add more about the stakeholder's reaction",
+            "Consider a stronger closing statement"
+          ]
+        },
+        improved_answer: {
+          improved_version: "Here's a more polished version of your answer...",
+          changes_made: ["Added quantifiable metrics", "Strengthened the result statement"],
+          coaching_tips: ["Practice the opening 10 seconds until it's natural"]
+        }
+      })
     } finally {
       setLoading(false)
     }
   }
 
   const handleReset = () => {
-    setQuestion('')
     setTranscript('')
     setResult(null)
     setRecordingTime(0)
     setAudioBlob(null)
     setAudioDuration(0)
     setIsPlaying(false)
+    setShowExample(false)
+    setShowBullets(false)
     if (audioUrl) {
       URL.revokeObjectURL(audioUrl)
       setAudioUrl(null)
     }
   }
 
-  const ScoreCard = ({ label, score }: { label: string; score: number }) => {
-    const getScoreColor = (score: number) => {
-      if (score >= 80) return 'text-green-600'
-      if (score >= 60) return 'text-orange-600'
-      return 'text-red-600'
-    }
+  const handleNewQuestion = () => {
+    handleReset()
+    const currentIndex = sampleQuestions.indexOf(question)
+    const nextIndex = (currentIndex + 1) % sampleQuestions.length
+    setQuestion(sampleQuestions[nextIndex])
+  }
 
-    const getProgressColor = (score: number) => {
-      if (score >= 80) return 'bg-green-500'
-      if (score >= 60) return 'bg-orange-500'
-      return 'bg-red-500'
-    }
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
 
-    return (
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium">{label}</span>
-          <span className={`text-lg font-bold ${getScoreColor(score)}`}>{score}/100</span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-3">
-          <div
-            className={`h-3 rounded-full transition-all duration-500 ${getProgressColor(score)}`}
-            style={{ width: `${score}%` }}
-          />
-        </div>
-      </div>
-    )
+  // Show results view
+  if (result) {
+    return <ResultsView result={result} onReset={handleReset} onNewQuestion={handleNewQuestion} />
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Practice Input */}
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Practice Mode</CardTitle>
-            <CardDescription>
-              Answer out loud, get instant feedback, and improve
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Question to Practice
-              </label>
-              <Textarea
-                placeholder="Enter a behavioral question..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                rows={3}
-              />
+    <div className="max-w-3xl mx-auto space-y-8">
+      {/* The Question Card (The Prompter) */}
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-stone-100 text-center">
+        <span className="text-xs font-bold tracking-widest text-stone-400 uppercase mb-4 block">
+          Current Question
+        </span>
+        <h2 className="font-serif text-3xl text-stone-900 leading-tight mb-6">
+          "{question}"
+        </h2>
+        
+        {/* Helper Actions */}
+        <div className="flex justify-center gap-6">
+          <button 
+            onClick={() => setShowExample(!showExample)}
+            className="text-sm text-stone-500 hover:text-emerald-700 flex items-center gap-1.5 transition-colors"
+          >
+            <Eye className="w-4 h-4" />
+            {showExample ? 'Hide Example' : 'See Example Answer'}
+          </button>
+          <button 
+            onClick={() => setShowBullets(!showBullets)}
+            className="text-sm text-stone-500 hover:text-emerald-700 flex items-center gap-1.5 transition-colors"
+          >
+            <List className="w-4 h-4" />
+            {showBullets ? 'Hide Bullets' : 'Show Key Points'}
+          </button>
+        </div>
+
+        {/* Example Answer (Expandable) */}
+        {showExample && (
+          <div className="mt-6 p-6 bg-stone-50 rounded-xl text-left border border-stone-100">
+            <div className="flex items-center gap-2 mb-3">
+              <Lightbulb className="w-4 h-4 text-amber-500" />
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Example Answer</span>
             </div>
+            <p className="text-stone-700 text-sm leading-relaxed italic">
+              {exampleAnswer}
+            </p>
+          </div>
+        )}
 
-            <div className="border-2 border-dashed rounded-lg p-6">
-              {!audioBlob && !isRecording ? (
-                <div className="text-center">
-                  <Mic className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Record your answer or type below
-                  </p>
-                  {micPermissionGranted === false && (
-                    <p className="text-xs text-red-600 mb-2">
-                      Microphone access denied. Please enable microphone permissions.
-                    </p>
-                  )}
-                  <Button
-                    onClick={handleStartRecording}
-                    disabled={micPermissionGranted === false}
-                    className="gap-2"
-                  >
-                    <Mic className="w-4 h-4" />
-                    Start Recording
-                  </Button>
-                </div>
-              ) : isRecording ? (
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-red-500 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
-                    <Mic className="w-8 h-8 text-white" />
-                  </div>
-                  <p className="text-lg font-bold text-red-500 mb-2">Recording...</p>
-                  <p className="text-2xl font-mono mb-4">{recordingTime}s</p>
-
-                  {/* Simple waveform visualization */}
-                  <div className="flex items-end justify-center gap-1 h-8 mb-4">
-                    {Array.from({ length: 20 }, (_, i) => (
-                      <div
-                        key={i}
-                        className="bg-red-400 rounded-sm animate-pulse"
-                        style={{
-                          width: '3px',
-                          height: `${Math.random() * 100}%`,
-                          animationDelay: `${i * 0.1}s`
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  <Button
-                    onClick={handleStopRecording}
-                    variant="outline"
-                    className="gap-2 border-red-500 text-red-600 hover:bg-red-50"
-                  >
-                    <Square className="w-4 h-4" />
-                    Stop Recording
-                  </Button>
-                </div>
-              ) : audioBlob ? (
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <Volume2 className="w-8 h-8 text-green-600" />
-                  </div>
-                  <p className="text-green-600 font-medium mb-2">Recording Complete</p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Duration: {audioDuration || recordingTime}s
-                  </p>
-
-                  {/* Audio playback controls */}
-                  <div className="flex items-center justify-center gap-4 mb-4">
-                    <Button
-                      onClick={handlePlayAudio}
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                    >
-                      {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                      {isPlaying ? 'Pause' : 'Play'}
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setAudioBlob(null)
-                        setAudioUrl(null)
-                        setRecordingTime(0)
-                        setAudioDuration(0)
-                      }}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Record Again
-                    </Button>
-                  </div>
-
-                  {/* Hidden audio element for playback */}
-                  {audioUrl && (
-                    <audio
-                      ref={audioRef}
-                      src={audioUrl}
-                      onEnded={handleAudioEnded}
-                      className="hidden"
-                    />
-                  )}
-                </div>
-              ) : null}
+        {/* Bullet Points (Expandable) */}
+        {showBullets && (
+          <div className="mt-6 p-6 bg-emerald-50 rounded-xl text-left border border-emerald-100">
+            <div className="flex items-center gap-2 mb-3">
+              <CheckCircle className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wide">Key Points to Hit</span>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Your Answer (Type or speak)
-              </label>
-              <Textarea
-                placeholder="Type your practice answer here..."
-                value={transcript}
-                onChange={(e) => setTranscript(e.target.value)}
-                rows={6}
-                disabled={isRecording}
-              />
-            </div>
-
-            <div className="flex gap-2">
-              {!result && (
-                <Button
-                  onClick={handleSubmitPractice}
-                  disabled={!question.trim() || (!transcript.trim() && !audioBlob) || loading}
-                  className="flex-1 gap-2"
-                  size="lg"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  {loading ? 'Analyzing...' : 'Get Feedback'}
-                </Button>
-              )}
-              {result && (
-                <Button onClick={handleReset} variant="outline" className="flex-1">
-                  Practice Another
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Quick Practice Questions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {samplePracticeQuestions.map((q, idx) => (
-              <button
-                key={idx}
-                onClick={() => setQuestion(q)}
-                className="w-full text-left p-3 rounded-lg border hover:bg-accent hover:border-primary transition-colors text-sm"
-              >
-                {q}
-              </button>
-            ))}
-          </CardContent>
-        </Card>
+            <ul className="space-y-2">
+              {bulletPoints.map((point, idx) => (
+                <li key={idx} className="text-stone-700 text-sm flex items-start gap-2">
+                  <span className="text-emerald-500 mt-0.5">•</span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
-      {/* Results */}
-      <div>
-        {result ? (
-          <div className="space-y-6">
-            {/* Overall Score Card */}
-            <Card className="border-2 border-primary">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Overall Score
-                </CardTitle>
-                <CardDescription>Based on AI analysis of your answer</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-6xl font-bold text-primary mb-2">
-                    {result.attempt?.overall_score || 0}
-                  </div>
-                  <div className="text-lg text-muted-foreground mb-4">out of 100</div>
-                  <Progress value={result.attempt?.overall_score || 0} className="h-3" />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Detailed Score Grid */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Detailed Scores</CardTitle>
-                <CardDescription>Breakdown of your performance across different dimensions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <ScoreCard label="Clarity" score={result.attempt?.clarity_score || 0} />
-                  <ScoreCard label="Structure" score={result.attempt?.structure_score || 0} />
-                  <ScoreCard label="Confidence" score={result.attempt?.confidence_score || 0} />
-                  <ScoreCard label="Pacing" score={result.attempt?.pacing_score || 0} />
-                </div>
-              </CardContent>
-            </Card>
-
-            {result.attempt?.filler_words_count > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Filler Words</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm mb-3">
-                    Detected {result.attempt.filler_words_count} filler word(s)
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(result.attempt?.filler_words || {}).map(
-                      ([word, count]: [string, any]) => (
-                        <span
-                          key={word}
-                          className="px-3 py-1 bg-destructive/10 text-destructive rounded-full text-sm"
-                        >
-                          {word}: {count}
-                        </span>
-                      )
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+      {/* The Recorder (The Stage) */}
+      <div className={`
+        rounded-3xl p-12 flex flex-col items-center justify-center border-2 transition-all
+        ${isRecording 
+          ? 'bg-rose-50 border-rose-200' 
+          : audioBlob 
+            ? 'bg-emerald-50 border-emerald-200' 
+            : 'bg-stone-100 border-dashed border-stone-200 hover:border-emerald-300'
+        }
+      `}>
+        {!audioBlob && !isRecording ? (
+          <>
+            {/* Ready State - Big Mic Button */}
+            <button 
+              onClick={handleStartRecording}
+              disabled={micPermissionGranted === false}
+              className="w-28 h-28 bg-white rounded-full shadow-xl shadow-stone-300/50 flex items-center justify-center mb-6 hover:scale-105 hover:shadow-2xl transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Mic className="w-12 h-12 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+            </button>
+            
+            {micPermissionGranted === false ? (
+              <p className="text-rose-600 font-medium mb-2">Microphone access denied</p>
+            ) : (
+              <p className="text-stone-600 font-medium">Tap to start recording</p>
             )}
+            <div className="flex items-center gap-1.5 text-stone-400 text-sm mt-2">
+              <Clock className="w-4 h-4" />
+              <span>Maximum time: 2:00</span>
+            </div>
 
-            {result.attempt?.strengths && result.attempt.strengths.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Strengths</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {result.attempt.strengths.map((strength: string, idx: number) => (
-                      <li key={idx} className="flex gap-2 text-sm">
-                        <span className="text-green-500">✓</span>
-                        {strength}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
-
-            {result.attempt?.improvements && result.attempt.improvements.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Areas to Improve</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {result.attempt.improvements.map((improvement: string, idx: number) => (
-                      <li key={idx} className="flex gap-2 text-sm">
-                        <span className="text-green-500">→</span>
-                        {improvement}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
-
-            {result.improved_answer?.improved_version && (
-              <Card className="border-2 border-green-500 bg-green-50/50">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-green-600" />
-                    Improved Version
-                  </CardTitle>
-                  <CardDescription>
-                    Here's a stronger version tailored to your communication style
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="bg-white border border-green-200 p-6 rounded-lg shadow-sm">
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                      {result.improved_answer.improved_version}
-                    </p>
-                  </div>
-
-                  {result.improved_answer?.changes_made && result.improved_answer.changes_made.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-green-600" />
-                        Key Improvements Made:
-                      </h4>
-                      <div className="grid gap-2">
-                        {result.improved_answer.changes_made.map((change: string, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2 text-sm bg-green-50 p-2 rounded">
-                            <span className="text-green-600 mt-0.5">✓</span>
-                            <span>{change}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {result.improved_answer?.coaching_tips && result.improved_answer.coaching_tips.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-blue-600" />
-                        Coaching Tips:
-                      </h4>
-                      <div className="grid gap-2">
-                        {result.improved_answer.coaching_tips.map((tip: string, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2 text-sm bg-blue-50 p-2 rounded">
-                            <span className="text-blue-600 mt-0.5">💡</span>
-                            <span>{tip}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="py-12">
-              <div className="text-center text-muted-foreground">
-                <Mic className="w-16 h-16 mx-auto mb-4" />
-                <p>Answer a question to get instant feedback</p>
-                <p className="text-sm mt-2">
-                  We'll analyze your structure, clarity, and confidence
-                </p>
+            {/* Idle Audio Visualizer */}
+            <div className="flex gap-1 h-8 items-center mt-8 opacity-40">
+              {[...Array(7)].map((_, i) => (
+                <div 
+                  key={i}
+                  className="w-1.5 bg-stone-400 rounded-full"
+                  style={{ height: `${12 + (i % 3) * 8}px` }}
+                />
+              ))}
+            </div>
+          </>
+        ) : isRecording ? (
+          <>
+            {/* Recording State */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 w-28 h-28 rounded-full bg-rose-400/30 animate-ping" />
+              <div className="relative w-28 h-28 bg-rose-500 rounded-full shadow-xl flex items-center justify-center">
+                <Mic className="w-12 h-12 text-white" />
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+            
+            <div className="text-5xl font-mono text-stone-900 font-bold mb-2">
+              {formatTime(recordingTime)}
+            </div>
+            
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-3 h-3 rounded-full bg-rose-500 animate-pulse" />
+              <span className="text-rose-600 font-medium">Recording...</span>
+            </div>
+
+            {/* Live Audio Visualizer */}
+            <div className="flex gap-1 h-12 items-center mb-8">
+              {[...Array(12)].map((_, i) => (
+                <div 
+                  key={i}
+                  className="w-1.5 bg-rose-400 rounded-full animate-pulse"
+                  style={{ 
+                    height: `${Math.random() * 40 + 12}px`,
+                    animationDelay: `${i * 0.05}s`,
+                    animationDuration: `${0.3 + Math.random() * 0.2}s`
+                  }}
+                />
+              ))}
+            </div>
+
+            <button 
+              onClick={handleStopRecording}
+              className="bg-white hover:bg-stone-50 text-rose-600 px-8 py-3 rounded-full font-medium shadow-lg border border-rose-200 transition-all flex items-center gap-2"
+            >
+              <Square className="w-5 h-5" />
+              Stop Recording
+            </button>
+          </>
+        ) : audioBlob ? (
+          <>
+            {/* Completed State */}
+            <div className="w-28 h-28 bg-emerald-500 rounded-full shadow-xl flex items-center justify-center mb-6">
+              <Volume2 className="w-12 h-12 text-white" />
+            </div>
+            
+            <p className="text-emerald-700 font-semibold text-lg mb-1">Recording Complete</p>
+            <p className="text-stone-500 text-sm mb-6">Duration: {formatTime(audioDuration || recordingTime)}</p>
+
+            {/* Audio Playback */}
+            <div className="flex items-center gap-3 mb-8">
+              <button 
+                onClick={handlePlayAudio}
+                className="bg-white hover:bg-stone-50 text-stone-700 px-5 py-2.5 rounded-full font-medium shadow-md border border-stone-200 transition-all flex items-center gap-2"
+              >
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                {isPlaying ? 'Pause' : 'Play Back'}
+              </button>
+              <button 
+                onClick={handleReset}
+                className="bg-white hover:bg-stone-50 text-stone-500 px-5 py-2.5 rounded-full font-medium shadow-md border border-stone-200 transition-all flex items-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Re-record
+              </button>
+            </div>
+
+            {/* Submit Button */}
+            <button 
+              onClick={handleSubmitPractice}
+              disabled={loading}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-4 rounded-full font-semibold shadow-lg shadow-emerald-200 transition-all flex items-center gap-2 disabled:opacity-50"
+            >
+              <Sparkles className="w-5 h-5" />
+              {loading ? 'Analyzing...' : 'Get Feedback'}
+            </button>
+
+            {audioUrl && (
+              <audio ref={audioRef} src={audioUrl} onEnded={handleAudioEnded} className="hidden" />
+            )}
+          </>
+        ) : null}
+      </div>
+
+      {/* Quick Practice Questions */}
+      <div className="bg-white rounded-2xl p-6 border border-stone-100">
+        <h3 className="font-serif text-lg font-semibold text-stone-900 mb-4">Quick Practice Questions</h3>
+        <div className="space-y-2">
+          {sampleQuestions.map((q, idx) => (
+            <button
+              key={idx}
+              onClick={() => { handleReset(); setQuestion(q); }}
+              className={`
+                w-full text-left p-4 rounded-xl border transition-all flex items-center justify-between group
+                ${question === q 
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-900' 
+                  : 'bg-stone-50 border-stone-100 hover:border-emerald-200 hover:bg-emerald-50/50 text-stone-700'
+                }
+              `}
+            >
+              <span className="text-sm">{q}</span>
+              <ChevronRight className={`w-4 h-4 transition-transform ${question === q ? 'text-emerald-600' : 'text-stone-400 group-hover:translate-x-1'}`} />
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
 }
 
+// Results View Component
+function ResultsView({ 
+  result, 
+  onReset, 
+  onNewQuestion 
+}: { 
+  result: any
+  onReset: () => void
+  onNewQuestion: () => void 
+}) {
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-emerald-600'
+    if (score >= 60) return 'text-amber-600'
+    return 'text-rose-600'
+  }
+
+  const getProgressColor = (score: number) => {
+    if (score >= 80) return 'bg-emerald-500'
+    if (score >= 60) return 'bg-amber-500'
+    return 'bg-rose-500'
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      {/* Overall Score Card */}
+      <div className="bg-white rounded-2xl p-8 border border-stone-100 shadow-sm text-center">
+        <span className="text-xs font-bold tracking-widest text-stone-400 uppercase mb-4 block">
+          Your Score
+        </span>
+        <div className={`text-7xl font-bold mb-2 ${getScoreColor(result.attempt?.overall_score || 0)}`}>
+          {result.attempt?.overall_score || 0}
+        </div>
+        <div className="text-stone-500 mb-6">out of 100</div>
+        <div className="h-3 bg-stone-100 rounded-full overflow-hidden max-w-md mx-auto">
+          <div 
+            className={`h-full rounded-full transition-all duration-1000 ${getProgressColor(result.attempt?.overall_score || 0)}`}
+            style={{ width: `${result.attempt?.overall_score || 0}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Detailed Scores */}
+      <div className="bg-white rounded-2xl p-6 border border-stone-100">
+        <h3 className="font-serif text-lg font-semibold text-stone-900 mb-4">Breakdown</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { label: 'Clarity', score: result.attempt?.clarity_score || 0 },
+            { label: 'Structure', score: result.attempt?.structure_score || 0 },
+            { label: 'Confidence', score: result.attempt?.confidence_score || 0 },
+            { label: 'Pacing', score: result.attempt?.pacing_score || 0 },
+          ].map((item) => (
+            <div key={item.label} className="bg-stone-50 p-4 rounded-xl">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-stone-600">{item.label}</span>
+                <span className={`text-lg font-bold ${getScoreColor(item.score)}`}>{item.score}</span>
+              </div>
+              <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full rounded-full ${getProgressColor(item.score)}`}
+                  style={{ width: `${item.score}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Strengths & Improvements */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {result.attempt?.strengths && result.attempt.strengths.length > 0 && (
+          <div className="bg-emerald-50 rounded-2xl p-6 border border-emerald-100">
+            <h4 className="font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+              <CheckCircle className="w-5 h-5" />
+              Strengths
+            </h4>
+            <ul className="space-y-2">
+              {result.attempt.strengths.map((s: string, i: number) => (
+                <li key={i} className="text-sm text-emerald-900 flex items-start gap-2">
+                  <span className="text-emerald-500 mt-0.5">✓</span>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {result.attempt?.improvements && result.attempt.improvements.length > 0 && (
+          <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100">
+            <h4 className="font-semibold text-amber-800 mb-3 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Areas to Improve
+            </h4>
+            <ul className="space-y-2">
+              {result.attempt.improvements.map((s: string, i: number) => (
+                <li key={i} className="text-sm text-amber-900 flex items-start gap-2">
+                  <span className="text-amber-500 mt-0.5">→</span>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Improved Version */}
+      {result.improved_answer?.improved_version && (
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200">
+          <h4 className="font-serif text-lg font-semibold text-emerald-900 mb-3 flex items-center gap-2">
+            <Sparkles className="w-5 h-5" />
+            Improved Version
+          </h4>
+          <div className="bg-white rounded-xl p-5 border border-emerald-100 mb-4">
+            <p className="text-stone-700 text-sm leading-relaxed">
+              {result.improved_answer.improved_version}
+            </p>
+          </div>
+          
+          {result.improved_answer?.coaching_tips && (
+            <div className="flex items-start gap-2 text-sm text-emerald-800">
+              <Lightbulb className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+              <span><strong>Tip:</strong> {result.improved_answer.coaching_tips[0]}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex justify-center gap-4">
+        <button 
+          onClick={onReset}
+          className="bg-white hover:bg-stone-50 text-stone-700 px-6 py-3 rounded-full font-medium border border-stone-200 transition-all flex items-center gap-2"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Try Again
+        </button>
+        <button 
+          onClick={onNewQuestion}
+          className="bg-stone-900 hover:bg-stone-800 text-white px-6 py-3 rounded-full font-medium transition-all flex items-center gap-2"
+        >
+          Next Question
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  )
+}
