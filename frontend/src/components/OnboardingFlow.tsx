@@ -83,8 +83,11 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   // Handle completing onboarding - skip processing step and go directly to dashboard
   const handleCompleteOnboarding = () => {
+    // Get the latest state from the store (userId might have just been set)
+    const currentState = useOnboardingStore.getState()
+    
     // Get or generate userId
-    let finalUserId = userId
+    let finalUserId = currentState.userId || userId
     if (!finalUserId) {
       // Generate a new UUID if one doesn't exist (fallback)
       finalUserId = crypto.randomUUID()
@@ -101,11 +104,11 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     setTimeout(() => {
       startBackgroundProcessing({
         userId: finalUserId,
-        personalityData,
-        experienceChoice,
-        resumeFile,
-        manualExperienceData,
-        voiceFile,
+        personalityData: currentState.personalityData || personalityData,
+        experienceChoice: currentState.experienceChoice || experienceChoice,
+        resumeFile: currentState.resumeFile || resumeFile,
+        manualExperienceData: currentState.manualExperienceData || manualExperienceData,
+        voiceFile: currentState.voiceFile || voiceFile,
       })
     }, 100)
 
@@ -120,9 +123,9 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       case 'experience-choice':
         return <ExperienceChoiceStep onNext={handleNext} onPrev={handlePrev} />
       case 'resume-upload':
-        return <ResumeUploadStep onNext={handleNext} onPrev={handlePrev} />
+        return <ResumeUploadStep onNext={handleCompleteOnboarding} onPrev={handlePrev} />
       case 'manual-experience':
-        return <ManualExperienceStep onNext={handleNext} onPrev={handlePrev} />
+        return <ManualExperienceStep onNext={handleCompleteOnboarding} onPrev={handlePrev} />
       case 'voice-upload':
         return <VoiceUploadStep onNext={handleCompleteOnboarding} onPrev={handlePrev} />
       default:
