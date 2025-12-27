@@ -1,75 +1,67 @@
-import { Mic, BookOpen, Target } from 'lucide-react'
+import { Mic, BrainCircuit, Sparkles } from 'lucide-react'
 
 export function FeaturesSection() {
   return (
-    <div className="w-full py-24">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <div className="w-full py-32">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row gap-20">
         
-        {/* Section Header */}
-        <div className="text-center mb-20 max-w-3xl mx-auto">
-          <h2 className="font-serif text-4xl md:text-5xl text-stone-900 mb-6">
-            Your Interview Prep, Reimagined.
-          </h2>
-          <p className="font-sans text-lg text-stone-500 leading-relaxed">
-            Stop memorizing generic scripts. Build a dynamic story engine that adapts to any question.
-          </p>
+        {/* LEFT COLUMN: Sticky Header */}
+        <div className="md:w-1/3">
+          <div className="sticky top-32">
+            <h2 className="font-serif text-5xl md:text-6xl text-stone-900 mb-6 leading-tight">
+              The <br/>
+              Methodology
+            </h2>
+            <p className="font-sans text-lg text-stone-600 max-w-sm">
+              We don't just generate answers. We build a cognitive model of your professional history.
+            </p>
+          </div>
         </div>
 
-        {/* The "Sticky Narrative" Layout - Split Screen */}
-        <div className="flex flex-col lg:flex-row items-start gap-12 lg:gap-16">
+        {/* RIGHT COLUMN: The Steps (No Numbers) */}
+        <div className="md:w-2/3 space-y-40 pb-20">
           
-          {/* Left Side - Sticky Headline */}
-          <div className="w-full lg:w-1/3 lg:sticky lg:top-24 h-fit">
-            <h2 className="font-serif text-5xl md:text-6xl lg:text-7xl text-stone-900 leading-tight">
-              The Methodology
-            </h2>
-            <p className="font-sans text-lg text-stone-500 leading-relaxed mt-6">
-              Three core principles that transform how you prepare for behavioral interviews.
+          {/* Feature 1 */}
+          <div className="group">
+            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-200 bg-transparent group-hover:border-emerald-200 group-hover:bg-emerald-50/50 transition-all duration-300">
+              <Mic className="w-8 h-8 text-stone-400 group-hover:text-emerald-800 transition-colors duration-300" strokeWidth={1.5} />
+            </div>
+            <h3 className="font-serif text-4xl text-stone-900 mb-4 group-hover:text-emerald-900 transition-colors duration-300">
+              Deep Mirroring
+            </h3>
+            <p className="font-sans text-xl text-stone-600 leading-relaxed max-w-lg">
+              The AI analyzes your writing and speech patterns to build a "Voice Fingerprint." It learns your vocabulary, tone, and pacing so every answer sounds authentically like <em>you</em>.
             </p>
           </div>
 
-          {/* Right Side - Scrolling Features */}
-          <div className="w-full lg:w-2/3 space-y-32">
-            
-            {/* Feature 01 - Voice Calibration */}
-            <div className="flex flex-col group">
-              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors w-fit">
-                <Mic className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
-              </div>
-              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">01</span>
-              <h3 className="font-serif text-3xl md:text-4xl text-stone-900 mb-4">Voice Calibration</h3>
-              <p className="font-sans text-lg text-stone-500 leading-relaxed max-w-2xl">
-                We analyze your natural speaking patterns to ensure every AI-generated answer sounds exactly like <em>you</em>, not a robot.
-              </p>
+          {/* Feature 2 */}
+          <div className="group">
+            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-200 bg-transparent group-hover:border-emerald-200 group-hover:bg-emerald-50/50 transition-all duration-300">
+              <BrainCircuit className="w-8 h-8 text-stone-400 group-hover:text-emerald-800 transition-colors duration-300" strokeWidth={1.5} />
             </div>
+            <h3 className="font-serif text-4xl text-stone-900 mb-4 group-hover:text-emerald-900 transition-colors duration-300">
+              Memory Retrieval
+            </h3>
+            <p className="font-sans text-xl text-stone-600 leading-relaxed max-w-lg">
+              We extract buried wins from your resume and structure them into "Modular Stories." You'll never freeze up trying to remember a project again.
+            </p>
+          </div>
 
-            {/* Feature 02 - The Story Bank */}
-            <div className="flex flex-col group">
-              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors w-fit">
-                <BookOpen className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
-              </div>
-              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">02</span>
-              <h3 className="font-serif text-3xl md:text-4xl text-stone-900 mb-4">The Story Bank</h3>
-              <p className="font-sans text-lg text-stone-500 leading-relaxed max-w-2xl">
-                Forget scattered notes. We extract your best professional moments and organize them into a searchable, taggable database.
-              </p>
+          {/* Feature 3 */}
+          <div className="group">
+            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-200 bg-transparent group-hover:border-emerald-200 group-hover:bg-emerald-50/50 transition-all duration-300">
+              <Sparkles className="w-8 h-8 text-stone-400 group-hover:text-emerald-800 transition-colors duration-300" strokeWidth={1.5} />
             </div>
-
-            {/* Feature 03 - Precision Routing */}
-            <div className="flex flex-col group">
-              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors w-fit">
-                <Target className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
-              </div>
-              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">03</span>
-              <h3 className="font-serif text-3xl md:text-4xl text-stone-900 mb-4">Precision Routing</h3>
-              <p className="font-sans text-lg text-stone-500 leading-relaxed max-w-2xl">
-                Our engine instantly matches the interviewer's hidden intent to your strongest story, re-framing it in real-time.
-              </p>
-            </div>
-
+            <h3 className="font-serif text-4xl text-stone-900 mb-4 group-hover:text-emerald-900 transition-colors duration-300">
+              Context Adaptation
+            </h3>
+            <p className="font-sans text-xl text-stone-600 leading-relaxed max-w-lg">
+              The engine takes your modular stories and instantly reshapes them to fit the <em>hidden intent</em> of the question—whether it asks for leadership, conflict, or technical depth.
+            </p>
           </div>
 
         </div>
+
       </div>
     </div>
   )
