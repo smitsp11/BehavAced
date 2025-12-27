@@ -5,8 +5,19 @@
 import { createBrowserClient } from '@supabase/ssr'
 
 // Get environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+// Validate environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Missing Supabase environment variables!\n\n' +
+    'Please add to frontend/.env.local:\n' +
+    'NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co\n' +
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key\n\n' +
+    'Get these from: https://supabase.com/dashboard/project/_/settings/api'
+  )
+}
 
 // Create browser client (for client components)
 export function createClient() {

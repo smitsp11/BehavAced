@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
 import { FadeIn, SlideUp, HoverCard, StaggerContainer, StaggerItem } from '@/components/ui/motion'
 import { motion } from 'framer-motion'
-import { Sparkles, MessageSquare, ArrowRight, Play, Star, Clock, Target, Upload, FileText, Brain, CheckCircle2 } from 'lucide-react'
+import { Sparkles, MessageSquare, ArrowRight, Play, Star, Clock, Target, Upload, FileText, Brain, CheckCircle2, Rocket, Zap, Search, Heart, BookOpen, Mic } from 'lucide-react'
 import { generateDemoAnswer } from '@/lib/api'
+import { FeaturesSection } from '@/components/landing/FeaturesSection'
 
 interface DemoAnswer {
   success: boolean
@@ -160,8 +161,8 @@ export default function TryMode() {
   return (
     <div className="min-h-screen relative">
       {/* Hero Section - Clean Single Column Layout with Gradient Background */}
-      <div className="relative bg-gradient-to-r from-[#A8F2C8] to-[#FFE2C7]">
-      <div className="container mx-auto px-4 pb-[140px] pt-16">
+      <section className="w-full bg-gradient-to-r from-[#A8F2C8] to-[#FFE2C7] min-h-[90vh] flex flex-col justify-center py-20">
+      <div className="max-w-7xl mx-auto px-6 text-center">
           <div className="max-w-4xl mx-auto mb-16">
             {/* Headline + Input */}
             <FadeIn>
@@ -411,62 +412,55 @@ export default function TryMode() {
           </FadeIn>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* How It Works Section */}
-      <div id="how-it-works" className="pt-[160px] pb-[160px]">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-[48px] md:text-[64px] font-bold text-center mb-6 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+      <div id="how-it-works" className="w-full py-24 bg-stone-50 border-t border-stone-200">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-20 max-w-3xl mx-auto">
+            <h2 className="font-serif text-4xl md:text-5xl text-stone-900 mb-6">
               How It Works
             </h2>
-            <p className="text-center text-gray-700 text-xl md:text-2xl mb-20 max-w-3xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
+            <p className="font-sans text-lg text-stone-500 leading-relaxed">
               Super simple. Super powerful.
             </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-200 border-t border-b border-stone-200">
+            {/* Step 1 */}
+            <div className="py-12 md:px-8 lg:px-12 flex flex-col items-center text-center group">
+              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors">
+                <Upload className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
+              </div>
+              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">01</span>
+              <h3 className="font-serif text-2xl text-stone-900 mb-3">Upload Your Resume</h3>
+              <p className="font-sans text-stone-500 leading-relaxed">
+                AI analyzes your writing style and communication patterns.
+              </p>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
-              {/* Step 1 */}
-              <div className="px-8 py-12 text-center relative">
-                <div className="text-[80px] md:text-[120px] font-semibold mb-6 leading-none" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.02em' }}>
-                  1
-                </div>
-                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#1a1a1a' }}>
-                  Upload Your Resume
-                </h3>
-                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  AI analyzes your writing style and communication patterns.
-                </p>
-                {/* Vertical divider */}
-                <div className="hidden md:block absolute top-0 right-0 bottom-0 w-[1px] bg-[#E6E6E6]" />
+            {/* Step 2 */}
+            <div className="py-12 md:px-8 lg:px-12 flex flex-col items-center text-center group">
+              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors">
+                <BookOpen className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
               </div>
-              
-              {/* Step 2 */}
-              <div className="px-8 py-12 text-center relative">
-                <div className="text-[80px] md:text-[120px] font-semibold mb-6 leading-none" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.02em' }}>
-                  2
-                </div>
-                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#1a1a1a' }}>
-                  Build Your Story Bank
-                </h3>
-                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Organize experiences into structured STAR stories.
-                </p>
-                {/* Vertical divider */}
-                <div className="hidden md:block absolute top-0 right-0 bottom-0 w-[1px] bg-[#E6E6E6]" />
+              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">02</span>
+              <h3 className="font-serif text-2xl text-stone-900 mb-3">Build Your Story Bank</h3>
+              <p className="font-sans text-stone-500 leading-relaxed">
+                Organize experiences into structured STAR stories.
+              </p>
+            </div>
+            
+            {/* Step 3 */}
+            <div className="py-12 md:px-8 lg:px-12 flex flex-col items-center text-center group">
+              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors">
+                <Sparkles className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
               </div>
-              
-              {/* Step 3 */}
-              <div className="px-8 py-12 text-center relative">
-                <div className="text-[80px] md:text-[120px] font-semibold mb-6 leading-none" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.02em' }}>
-                  3
-                </div>
-                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#1a1a1a' }}>
-                  Personalized Answers
-                </h3>
-                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Voice-matched, structured responses in your authentic style.
-                </p>
-              </div>
+              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">03</span>
+              <h3 className="font-serif text-2xl text-stone-900 mb-3">Personalized Answers</h3>
+              <p className="font-sans text-stone-500 leading-relaxed">
+                Voice-matched, structured responses in your authentic style.
+              </p>
             </div>
           </div>
         </div>
@@ -551,141 +545,8 @@ export default function TryMode() {
         </div>
       </div>
 
-      {/* Value Prop Section - Floating Cards */}
-      <div className="pt-[60px] pb-[140px]">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            {/* Metrics Row */}
-            <div className="grid grid-cols-3 gap-8 mb-16">
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, background: 'linear-gradient(135deg, #28d98a 0%, #6fffc5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: '1.1', paddingBottom: '4px' }}>
-                  +200
-                </div>
-                <p className="text-sm md:text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  answers generated
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, background: 'linear-gradient(135deg, #28d98a 0%, #6fffc5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: '1.1', paddingBottom: '4px' }}>
-                  +150
-                </div>
-                <p className="text-sm md:text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  students helped
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, background: 'linear-gradient(135deg, #28d98a 0%, #6fffc5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: '1.1', paddingBottom: '4px' }}>
-                  95%
-                </div>
-                <p className="text-sm md:text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  report increased confidence
-                </p>
-              </div>
-            </div>
-
-            {/* Headline */}
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 tracking-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-              Your Interview Prep, Reimagined With AI
-            </h2>
-            
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {/* Feature Card 1 */}
-              <motion.div
-                className="bg-white rounded-2xl p-8 text-center border border-gray-100 transition-all duration-300 hover:-translate-y-1"
-                style={{
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
-                }}
-                whileHover={{
-                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)'
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6 bg-gradient-to-br from-green-50 to-emerald-50">
-                  <span className="text-3xl">✨</span>
-                </div>
-                <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                  AI That Sounds Like You
-                </h3>
-                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Our AI analyzes your communication style and creates answers that sound authentically like you.
-                </p>
-              </motion.div>
-
-              {/* Feature Card 2 */}
-              <motion.div
-                className="bg-white rounded-2xl p-8 text-center border border-gray-100 transition-all duration-300 hover:-translate-y-1"
-                style={{
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
-                }}
-                whileHover={{
-                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)'
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6 bg-gradient-to-br from-green-50 to-emerald-50">
-                  <span className="text-3xl">📚</span>
-                </div>
-                <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                  Your Personal Story Bank
-                </h3>
-                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Extract and organize your professional stories into a searchable bank for instant retrieval.
-                </p>
-              </motion.div>
-
-              {/* Feature Card 3 */}
-              <motion.div
-                className="bg-white rounded-2xl p-8 text-center border border-gray-100 transition-all duration-300 hover:-translate-y-1"
-                style={{
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
-                }}
-                whileHover={{
-                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)'
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6 bg-gradient-to-br from-green-50 to-emerald-50">
-                  <span className="text-3xl">🎯</span>
-                </div>
-                <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
-                  Made for Interviews
-                </h3>
-                <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                  Specifically designed for behavioral interviews with STAR/SOAR structure and quantifiable results.
-                </p>
-              </motion.div>
-            </div>
-
-            {/* Bullet Points as Pills */}
-            <div className="flex items-center justify-center gap-3 flex-wrap mt-8">
-              <motion.div
-                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <span>✨</span>
-                <span className="text-gray-700">Matches your authentic voice</span>
-              </motion.div>
-              <motion.div
-                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <span>⚡</span>
-                <span className="text-gray-700">No generic templates</span>
-              </motion.div>
-              <motion.div
-                className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-full text-sm shadow-md flex items-center gap-2"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '14px' }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <span>🔍</span>
-                <span className="text-gray-700">Ready in seconds</span>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Features Section - Editorial Lines Design */}
+      <FeaturesSection />
 
       {/* Testimonial Section - Dark Background */}
       <div className="pt-[120px] pb-[140px] bg-gray-900">
@@ -773,7 +634,7 @@ export default function TryMode() {
             <div className="grid md:grid-cols-4 gap-8 mb-8">
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-2xl">🧠</span>
+                  <Brain className="w-6 h-6 text-stone-900" />
                   <span className="font-black text-lg" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 900 }}>BehavAced</span>
                 </div>
                 <p className="text-base text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
@@ -806,7 +667,9 @@ export default function TryMode() {
               </div>
             </div>
             <div className="pt-8 border-t border-green-100 text-center text-sm text-gray-500">
-              <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '14px' }}>© 2025 BehavAced. Made with 💚 for students and job seekers.</p>
+              <p className="flex items-center justify-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '14px' }}>
+                © 2025 BehavAced. Made with <Heart className="w-4 h-4 text-emerald-600 fill-emerald-600" /> for students and job seekers.
+              </p>
             </div>
           </div>
         </div>
