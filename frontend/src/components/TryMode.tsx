@@ -159,9 +159,9 @@ export default function TryMode() {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative bg-gradient-to-r from-[#A8F2C8] to-[#FFE2C7]">
       {/* Hero Section - Clean Single Column Layout with Gradient Background */}
-      <section className="w-full bg-gradient-to-r from-[#A8F2C8] to-[#FFE2C7] min-h-[90vh] flex flex-col justify-center py-20">
+      <div className="w-full min-h-[90vh] flex flex-col justify-center py-20">
       <div className="max-w-7xl mx-auto px-6 text-center">
           <div className="max-w-4xl mx-auto mb-16">
             {/* Headline + Input */}
@@ -412,10 +412,10 @@ export default function TryMode() {
           </FadeIn>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* How It Works Section */}
-      <div id="how-it-works" className="w-full py-24 bg-stone-50 border-t border-stone-200">
+      <div id="how-it-works" className="w-full py-24">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-20 max-w-3xl mx-auto">
             <h2 className="font-serif text-4xl md:text-5xl text-stone-900 mb-6">
@@ -548,11 +548,11 @@ export default function TryMode() {
       {/* Features Section - Editorial Lines Design */}
       <FeaturesSection />
 
-      {/* Testimonial Section - Dark Background */}
-      <div className="pt-[120px] pb-[140px] bg-gray-900">
+      {/* Testimonial Section */}
+      <div className="pt-[120px] pb-[140px]">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-white" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-stone-900" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
               Loved by Students & Job Seekers
             </h2>
             <div className="grid md:grid-cols-2 gap-8 items-stretch">
