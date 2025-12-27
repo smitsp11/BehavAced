@@ -23,40 +23,40 @@ export function FeaturesSection() {
           
           {/* Feature 1 */}
           <div className="group">
-            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-200 bg-transparent group-hover:border-emerald-200 group-hover:bg-emerald-50/50 transition-all duration-300">
-              <Mic className="w-8 h-8 text-stone-400 group-hover:text-emerald-800 transition-colors duration-300" strokeWidth={1.5} />
+            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-300 bg-white/50 group-hover:border-emerald-300 group-hover:bg-emerald-50/80 transition-all duration-300">
+              <Mic className="w-8 h-8 text-stone-600 group-hover:text-emerald-700 transition-colors duration-300" strokeWidth={1.5} />
             </div>
             <h3 className="font-serif text-4xl text-stone-900 mb-4 group-hover:text-emerald-900 transition-colors duration-300">
               Deep Mirroring
             </h3>
-            <p className="font-sans text-xl text-stone-600 leading-relaxed max-w-lg">
-              The AI analyzes your writing and speech patterns to build a "Voice Fingerprint." It learns your vocabulary, tone, and pacing so every answer sounds authentically like <em>you</em>.
+            <p className="font-sans text-xl text-stone-700 leading-relaxed max-w-lg">
+              The AI analyzes your writing and speech patterns to build a "Voice Fingerprint." It learns your vocabulary, tone, and pacing so every answer sounds authentically like <em className="text-stone-900">you</em>.
             </p>
           </div>
 
           {/* Feature 2 */}
           <div className="group">
-            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-200 bg-transparent group-hover:border-emerald-200 group-hover:bg-emerald-50/50 transition-all duration-300">
-              <BrainCircuit className="w-8 h-8 text-stone-400 group-hover:text-emerald-800 transition-colors duration-300" strokeWidth={1.5} />
+            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-300 bg-white/50 group-hover:border-emerald-300 group-hover:bg-emerald-50/80 transition-all duration-300">
+              <BrainCircuit className="w-8 h-8 text-stone-600 group-hover:text-emerald-700 transition-colors duration-300" strokeWidth={1.5} />
             </div>
             <h3 className="font-serif text-4xl text-stone-900 mb-4 group-hover:text-emerald-900 transition-colors duration-300">
               Memory Retrieval
             </h3>
-            <p className="font-sans text-xl text-stone-600 leading-relaxed max-w-lg">
+            <p className="font-sans text-xl text-stone-700 leading-relaxed max-w-lg">
               We extract buried wins from your resume and structure them into "Modular Stories." You'll never freeze up trying to remember a project again.
             </p>
           </div>
 
           {/* Feature 3 */}
           <div className="group">
-            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-200 bg-transparent group-hover:border-emerald-200 group-hover:bg-emerald-50/50 transition-all duration-300">
-              <Sparkles className="w-8 h-8 text-stone-400 group-hover:text-emerald-800 transition-colors duration-300" strokeWidth={1.5} />
+            <div className="mb-6 inline-flex p-4 rounded-full border border-stone-300 bg-white/50 group-hover:border-emerald-300 group-hover:bg-emerald-50/80 transition-all duration-300">
+              <Sparkles className="w-8 h-8 text-stone-600 group-hover:text-emerald-700 transition-colors duration-300" strokeWidth={1.5} />
             </div>
             <h3 className="font-serif text-4xl text-stone-900 mb-4 group-hover:text-emerald-900 transition-colors duration-300">
               Context Adaptation
             </h3>
-            <p className="font-sans text-xl text-stone-600 leading-relaxed max-w-lg">
-              The engine takes your modular stories and instantly reshapes them to fit the <em>hidden intent</em> of the question—whether it asks for leadership, conflict, or technical depth.
+            <p className="font-sans text-xl text-stone-700 leading-relaxed max-w-lg">
+              The engine takes your modular stories and instantly reshapes them to fit the <em className="text-stone-900">hidden intent</em> of the question—whether it asks for leadership, conflict, or technical depth.
             </p>
           </div>
 

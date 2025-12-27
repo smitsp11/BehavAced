@@ -421,44 +421,44 @@ export default function TryMode() {
             <h2 className="font-serif text-4xl md:text-5xl text-stone-900 mb-6">
               How It Works
             </h2>
-            <p className="font-sans text-lg text-stone-500 leading-relaxed">
+            <p className="font-sans text-lg text-stone-600 leading-relaxed">
               Super simple. Super powerful.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-200 border-t border-b border-stone-200">
-            {/* Step 1 */}
-            <div className="py-12 md:px-8 lg:px-12 flex flex-col items-center text-center group">
-              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors">
-                <Upload className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
-              </div>
-              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">01</span>
-              <h3 className="font-serif text-2xl text-stone-900 mb-3">Upload Your Resume</h3>
-              <p className="font-sans text-stone-500 leading-relaxed">
-                AI analyzes your writing style and communication patterns.
-              </p>
-            </div>
             
-            {/* Step 2 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-300 border-t border-b border-stone-300">
+              {/* Step 1 */}
             <div className="py-12 md:px-8 lg:px-12 flex flex-col items-center text-center group">
-              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors">
-                <BookOpen className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
+              <div className="mb-6 p-4 rounded-full border border-stone-300 bg-white/50 group-hover:border-emerald-300 group-hover:bg-emerald-50/80 transition-all duration-300">
+                <Upload className="w-8 h-8 text-stone-600 group-hover:text-emerald-700 transition-colors duration-300" strokeWidth={1.5} />
+                </div>
+              <span className="font-serif italic font-light text-6xl text-black mb-4 select-none block">01</span>
+              <h3 className="font-serif text-2xl text-stone-900 mb-3 group-hover:text-emerald-900 transition-colors duration-300">Upload Your Resume</h3>
+              <p className="font-sans text-stone-700 leading-relaxed">
+                  AI analyzes your writing style and communication patterns.
+                </p>
               </div>
-              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">02</span>
-              <h3 className="font-serif text-2xl text-stone-900 mb-3">Build Your Story Bank</h3>
-              <p className="font-sans text-stone-500 leading-relaxed">
-                Organize experiences into structured STAR stories.
-              </p>
-            </div>
-            
-            {/* Step 3 */}
+              
+              {/* Step 2 */}
             <div className="py-12 md:px-8 lg:px-12 flex flex-col items-center text-center group">
-              <div className="mb-6 p-4 rounded-full bg-stone-100 group-hover:bg-emerald-50 transition-colors">
-                <Sparkles className="w-8 h-8 text-stone-900 group-hover:text-emerald-700 transition-colors" strokeWidth={1.5} />
+              <div className="mb-6 p-4 rounded-full border border-stone-300 bg-white/50 group-hover:border-emerald-300 group-hover:bg-emerald-50/80 transition-all duration-300">
+                <BookOpen className="w-8 h-8 text-stone-600 group-hover:text-emerald-700 transition-colors duration-300" strokeWidth={1.5} />
+                </div>
+              <span className="font-serif italic font-light text-6xl text-black mb-4 select-none block">02</span>
+              <h3 className="font-serif text-2xl text-stone-900 mb-3 group-hover:text-emerald-900 transition-colors duration-300">Build Your Story Bank</h3>
+              <p className="font-sans text-stone-700 leading-relaxed">
+                  Organize experiences into structured STAR stories.
+                </p>
               </div>
-              <span className="font-serif text-6xl text-stone-200 mb-4 select-none">03</span>
-              <h3 className="font-serif text-2xl text-stone-900 mb-3">Personalized Answers</h3>
-              <p className="font-sans text-stone-500 leading-relaxed">
+              
+              {/* Step 3 */}
+            <div className="py-12 md:px-8 lg:px-12 flex flex-col items-center text-center group">
+              <div className="mb-6 p-4 rounded-full border border-stone-300 bg-white/50 group-hover:border-emerald-300 group-hover:bg-emerald-50/80 transition-all duration-300">
+                <Sparkles className="w-8 h-8 text-stone-600 group-hover:text-emerald-700 transition-colors duration-300" strokeWidth={1.5} />
+              </div>
+              <span className="font-serif italic font-light text-6xl text-black mb-4 select-none block">03</span>
+              <h3 className="font-serif text-2xl text-stone-900 mb-3 group-hover:text-emerald-900 transition-colors duration-300">Personalized Answers</h3>
+              <p className="font-sans text-stone-700 leading-relaxed">
                 Voice-matched, structured responses in your authentic style.
               </p>
             </div>
