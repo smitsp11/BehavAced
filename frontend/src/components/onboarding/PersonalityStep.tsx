@@ -53,7 +53,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
 
   const handleSubmit = () => {
     // Basic validation
-    if (!formData.work_style.trim() || !formData.communication.trim()) {
+    if (!formData.work_style.trim() || !formData.communication.trim() || !formData.strengths.trim()) {
       return
     }
 
@@ -112,8 +112,10 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
         return formData.work_style.trim().length > 0
       case 2:
         return formData.communication.trim().length > 0
+      case 3:
+        return formData.strengths.trim().length > 0
       default:
-        return true // Steps 3-5 are optional
+        return true // Steps 4-5 are optional
     }
   }
 
@@ -186,7 +188,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
           <div>
             <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
               <span className="text-lg">⚡</span>
-              <span>What are your key strengths?</span>
+              <span>What are your key strengths? <span className="text-green-600">*</span></span>
             </label>
             <Textarea
               placeholder="e.g., Problem-solving, leadership, adaptability, attention to detail..."
@@ -311,7 +313,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
         </Button>
       </div>
 
-      {currentStep <= 2 && (
+      {currentStep <= 3 && (
         <p className="text-center mt-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '15px', color: '#7D8B92' }}>
           * Required fields
         </p>
