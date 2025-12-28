@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { Plus, X, Calendar, MapPin, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Plus, X, Calendar, MapPin, ArrowRight, ArrowLeft, Briefcase } from 'lucide-react'
 import { useOnboardingStore, ManualExperienceData } from '@/lib/stores/onboardingStore'
 import { motion } from 'framer-motion'
 
@@ -11,13 +11,47 @@ interface ManualExperienceStepProps {
   onPrev: () => void
 }
 
+interface SavedRole {
+  role_title: string
+  company: string
+  location: string
+  start_date: string
+  end_date: string
+  achievements: string[]
+}
+
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+]
+
+const getYears = () => {
+  const currentYear = new Date().getFullYear()
+  const years = []
+  for (let i = currentYear; i >= currentYear - 50; i--) {
+    years.push(i)
+  }
+  return years
+}
+
 export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienceStepProps) {
   const { setManualExperienceData, setUserId } = useOnboardingStore()
+  
+  // Store the list of completed roles
+  const [savedRoles, setSavedRoles] = useState<SavedRole[]>([])
+  
+  // Store the current form data
   const [roleTitle, setRoleTitle] = useState('')
   const [company, setCompany] = useState('')
-  const [dateRange, setDateRange] = useState('')
+  const [startMonth, setStartMonth] = useState('')
+  const [startYear, setStartYear] = useState('')
+  const [endMonth, setEndMonth] = useState('')
+  const [endYear, setEndYear] = useState('')
+  const [isPresent, setIsPresent] = useState(false)
   const [location, setLocation] = useState('')
   const [achievements, setAchievements] = useState([''])
+  
+  const years = getYears()
 
   const addAchievement = () => {
     setAchievements([...achievements, ''])
@@ -35,25 +69,87 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
     setAchievements(newAchievements)
   }
 
-  const handleSaveAndContinue = () => {
-    if (!roleTitle.trim() || !company.trim()) {
-      return
-    }
+  const resetForm = () => {
+    setRoleTitle('')
+    setCompany('')
+    setStartMonth('')
+    setStartYear('')
+    setEndMonth('')
+    setEndYear('')
+    setIsPresent(false)
+    setLocation('')
+    setAchievements([''])
+  }
 
-    // Create experience entry
-    const experienceEntry = {
+  const createExperienceEntry = () => {
+    const startDate = startMonth && startYear 
+      ? `${startMonth} ${startYear}` 
+      : ''
+    const endDate = isPresent 
+      ? 'Present' 
+      : (endMonth && endYear ? `${endMonth} ${endYear}` : '')
+
+    return {
       role_title: roleTitle,
       company: company,
       location: location,
-      start_date: dateRange.split('—')[0]?.trim() || '',
-      end_date: dateRange.split('—')[1]?.trim() || '',
-      description: '',
-      achievements: achievements.filter(a => a.trim()),
-      skills_used: []
+      start_date: startDate,
+      end_date: endDate,
+      achievements: achievements.filter(a => a.trim())
+    }
+  }
+
+  const saveAndAddAnother = () => {
+    if (!roleTitle.trim() || !company.trim()) return
+
+    const experienceEntry = createExperienceEntry()
+    
+    // Add current to saved stack
+    setSavedRoles([...savedRoles, experienceEntry])
+    
+    // Reset form for next entry
+    resetForm()
+    
+    // Scroll to top to show the new empty form
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const removeSavedRole = (index: number) => {
+    setSavedRoles(savedRoles.filter((_, i) => i !== index))
+  }
+
+  const handleSaveAndContinue = () => {
+    if (!roleTitle.trim() || !company.trim()) {
+      // If current form is empty but we have saved roles, proceed with those
+      if (savedRoles.length > 0) {
+        const manualData: ManualExperienceData = {
+          experiences: savedRoles.map(role => ({
+            ...role,
+            description: '',
+            skills_used: []
+          })),
+          additional_skills: []
+        }
+        setManualExperienceData(manualData)
+        const userId = crypto.randomUUID()
+        setUserId(userId)
+        onNext()
+      }
+      return
     }
 
+    // Create experience entry from current form
+    const currentEntry = createExperienceEntry()
+
+    // Combine saved roles with current entry
+    const allExperiences = [...savedRoles, currentEntry]
+
     const manualData: ManualExperienceData = {
-      experiences: [experienceEntry],
+      experiences: allExperiences.map(role => ({
+        ...role,
+        description: '',
+        skills_used: []
+      })),
       additional_skills: []
     }
 
@@ -66,11 +162,54 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
     onNext()
   }
 
-  const canContinue = roleTitle.trim().length > 0 && company.trim().length > 0
+  const canContinue = roleTitle.trim().length > 0 && company.trim().length > 0 || savedRoles.length > 0
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col overflow-y-auto px-12 md:px-24 py-8">
+    <div className="w-full max-w-4xl mx-auto flex flex-col overflow-y-auto px-12 md:px-24 py-8 pb-32">
       
+      {/* THE "CHAPTER STACK" (Saved Roles Summary) */}
+      {savedRoles.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 space-y-4"
+        >
+          <p className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4 font-sans">
+            Experience Added ({savedRoles.length})
+          </p>
+          
+          {savedRoles.map((role, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="flex items-center justify-between p-6 bg-white border border-stone-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 flex-shrink-0">
+                  <Briefcase className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-serif text-xl text-stone-900">{role.role_title}</h4>
+                  <p className="text-sm text-stone-500 font-sans">
+                    {role.company} • {role.start_date} {role.end_date ? `— ${role.end_date}` : ''}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => removeSavedRole(idx)}
+                className="text-stone-300 hover:text-red-400 px-4 transition-colors flex-shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </motion.div>
+          ))}
+          
+          <div className="h-px w-full bg-stone-200 my-6" />
+        </motion.div>
+      )}
+
       {/* The Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -79,12 +218,16 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
         className="mb-6"
       >
         <h2 className="font-serif text-4xl md:text-5xl text-stone-900 leading-tight mb-2">
-          Where did you make <br />
-          <span className="italic text-stone-400">your mark?</span>
+          {savedRoles.length === 0 ? "Where did you make" : "What else did you"} <br />
+          <span className="italic text-stone-400">
+            {savedRoles.length === 0 ? "your mark?" : "accomplish?"}
+          </span>
         </h2>
-        <p className="font-sans text-stone-500 text-base">
-          Focus on your most recent or relevant role.
-        </p>
+        {savedRoles.length === 0 && (
+          <p className="font-sans text-stone-500 text-base">
+            Focus on your most recent or relevant role.
+          </p>
+        )}
       </motion.div>
 
       {/* The "Mad Libs" Inputs (Role & Company) */}
@@ -122,14 +265,73 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
         {/* The Metadata (Dates & Location) - Subtle Row */}
         <div className="flex flex-wrap gap-6">
           <div className="flex items-center gap-3 text-stone-400 focus-within:text-stone-900 transition-colors group">
-            <Calendar className="w-4 h-4" />
-            <input 
-              type="text" 
-              placeholder="2020 — Present"
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 w-40 text-base font-sans focus:ring-0"
-            />
+            <Calendar className="w-4 h-4 flex-shrink-0" />
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Start Date */}
+              <select
+                value={startMonth}
+                onChange={(e) => setStartMonth(e.target.value)}
+                className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 pr-8 text-base font-sans focus:ring-0 cursor-pointer appearance-none text-stone-600 focus:text-stone-900"
+              >
+                <option value="" disabled className="text-stone-400">Month</option>
+                {MONTHS.map((month) => (
+                  <option key={month} value={month} className="text-stone-900">
+                    {month}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={startYear}
+                onChange={(e) => setStartYear(e.target.value)}
+                className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 pr-8 text-base font-sans focus:ring-0 cursor-pointer appearance-none text-stone-600 focus:text-stone-900"
+              >
+                <option value="" disabled className="text-stone-400">Year</option>
+                {years.map((year) => (
+                  <option key={year} value={year} className="text-stone-900">
+                    {year}
+                  </option>
+                ))}
+              </select>
+              <span className="text-stone-300 mx-1">—</span>
+              {/* End Date or Present */}
+              {!isPresent ? (
+                <>
+                  <select
+                    value={endMonth}
+                    onChange={(e) => setEndMonth(e.target.value)}
+                    className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 pr-8 text-base font-sans focus:ring-0 cursor-pointer appearance-none text-stone-600 focus:text-stone-900"
+                  >
+                    <option value="" disabled className="text-stone-400">Month</option>
+                    {MONTHS.map((month) => (
+                      <option key={month} value={month} className="text-stone-900">
+                        {month}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={endYear}
+                    onChange={(e) => setEndYear(e.target.value)}
+                    className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 pr-8 text-base font-sans focus:ring-0 cursor-pointer appearance-none text-stone-600 focus:text-stone-900"
+                  >
+                    <option value="" disabled className="text-stone-400">Year</option>
+                    {years.map((year) => (
+                      <option key={year} value={year} className="text-stone-900">
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              ) : (
+                <span className="text-stone-600 text-base font-sans">Present</span>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsPresent(!isPresent)}
+                className="ml-2 text-xs text-stone-400 hover:text-emerald-600 transition-colors font-sans underline"
+              >
+                {isPresent ? 'Set end date' : 'or Present'}
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-3 text-stone-400 focus-within:text-stone-900 transition-colors group">
             <MapPin className="w-4 h-4" />
@@ -189,28 +391,35 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
         </button>
       </div>
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between pb-8">
+      {/* THE ACTION AREA */}
+      <div className="mt-8 flex flex-col md:flex-row items-center gap-4 border-t border-stone-100 pt-8 pb-8">
+        
+        {/* Secondary: Back */}
         <Button
           onClick={onPrev}
           variant="outline"
-          className="px-6 py-3 border-stone-300 text-stone-700 hover:border-stone-400 hover:bg-stone-50"
+          className="px-6 py-3 border-stone-300 text-stone-700 hover:border-stone-400 hover:bg-stone-50 md:mr-auto"
           style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
 
-        <div className="flex items-center gap-4">
-          {canContinue && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-sm text-stone-500 font-sans"
+        <div className="flex items-center gap-4 ml-auto">
+          {/* Action 1: Add Another (The "Loop" Button) */}
+          {(roleTitle.trim() || company.trim()) && (
+            <button 
+              onClick={saveAndAddAnother}
+              disabled={!roleTitle.trim() || !company.trim()}
+              className="group flex items-center gap-3 px-6 py-3 rounded-full border border-stone-200 text-stone-600 hover:border-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
             >
-              Press <kbd className="px-2 py-1 bg-stone-100 rounded text-xs">⌘ Enter</kbd> to continue
-            </motion.p>
+              <Plus className="w-4 h-4" />
+              <span className="font-bold tracking-wide text-xs uppercase">Add Another Role</span>
+            </button>
           )}
+
+          {/* Action 2: Finish (The "Next" Button) */}
           <Button
             onClick={handleSaveAndContinue}
             disabled={!canContinue}
@@ -225,7 +434,7 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
               }
             }}
           >
-            Save & Continue
+            <span className="font-bold tracking-wide text-xs uppercase">Save & Continue</span>
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
