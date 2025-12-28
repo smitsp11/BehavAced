@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Textarea } from '@/components/ui/Textarea'
-import { Plus, Trash2, ArrowRight, ArrowLeft, Save } from 'lucide-react'
-import { useOnboardingStore, ManualExperienceEntry, ManualExperienceData } from '@/lib/stores/onboardingStore'
+import { Plus, X, Calendar, MapPin, ArrowRight, ArrowLeft } from 'lucide-react'
+import { useOnboardingStore, ManualExperienceData } from '@/lib/stores/onboardingStore'
+import { motion } from 'framer-motion'
 
 interface ManualExperienceStepProps {
   onNext: () => void
@@ -14,344 +12,225 @@ interface ManualExperienceStepProps {
 }
 
 export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienceStepProps) {
-  const { manualExperienceData, setManualExperienceData, setUserId } = useOnboardingStore()
-  const [currentEntry, setCurrentEntry] = useState<ManualExperienceEntry>({
-    role_title: '',
-    company: '',
-    location: '',
-    start_date: '',
-    end_date: '',
-    description: '',
-    achievements: [],
-    skills_used: []
-  })
-  const [currentAchievement, setCurrentAchievement] = useState('')
-  const [currentSkill, setCurrentSkill] = useState('')
-  const [additionalSkills, setAdditionalSkills] = useState<string[]>(
-    manualExperienceData?.additional_skills || []
-  )
+  const { setManualExperienceData, setUserId } = useOnboardingStore()
+  const [roleTitle, setRoleTitle] = useState('')
+  const [company, setCompany] = useState('')
+  const [dateRange, setDateRange] = useState('')
+  const [location, setLocation] = useState('')
+  const [achievements, setAchievements] = useState([''])
 
   const addAchievement = () => {
-    if (currentAchievement.trim()) {
-      setCurrentEntry(prev => ({
-        ...prev,
-        achievements: [...prev.achievements, currentAchievement.trim()]
-      }))
-      setCurrentAchievement('')
-    }
+    setAchievements([...achievements, ''])
   }
 
   const removeAchievement = (index: number) => {
-    setCurrentEntry(prev => ({
-      ...prev,
-      achievements: prev.achievements.filter((_, i) => i !== index)
-    }))
-  }
-
-  const addSkill = () => {
-    if (currentSkill.trim()) {
-      setCurrentEntry(prev => ({
-        ...prev,
-        skills_used: [...prev.skills_used, currentSkill.trim()]
-      }))
-      setCurrentSkill('')
+    if (achievements.length > 1) {
+      setAchievements(achievements.filter((_, i) => i !== index))
     }
   }
 
-  const removeSkill = (index: number) => {
-    setCurrentEntry(prev => ({
-      ...prev,
-      skills_used: prev.skills_used.filter((_, i) => i !== index)
-    }))
+  const updateAchievement = (index: number, value: string) => {
+    const newAchievements = [...achievements]
+    newAchievements[index] = value
+    setAchievements(newAchievements)
   }
 
-  const addAdditionalSkill = () => {
-    if (currentSkill.trim() && !additionalSkills.includes(currentSkill.trim())) {
-      setAdditionalSkills(prev => [...prev, currentSkill.trim()])
-      setCurrentSkill('')
-    }
-  }
-
-  const removeAdditionalSkill = (skill: string) => {
-    setAdditionalSkills(prev => prev.filter(s => s !== skill))
-  }
-
-  const saveEntry = () => {
-    if (!currentEntry.role_title.trim() || !currentEntry.company.trim()) {
+  const handleSaveAndContinue = () => {
+    if (!roleTitle.trim() || !company.trim()) {
       return
     }
 
-    const newData: ManualExperienceData = {
-      experiences: [...(manualExperienceData?.experiences || []), currentEntry],
-      additional_skills: additionalSkills
-    }
-
-    setManualExperienceData(newData)
-
-    // Reset form
-    setCurrentEntry({
-      role_title: '',
-      company: '',
-      location: '',
-      start_date: '',
-      end_date: '',
+    // Create experience entry
+    const experienceEntry = {
+      role_title: roleTitle,
+      company: company,
+      location: location,
+      start_date: dateRange.split('—')[0]?.trim() || '',
+      end_date: dateRange.split('—')[1]?.trim() || '',
       description: '',
-      achievements: [],
+      achievements: achievements.filter(a => a.trim()),
       skills_used: []
-    })
-  }
-
-  const removeEntry = (index: number) => {
-    const newData: ManualExperienceData = {
-      experiences: (manualExperienceData?.experiences || []).filter((_, i) => i !== index),
-      additional_skills: additionalSkills
     }
-    setManualExperienceData(newData)
-  }
 
-  const handleContinue = () => {
+    const manualData: ManualExperienceData = {
+      experiences: [experienceEntry],
+      additional_skills: []
+    }
+
+    setManualExperienceData(manualData)
+
     // Generate a UUID-like user ID if we don't have one
     const userId = crypto.randomUUID()
     setUserId(userId)
+
     onNext()
   }
 
-  const hasValidData = (manualExperienceData?.experiences || []).length > 0
+  const canContinue = roleTitle.trim().length > 0 && company.trim().length > 0
 
   return (
-    <Card className="w-full max-w-4xl">
-      <CardHeader>
-        <CardTitle>Tell Us About Your Experience</CardTitle>
-        <CardDescription>
-          Add your professional roles and achievements. Focus on behavioral stories that demonstrate leadership, problem-solving, and impact.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Current Experience Form */}
-        <div className="border border-gray-200 rounded-lg p-6">
-          <h3 className="font-semibold mb-4">Add Experience</h3>
-          <div className="grid md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Role Title *</label>
-              <Input
-                placeholder="e.g., Senior Software Engineer"
-                value={currentEntry.role_title}
-                onChange={(e) => setCurrentEntry(prev => ({ ...prev, role_title: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Company *</label>
-              <Input
-                placeholder="e.g., Tech Corp"
-                value={currentEntry.company}
-                onChange={(e) => setCurrentEntry(prev => ({ ...prev, company: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Location</label>
-              <Input
-                placeholder="e.g., San Francisco, CA"
-                value={currentEntry.location}
-                onChange={(e) => setCurrentEntry(prev => ({ ...prev, location: e.target.value }))}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-sm font-medium mb-1">Start Date</label>
-                <Input
-                  placeholder="e.g., Jan 2020"
-                  value={currentEntry.start_date}
-                  onChange={(e) => setCurrentEntry(prev => ({ ...prev, start_date: e.target.value }))}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">End Date</label>
-                <Input
-                  placeholder="e.g., Present"
-                  value={currentEntry.end_date}
-                  onChange={(e) => setCurrentEntry(prev => ({ ...prev, end_date: e.target.value }))}
-                />
-              </div>
-            </div>
-          </div>
+    <div className="w-full max-w-4xl mx-auto flex flex-col overflow-y-auto px-12 md:px-24 py-12">
+      
+      {/* The Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-16"
+      >
+        <h2 className="font-serif text-5xl md:text-6xl text-stone-900 leading-tight mb-4">
+          Where did you make <br />
+          <span className="italic text-stone-400">your mark?</span>
+        </h2>
+        <p className="font-sans text-stone-500 text-lg">
+          Focus on your most recent or relevant role.
+        </p>
+      </motion.div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Role Description</label>
-            <Textarea
-              placeholder="Describe your responsibilities and the team/context you worked in..."
-              value={currentEntry.description}
-              onChange={(e) => setCurrentEntry(prev => ({ ...prev, description: e.target.value }))}
-              rows={3}
+      {/* The "Mad Libs" Inputs (Role & Company) */}
+      <div className="space-y-12 mb-16">
+        
+        {/* Role & Company Group */}
+        <div className="space-y-8">
+          <div className="group">
+            <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2 group-focus-within:text-emerald-600 transition-colors font-sans">
+              I worked as a...
+            </label>
+            <input 
+              type="text" 
+              placeholder="Senior Product Manager"
+              value={roleTitle}
+              onChange={(e) => setRoleTitle(e.target.value)}
+              className="w-full bg-transparent text-4xl md:text-5xl font-serif text-stone-900 placeholder:text-stone-200 border-b-2 border-stone-200 focus:border-stone-900 focus:outline-none py-4 transition-all focus:ring-0"
             />
           </div>
 
-          {/* Achievements */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Key Achievements</label>
-            <div className="flex gap-2 mb-2">
-              <Input
-                placeholder="e.g., Increased system performance by 40% through optimization"
-                value={currentAchievement}
-                onChange={(e) => setCurrentAchievement(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && addAchievement()}
-              />
-              <Button onClick={addAchievement} size="sm">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="space-y-1">
-              {currentEntry.achievements.map((achievement, index) => (
-                <div key={index} className="flex items-center gap-2 bg-gray-50 p-2 rounded">
-                  <span className="text-sm flex-1">{achievement}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeAchievement(index)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
+          <div className="group">
+            <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2 group-focus-within:text-emerald-600 transition-colors font-sans">
+              At company...
+            </label>
+            <input 
+              type="text" 
+              placeholder="Tech Corp Inc."
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              className="w-full bg-transparent text-4xl md:text-5xl font-serif text-stone-900 placeholder:text-stone-200 border-b-2 border-stone-200 focus:border-stone-900 focus:outline-none py-4 transition-all focus:ring-0"
+            />
           </div>
-
-          {/* Skills Used */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Skills Used</label>
-            <div className="flex gap-2 mb-2">
-              <Input
-                placeholder="e.g., Python, React, AWS"
-                value={currentSkill}
-                onChange={(e) => setCurrentSkill(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && addSkill()}
-              />
-              <Button onClick={addSkill} size="sm">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {currentEntry.skills_used.map((skill, index) => (
-                <span
-                  key={index}
-                  className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm flex items-center gap-1"
-                >
-                  {skill}
-                  <button onClick={() => removeSkill(index)}>
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <Button
-            onClick={saveEntry}
-            disabled={!currentEntry.role_title.trim() || !currentEntry.company.trim()}
-            className="w-full"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Add Experience
-          </Button>
         </div>
 
-        {/* Saved Experiences */}
-        {(manualExperienceData?.experiences || []).length > 0 && (
-          <div>
-            <h3 className="font-semibold mb-4">Your Experience ({manualExperienceData.experiences.length})</h3>
-            <div className="space-y-3">
-              {manualExperienceData.experiences.map((exp, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h4 className="font-medium">{exp.role_title} at {exp.company}</h4>
-                      <p className="text-sm text-gray-600">{exp.location} • {exp.start_date} - {exp.end_date || 'Present'}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeEntry(index)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  {exp.description && (
-                    <p className="text-sm text-gray-700 mb-2">{exp.description}</p>
-                  )}
-                  {exp.achievements.length > 0 && (
-                    <div className="mb-2">
-                      <p className="text-sm font-medium">Achievements:</p>
-                      <ul className="text-sm text-gray-600 ml-4">
-                        {exp.achievements.map((achievement, i) => (
-                          <li key={i}>• {achievement}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {exp.skills_used.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {exp.skills_used.map((skill, i) => (
-                        <span key={i} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Additional Skills */}
-        <div>
-          <label className="block text-sm font-medium mb-2">Additional Skills</label>
-          <div className="flex gap-2 mb-2">
-            <Input
-              placeholder="e.g., Leadership, Project Management"
-              value={currentSkill}
-              onChange={(e) => setCurrentSkill(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addAdditionalSkill()}
+        {/* The Metadata (Dates & Location) - Subtle Row */}
+        <div className="flex flex-wrap gap-8">
+          <div className="flex items-center gap-3 text-stone-400 focus-within:text-stone-900 transition-colors group">
+            <Calendar className="w-5 h-5" />
+            <input 
+              type="text" 
+              placeholder="2020 — Present"
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 w-40 text-lg font-sans focus:ring-0"
             />
-            <Button onClick={addAdditionalSkill} size="sm">
-              <Plus className="w-4 h-4" />
-            </Button>
           </div>
-          <div className="flex flex-wrap gap-1">
-            {additionalSkills.map((skill, index) => (
-              <span
-                key={index}
-                className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm flex items-center gap-1"
+          <div className="flex items-center gap-3 text-stone-400 focus-within:text-stone-900 transition-colors group">
+            <MapPin className="w-5 h-5" />
+            <input 
+              type="text" 
+              placeholder="New York / Remote"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 w-48 text-lg font-sans focus:ring-0"
+            />
+          </div>
+        </div>
+
+      </div>
+
+      {/* The "Wins" Section (Editorial List) */}
+      <div className="space-y-6 mb-12">
+        <h3 className="font-serif text-3xl text-stone-900">
+          Key Achievements
+        </h3>
+        <p className="text-stone-400 text-sm mb-4 font-sans">
+          What did you build, lead, or improve?
+        </p>
+
+        {achievements.map((achievement, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+            className="flex items-start gap-4 group"
+          >
+            <span className="mt-4 w-2 h-2 rounded-full bg-emerald-200 group-focus-within:bg-emerald-500 transition-colors flex-shrink-0" />
+            <textarea
+              rows={2}
+              placeholder="e.g. Led a team of 5 to reduce latency by 40%..."
+              value={achievement}
+              onChange={(e) => updateAchievement(index, e.target.value)}
+              className="flex-1 bg-transparent text-xl text-stone-600 placeholder:text-stone-200 border-b border-stone-100 focus:border-stone-300 focus:outline-none py-2 resize-none font-sans focus:ring-0"
+            />
+            {index > 0 && (
+              <button
+                onClick={() => removeAchievement(index)}
+                className="mt-3 text-stone-300 hover:text-red-400 transition-colors flex-shrink-0"
               >
-                {skill}
-                <button onClick={() => removeAdditionalSkill(skill)}>
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </motion.div>
+        ))}
 
-        {/* Navigation */}
-        <div className="flex gap-4 pt-4">
+        <button 
+          onClick={addAchievement}
+          className="flex items-center gap-2 text-emerald-600 font-bold uppercase tracking-widest text-xs hover:text-emerald-800 transition-colors mt-4 font-sans"
+        >
+          <Plus className="w-4 h-4" /> Add another achievement
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex items-center justify-between pb-20">
+        <Button
+          onClick={onPrev}
+          variant="outline"
+          className="px-6 py-3 border-stone-300 text-stone-700 hover:border-stone-400 hover:bg-stone-50"
+          style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+
+        <div className="flex items-center gap-4">
+          {canContinue && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-sm text-stone-500 font-sans"
+            >
+              Press <kbd className="px-2 py-1 bg-stone-100 rounded text-xs">⌘ Enter</kbd> to continue
+            </motion.p>
+          )}
           <Button
-            onClick={onPrev}
-            variant="outline"
-            className="flex-1"
+            onClick={handleSaveAndContinue}
+            disabled={!canContinue}
+            className="bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                if (canContinue) {
+                  handleSaveAndContinue()
+                }
+              }
+            }}
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <Button
-            onClick={handleContinue}
-            disabled={!hasValidData}
-            className="flex-1"
-            size="lg"
-          >
-            Continue
+            Save & Continue
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+    </div>
   )
 }
