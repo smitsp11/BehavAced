@@ -1,9 +1,9 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Upload, FileText, ArrowRight, ArrowLeft } from 'lucide-react'
+import { UploadCloud, PenLine, ArrowRight, ArrowLeft } from 'lucide-react'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
+import { motion } from 'framer-motion'
 
 interface ExperienceChoiceStepProps {
   onNext: () => void
@@ -11,124 +11,106 @@ interface ExperienceChoiceStepProps {
 }
 
 export default function ExperienceChoiceStep({ onNext, onPrev }: ExperienceChoiceStepProps) {
-  const { experienceChoice, setExperienceChoice } = useOnboardingStore()
+  const { setExperienceChoice } = useOnboardingStore()
 
-  const handleChoice = (choice: 'resume' | 'manual') => {
-    setExperienceChoice(choice)
-  }
-
-  const handleContinue = () => {
-    if (experienceChoice) {
-      onNext()
-    }
+  const handleSelectPath = (path: 'resume' | 'manual') => {
+    setExperienceChoice(path)
+    // Immediately transition to next step
+    onNext()
   }
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle>How would you like to share your experience?</CardTitle>
-        <CardDescription>
-          Choose how you'd prefer to provide your professional background. Both options work equally well.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* Resume Upload Option */}
-          <div
-            className={`border-2 rounded-lg p-6 cursor-pointer transition-all ${
-              experienceChoice === 'resume'
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-            onClick={() => handleChoice('resume')}
-          >
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className={`p-3 rounded-full ${
-                experienceChoice === 'resume' ? 'bg-blue-100' : 'bg-gray-100'
-              }`}>
-                <Upload className={`w-8 h-8 ${
-                  experienceChoice === 'resume' ? 'text-blue-600' : 'text-gray-600'
-                }`} />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Upload Resume</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Quick and easy - we'll automatically extract your experience, skills, and achievements
-                </p>
-                <ul className="text-xs text-gray-500 space-y-1">
-                  <li>• Supports PDF, DOCX, TXT</li>
-                  <li>• AI analyzes your background</li>
-                  <li>• Extracts quantifiable achievements</li>
-                </ul>
-              </div>
-            </div>
+    <div className="w-full max-w-4xl mx-auto flex flex-col justify-center min-h-[60vh] px-12 md:px-24">
+      
+      {/* The Big Question */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-16"
+      >
+        <h2 className="font-serif text-5xl md:text-6xl text-stone-900 leading-tight">
+          How should we build <br />
+          <span className="italic text-stone-400">your profile?</span>
+        </h2>
+      </motion.div>
+
+      {/* The Options (Vertical Stack) */}
+      <div className="space-y-6 mb-12">
+        
+        {/* OPTION A: UPLOAD */}
+        <motion.button 
+          onClick={() => handleSelectPath('resume')}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="group w-full text-left p-8 rounded-3xl hover:bg-white hover:shadow-xl hover:shadow-stone-200/50 border border-transparent hover:border-stone-100 transition-all duration-300 flex items-start gap-6"
+        >
+          {/* Icon Circle */}
+          <div className="w-16 h-16 rounded-full bg-stone-100 group-hover:bg-emerald-100 flex items-center justify-center shrink-0 transition-colors">
+            <UploadCloud className="w-8 h-8 text-stone-500 group-hover:text-emerald-700" strokeWidth={1.5} />
           </div>
 
-          {/* Manual Entry Option */}
-          <div
-            className={`border-2 rounded-lg p-6 cursor-pointer transition-all ${
-              experienceChoice === 'manual'
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-            onClick={() => handleChoice('manual')}
-          >
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className={`p-3 rounded-full ${
-                experienceChoice === 'manual' ? 'bg-blue-100' : 'bg-gray-100'
-              }`}>
-                <FileText className={`w-8 h-8 ${
-                  experienceChoice === 'manual' ? 'text-blue-600' : 'text-gray-600'
-                }`} />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Enter Manually</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Have full control - describe your roles, achievements, and skills in detail
-                </p>
-                <ul className="text-xs text-gray-500 space-y-1">
-                  <li>• Step-by-step role entry</li>
-                  <li>• Focus on behavioral stories</li>
-                  <li>• Add specific achievements</li>
-                </ul>
-              </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-1">
+              <h3 className="font-serif text-3xl text-stone-900 group-hover:text-emerald-900 transition-colors">
+                Auto-Extract Resume
+              </h3>
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-full">
+                Fastest
+              </span>
             </div>
+            <p className="font-sans text-stone-500 text-lg group-hover:text-stone-600 leading-relaxed max-w-md">
+              We'll parse your PDF to automatically extract skills, roles, and key achievements.
+            </p>
           </div>
-        </div>
 
-        {experienceChoice && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-blue-800 font-medium">
-              <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-              {experienceChoice === 'resume'
-                ? 'Great! Upload your resume on the next screen.'
-                : 'Perfect! Tell us about your experience manually.'
-              }
-            </div>
+          {/* Arrow (Visible on Hover) */}
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity self-center">
+            <ArrowRight className="w-8 h-8 text-stone-300 group-hover:text-emerald-500" />
           </div>
-        )}
+        </motion.button>
 
-        <div className="flex gap-4 pt-4">
-          <Button
-            onClick={onPrev}
-            variant="outline"
-            className="px-6 py-6 rounded-full border-2 border-gray-200 hover:border-green-400 transition-all"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
-          </Button>
-          <Button
-            onClick={handleContinue}
-            disabled={!experienceChoice}
-            className={`flex-1 bg-gradient-to-r from-[#7fffd2] to-[#28d98a] text-white rounded-full px-8 py-6 text-lg font-semibold shadow-[0_8px_25px_rgba(40,217,138,0.35)] hover:shadow-[0_12px_35px_rgba(40,217,138,0.45)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
-          >
-            {experienceChoice ? 'Continue' : 'Next'}
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+        {/* OPTION B: MANUAL */}
+        <motion.button 
+          onClick={() => handleSelectPath('manual')}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="group w-full text-left p-8 rounded-3xl hover:bg-white hover:shadow-xl hover:shadow-stone-200/50 border border-transparent hover:border-stone-100 transition-all duration-300 flex items-start gap-6"
+        >
+          <div className="w-16 h-16 rounded-full bg-stone-100 group-hover:bg-stone-200 flex items-center justify-center shrink-0 transition-colors">
+            <PenLine className="w-8 h-8 text-stone-500 group-hover:text-stone-800" strokeWidth={1.5} />
+          </div>
+
+          <div className="flex-1">
+            <h3 className="font-serif text-3xl text-stone-900 group-hover:text-stone-800 transition-colors mb-1">
+              Guided Manual Entry
+            </h3>
+            <p className="font-sans text-stone-500 text-lg group-hover:text-stone-600 leading-relaxed max-w-md">
+              Build your profile step-by-step using our behavioral story framework.
+            </p>
+          </div>
+          
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity self-center">
+            <ArrowRight className="w-8 h-8 text-stone-300" />
+          </div>
+        </motion.button>
+
+      </div>
+
+      {/* Navigation - Back Button Only */}
+      <div className="flex items-center">
+        <Button
+          onClick={onPrev}
+          variant="outline"
+          className="px-6 py-3 border-stone-300 text-stone-700 hover:border-stone-400 hover:bg-stone-50"
+          style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+      </div>
+    </div>
   )
 }
