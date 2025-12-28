@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
-import { ArrowRight, ArrowLeft } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Brain } from 'lucide-react'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
 import { createPersonalitySnapshot } from '@/lib/api'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -14,6 +14,42 @@ interface PersonalityStepProps {
 }
 
 const TOTAL_STEPS = 5
+
+// Keywords to highlight in emerald green
+const KEYWORDS = [
+  'analytical', 'detail-oriented', 'structured', 'methodical', 'proactive',
+  'direct', 'concise', 'collaborative', 'data-driven', 'leadership',
+  'problem-solving', 'adaptability', 'communication', 'impatient', 'delegation',
+  'time management', 'public speaking', 'conflict', 'teamwork', 'innovation'
+]
+
+const STEP_INFO = [
+  {
+    number: '01',
+    title: 'Identity',
+    description: 'Understanding your core work style helps us match your authentic voice.'
+  },
+  {
+    number: '02',
+    title: 'Voice',
+    description: 'How you communicate reveals your natural speaking patterns.'
+  },
+  {
+    number: '03',
+    title: 'Experience',
+    description: 'Your strengths shape the stories we\'ll help you tell.'
+  },
+  {
+    number: '04',
+    title: 'Analysis',
+    description: 'Growth areas help us craft balanced, honest responses.'
+  },
+  {
+    number: '05',
+    title: 'Refinement',
+    description: 'Optional writing sample for deeper voice matching.'
+  }
+]
 
 export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps) {
   const { 
@@ -30,6 +66,44 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
     challenges: personalityData?.challenges || '',
     writing_sample: personalityData?.writing_sample || '',
   })
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Highlight keywords in text
+  const highlightKeywords = (text: string) => {
+    if (!text) return text
+    let highlighted = text
+    KEYWORDS.forEach(keyword => {
+      const regex = new RegExp(`\\b${keyword}\\b`, 'gi')
+      highlighted = highlighted.replace(regex, (match) => 
+        `<span class="text-emerald-600 font-semibold">${match}</span>`
+      )
+    })
+    return highlighted
+  }
+
+  // Show analyzing indicator when user types
+  useEffect(() => {
+    const currentField = getCurrentField()
+    if (currentField && formData[currentField as keyof typeof formData].length > 10) {
+      setIsAnalyzing(true)
+      const timer = setTimeout(() => setIsAnalyzing(false), 2000)
+      return () => clearTimeout(timer)
+    } else {
+      setIsAnalyzing(false)
+    }
+  }, [formData, currentStep])
+
+  const getCurrentField = () => {
+    switch (currentStep) {
+      case 1: return 'work_style'
+      case 2: return 'communication'
+      case 3: return 'strengths'
+      case 4: return 'challenges'
+      case 5: return 'writing_sample'
+      default: return null
+    }
+  }
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -38,6 +112,8 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS) {
       setCurrentStep(prev => prev + 1)
+      // Focus textarea on next step
+      setTimeout(() => textareaRef.current?.focus(), 100)
     } else {
       handleSubmit()
     }
@@ -46,20 +122,33 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1)
+      setTimeout(() => textareaRef.current?.focus(), 100)
     } else {
       onPrev()
     }
   }
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        if (canProceed()) {
+          handleNext()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentStep, formData])
+
   const handleSubmit = () => {
-    // Basic validation
     if (!formData.work_style.trim() || !formData.communication.trim() || !formData.strengths.trim() || !formData.challenges.trim()) {
       return
     }
 
     setPersonalityData(formData)
     
-    // Start personality snapshot processing in background if userId exists
     if (userId) {
       startPersonalitySnapshotBackground(formData)
     }
@@ -67,23 +156,10 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
     onNext()
   }
 
-  // TEMPORARILY DISABLED: Background processing for design testing
-  // Start background processing when personality data changes and userId exists
-  // useEffect(() => {
-  //   if (personalityData && userId && formData.work_style && formData.communication) {
-  //     const taskStatus = useOnboardingStore.getState().getBackgroundTaskStatus('personalitySnapshot')
-  //     if (taskStatus.status === 'idle') {
-  //       startPersonalitySnapshotBackground(personalityData)
-  //     }
-  //   }
-  // }, [userId])
-
   const startPersonalitySnapshotBackground = async (data: typeof formData) => {
-    // Mark as processing
     setBackgroundTaskStatus('personalitySnapshot', 'processing')
     
     try {
-      // Convert to API format
       const responses = {
         work_style: data.work_style,
         communication: data.communication,
@@ -91,7 +167,6 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
         challenges: data.challenges,
       }
       
-      // Fire and forget - don't await
       createPersonalitySnapshot(userId!, responses, data.writing_sample)
         .then(() => {
           setBackgroundTaskStatus('personalitySnapshot', 'completed')
@@ -117,209 +192,252 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
       case 4:
         return formData.challenges.trim().length > 0
       default:
-        return true // Step 5 is optional
+        return true
     }
   }
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0
-    }),
-    center: {
-      x: 0,
-      opacity: 1
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? -300 : 300,
-      opacity: 0
-    })
-  }
-
-  const renderStep = () => {
-    const inputStyle = {
-      fontFamily: 'Inter, sans-serif' as const,
-      fontWeight: 400,
-      fontSize: '16px',
-      border: '1px solid #E3F3E7',
-      background: 'rgba(255,255,255,0.9)',
-      backdropFilter: 'blur(12px)',
-      padding: '16px 18px',
-      borderRadius: '14px',
-      lineHeight: '1.6',
-      boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
-    }
-
+  const getQuestion = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <div>
-            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
-              <span className="text-lg">✍️</span>
-              <span>How would you describe your work style? <span className="text-green-600">*</span></span>
-            </label>
-            <Textarea
-              placeholder="e.g., I'm analytical and detail-oriented, preferring structured approaches with clear goals and metrics..."
-              value={formData.work_style}
-              onChange={(e) => handleChange('work_style', e.target.value)}
-              rows={4}
-              className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
-              style={inputStyle}
-            />
-          </div>
-        )
+        return "How would you describe your work style?"
       case 2:
-        return (
-          <div>
-            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
-              <span className="text-lg">🗣️</span>
-              <span>How do you typically communicate in professional settings? <span className="text-green-600">*</span></span>
-            </label>
-            <Textarea
-              placeholder="e.g., I'm direct and concise, focusing on key points and actionable outcomes..."
-              value={formData.communication}
-              onChange={(e) => handleChange('communication', e.target.value)}
-              rows={4}
-              className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
-              style={inputStyle}
-            />
-          </div>
-        )
+        return "How do you typically communicate in professional settings?"
       case 3:
-        return (
-          <div>
-            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
-              <span className="text-lg">⚡</span>
-              <span>What are your key strengths? <span className="text-green-600">*</span></span>
-            </label>
-            <Textarea
-              placeholder="e.g., Problem-solving, leadership, adaptability, attention to detail..."
-              value={formData.strengths}
-              onChange={(e) => handleChange('strengths', e.target.value)}
-              rows={3}
-              className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
-              style={inputStyle}
-            />
-          </div>
-        )
+        return "What are your key strengths?"
       case 4:
-        return (
-          <div>
-            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
-              <span className="text-lg">🌱</span>
-              <span>What areas are you working to improve? <span className="text-green-600">*</span></span>
-            </label>
-            <Textarea
-              placeholder="e.g., Public speaking, delegation, time management..."
-              value={formData.challenges}
-              onChange={(e) => handleChange('challenges', e.target.value)}
-              rows={3}
-              className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
-              style={inputStyle}
-            />
-          </div>
-        )
+        return "What areas are you working to improve?"
       case 5:
-        return (
-          <div>
-            <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
-              <span className="text-lg">📄</span>
-              <span>Optional: Writing sample (helps match your voice)</span>
-            </label>
-            <Textarea
-              placeholder="Paste any professional writing - email, report, presentation, blog post..."
-              value={formData.writing_sample}
-              onChange={(e) => handleChange('writing_sample', e.target.value)}
-              rows={5}
-              className="resize-none transition-all focus:border-green-400 focus:ring-2 focus:ring-green-100 placeholder-warm"
-              style={inputStyle}
-            />
-            <p className="mt-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '15px', color: '#7D8B92' }}>
-              This helps our AI better understand your writing style and vocabulary level
-            </p>
-          </div>
-        )
+        return "Optional: Writing sample (helps match your voice)"
       default:
-        return null
+        return ""
+    }
+  }
+
+  const getPlaceholder = () => {
+    switch (currentStep) {
+      case 1:
+        return "e.g., I'm analytical and detail-oriented, preferring structured approaches with clear goals and metrics..."
+      case 2:
+        return "e.g., I'm direct and concise, focusing on key points and actionable outcomes..."
+      case 3:
+        return "e.g., Problem-solving, leadership, adaptability, attention to detail..."
+      case 4:
+        return "e.g., Public speaking, delegation, time management..."
+      case 5:
+        return "Paste any professional writing - email, report, presentation, blog post..."
+      default:
+        return ""
+    }
+  }
+
+  const getCurrentValue = () => {
+    switch (currentStep) {
+      case 1:
+        return formData.work_style
+      case 2:
+        return formData.communication
+      case 3:
+        return formData.strengths
+      case 4:
+        return formData.challenges
+      case 5:
+        return formData.writing_sample
+      default:
+        return ""
+    }
+  }
+
+  const handleInputChange = (value: string) => {
+    switch (currentStep) {
+      case 1:
+        handleChange('work_style', value)
+        break
+      case 2:
+        handleChange('communication', value)
+        break
+      case 3:
+        handleChange('strengths', value)
+        break
+      case 4:
+        handleChange('challenges', value)
+        break
+      case 5:
+        handleChange('writing_sample', value)
+        break
+    }
+  }
+
+  const slideUpVariants = {
+    enter: {
+      y: 50,
+      opacity: 0
+    },
+    center: {
+      y: 0,
+      opacity: 1
+    },
+    exit: {
+      y: -50,
+      opacity: 0
     }
   }
 
   return (
-    <div className="w-full">
-      <div className="mb-10 relative">
-        {/* Soft Green Light Gradient Behind Title */}
-        <div className="absolute -inset-4 bg-gradient-to-r from-green-50/60 via-emerald-50/40 to-green-50/60 rounded-2xl blur-xl -z-10" />
-        <div className="relative">
-          <h2 className="mb-2 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '20px' }}>
-            <span className="text-xl">📝</span>
-            Tell Us About Yourself
-          </h2>
-          <p className="leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '15px', color: '#7D8B92' }}>
-            We'll use this to learn how you communicate and shape answers that sound authentically like you.
+    <div className="w-full h-full bg-stone-50 flex">
+      {/* LEFT SIDEBAR - Coach's Guide (30%) */}
+      <div className="w-[30%] border-r border-stone-200 p-8 flex flex-col">
+        <div className="mb-8">
+          <h2 className="font-serif text-2xl text-stone-900 mb-2">The Executive Diagnostic</h2>
+          <p className="font-sans text-sm text-stone-600 leading-relaxed">
+            A private consultation to understand your authentic communication style.
           </p>
+        </div>
+
+        {/* Vertical Step Counter */}
+        <div className="flex-1 space-y-6">
+          {STEP_INFO.map((step, index) => (
+            <div
+              key={index}
+              className={`flex items-start gap-4 transition-all duration-300 ${
+                index + 1 === currentStep
+                  ? 'opacity-100'
+                  : index + 1 < currentStep
+                  ? 'opacity-60'
+                  : 'opacity-40'
+              }`}
+            >
+              <div className="flex-shrink-0">
+                <span
+                  className={`font-serif italic font-light text-3xl block ${
+                    index + 1 === currentStep
+                      ? 'text-black'
+                      : index + 1 < currentStep
+                      ? 'text-stone-400'
+                      : 'text-stone-300'
+                  }`}
+                >
+                  {step.number}
+                </span>
+              </div>
+              <div className="flex-1 pt-1">
+                <h3
+                  className={`font-serif text-lg mb-1 ${
+                    index + 1 === currentStep
+                      ? 'text-stone-900'
+                      : 'text-stone-600'
+                  }`}
+                >
+                  {step.title}
+                </h3>
+                <p className="font-sans text-xs text-stone-500 leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Step Indicator */}
-      <div className="mb-8 flex items-center justify-center gap-2">
-        {Array.from({ length: TOTAL_STEPS }).map((_, index) => (
-          <div
-            key={index}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              index + 1 <= currentStep
-                ? 'bg-gradient-to-r from-[#28d98a] to-[#6fffc5] w-8'
-                : 'bg-gray-200 w-1.5'
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* Step Content with Slide Animation */}
-      <div className="relative min-h-[200px] mb-8">
-        <AnimatePresence mode="wait" custom={1}>
+      {/* RIGHT SIDE - Writing Desk (70%) */}
+      <div className="flex-1 p-12 flex flex-col">
+        {/* Question - Massive Serif Headline */}
+        <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
-            custom={1}
-            variants={slideVariants}
+            variants={slideUpVariants}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            className="mb-8"
           >
-            {renderStep()}
+            <h1 className="font-serif text-5xl md:text-6xl text-stone-900 mb-4 leading-tight">
+              {getQuestion()}
+              {currentStep <= 4 && <span className="text-emerald-600 ml-2">*</span>}
+            </h1>
           </motion.div>
         </AnimatePresence>
-      </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex gap-4 pt-6">
-        {currentStep > 1 && (
-          <Button
-            onClick={handleBack}
-            variant="outline"
-            className="px-6 py-6 rounded-full border-2 border-gray-200 hover:border-green-400 transition-all"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+        {/* Analyzing Indicator */}
+        {isAnalyzing && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mb-4 flex items-center gap-2 text-sm text-emerald-600"
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
-          </Button>
+            <Brain className="w-4 h-4 animate-pulse" />
+            <span className="font-sans">Analyzing communication pattern...</span>
+          </motion.div>
         )}
-        <Button
-          onClick={handleNext}
-          disabled={!canProceed()}
-          className={`${currentStep > 1 ? 'flex-1' : 'w-full'} bg-gradient-to-r from-[#7fffd2] to-[#28d98a] text-white rounded-full px-8 py-6 text-lg font-semibold shadow-[0_8px_25px_rgba(40,217,138,0.35)] hover:shadow-[0_12px_35px_rgba(40,217,138,0.45)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
-          style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
-        >
-          {currentStep === TOTAL_STEPS ? 'Continue' : 'Next'}
-          <ArrowRight className="w-5 h-5 ml-2" />
-        </Button>
-      </div>
 
-      {currentStep <= 4 && (
-        <p className="text-center mt-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '15px', color: '#7D8B92' }}>
-          * Required fields
-        </p>
-      )}
+        {/* Ghost Input - Minimal Underline Style */}
+        <div className="flex-1 flex flex-col">
+          <div className="relative flex-1">
+            <Textarea
+              ref={textareaRef}
+              value={getCurrentValue()}
+              onChange={(e) => handleInputChange(e.target.value)}
+              placeholder={getPlaceholder()}
+              rows={12}
+              className="w-full h-full resize-none bg-transparent border-0 border-b-2 border-stone-300 focus:border-emerald-500 focus:ring-0 rounded-none p-0 text-lg font-sans text-stone-900 placeholder:text-stone-400 transition-all duration-300"
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 400,
+                lineHeight: '1.8',
+                boxShadow: 'none',
+                outline: 'none'
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                  e.preventDefault()
+                  if (canProceed()) {
+                    handleNext()
+                  }
+                }
+              }}
+            />
+          </div>
+
+          {/* Navigation */}
+          <div className="mt-8 flex items-center justify-between">
+            <div>
+              {currentStep > 1 && (
+                <Button
+                  onClick={handleBack}
+                  variant="outline"
+                  className="px-6 py-3 border-stone-300 text-stone-700 hover:border-stone-400 hover:bg-stone-50"
+                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-4">
+              {canProceed() && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-sm text-stone-500 font-sans"
+                >
+                  Press <kbd className="px-2 py-1 bg-stone-100 rounded text-xs">⌘ Enter</kbd> to continue
+                </motion.p>
+              )}
+              <Button
+                onClick={handleNext}
+                disabled={!canProceed()}
+                className="bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+              >
+                {currentStep === TOTAL_STEPS ? 'Continue' : 'Next'}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
