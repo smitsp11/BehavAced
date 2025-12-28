@@ -147,8 +147,8 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
     const manualData: ManualExperienceData = {
       experiences: allExperiences.map(role => ({
         ...role,
-        description: '',
-        skills_used: []
+      description: '',
+      skills_used: []
       })),
       additional_skills: []
     }
@@ -165,7 +165,7 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
   const canContinue = roleTitle.trim().length > 0 && company.trim().length > 0 || savedRoles.length > 0
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col overflow-y-auto px-12 md:px-24 py-8 pb-32">
+    <div className="w-full max-w-4xl mx-auto flex flex-col overflow-y-auto px-12 md:px-24 pt-64 pb-32">
       
       {/* THE "CHAPTER STACK" (Saved Roles Summary) */}
       {savedRoles.length > 0 && (
@@ -189,13 +189,13 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 flex-shrink-0">
                   <Briefcase className="w-5 h-5" />
-                </div>
-                <div>
+            </div>
+            <div>
                   <h4 className="font-serif text-xl text-stone-900">{role.role_title}</h4>
                   <p className="text-sm text-stone-500 font-sans">
                     {role.company} • {role.start_date} {role.end_date ? `— ${role.end_date}` : ''}
                   </p>
-                </div>
+            </div>
               </div>
               <button
                 onClick={() => removeSavedRole(idx)}
@@ -260,7 +260,7 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
               className="w-full bg-transparent text-3xl md:text-4xl font-serif text-stone-900 placeholder:text-stone-200 border-b-2 border-stone-200 focus:border-stone-900 focus:outline-none py-3 transition-all focus:ring-0"
             />
           </div>
-        </div>
+            </div>
 
         {/* The Metadata (Dates & Location) - Subtle Row */}
         <div className="flex flex-wrap gap-6">
@@ -345,7 +345,7 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
           </div>
         </div>
 
-      </div>
+                    </div>
 
       {/* The "Wins" Section (Editorial List) */}
       <div className="space-y-3 mb-6">
@@ -378,7 +378,7 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
                 className="mt-3 text-stone-300 hover:text-red-400 transition-colors flex-shrink-0"
               >
                 <X className="w-5 h-5" />
-              </button>
+                </button>
             )}
           </motion.div>
         ))}
@@ -389,21 +389,21 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
         >
           <Plus className="w-4 h-4" /> Add another achievement
         </button>
-      </div>
+        </div>
 
       {/* THE ACTION AREA */}
       <div className="mt-8 flex flex-col md:flex-row items-center gap-4 border-t border-stone-100 pt-8 pb-8">
         
         {/* Secondary: Back */}
-        <Button
-          onClick={onPrev}
-          variant="outline"
+          <Button
+            onClick={onPrev}
+            variant="outline"
           className="px-6 py-3 border-stone-300 text-stone-700 hover:border-stone-400 hover:bg-stone-50 md:mr-auto"
           style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
 
         <div className="flex items-center gap-4 ml-auto">
           {/* Action 1: Add Another (The "Loop" Button) */}
