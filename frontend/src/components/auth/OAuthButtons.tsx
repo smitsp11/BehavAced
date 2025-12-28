@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signInWithGoogle, signInWithGitHub } from '@/lib/supabase'
+import { signInWithGoogle, signInWithGitHub } from '@/lib/supabase-browser'
 
 export function OAuthButtons() {
   const [loading, setLoading] = useState<string | null>(null)

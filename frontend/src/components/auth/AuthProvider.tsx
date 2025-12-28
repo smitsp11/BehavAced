@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase-browser'
 
 interface AuthContextType {
   user: User | null
@@ -27,19 +27,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = getSupabase()
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const initializeAuth = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (error) {
+        console.error('Error getting session:', error)
+      }
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
-    })
+    }
 
-    // Listen for auth changes
+    initializeAuth()
+
+    // Listen for auth changes (including OAuth callbacks)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id)
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
+      
+      // If we get a SIGNED_IN event, ensure we have the latest session
+      if (event === 'SIGNED_IN' && session) {
+        // Double-check session is set
+        const { data: { session: latestSession } } = await supabase.auth.getSession()
+        if (latestSession) {
+          setSession(latestSession)
+          setUser(latestSession.user)
+        }
+      }
     })
 
     return () => subscription.unsubscribe()

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase'
+import { supabaseServer } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -7,12 +7,24 @@ export async function GET(request: Request) {
   const origin = requestUrl.origin
 
   if (code) {
-    const supabase = createClient()
-    await supabase.auth.exchangeCodeForSession(code)
+    // Use server client with cookies for PKCE code verifier
+    const supabase = supabaseServer()
+    
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (error) {
+      console.error('Error exchanging code for session:', error)
+      return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+    }
+
+    // Session should be set in cookies by Supabase
+    // Redirect to onboarding - the client-side AuthProvider will pick up the session
+    if (data.session) {
+      return NextResponse.redirect(`${origin}/onboarding`)
+    }
   }
 
-  // Redirect to onboarding for new users (they'll need to complete onboarding)
-  // We can check if they have a profile later, but for now redirect to onboarding
-  return NextResponse.redirect(`${origin}/onboarding`)
+  // If no code or session exchange failed, redirect to login
+  return NextResponse.redirect(`${origin}/login?error=no_session`)
 }
 

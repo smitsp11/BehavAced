@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { signUpWithEmail } from '@/lib/supabase'
+import { signUpWithEmail } from '@/lib/supabase-browser'
 import { OAuthButtons } from './OAuthButtons'
 
 export function SignUpForm() {
