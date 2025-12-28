@@ -27,7 +27,7 @@ export default function ExperienceChoiceStep({ onNext, onPrev }: ExperienceChoic
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="mb-16"
+        className="mb-10"
       >
         <h2 className="font-serif text-5xl md:text-6xl text-stone-900 leading-tight">
           How should we build <br />
@@ -36,7 +36,7 @@ export default function ExperienceChoiceStep({ onNext, onPrev }: ExperienceChoic
       </motion.div>
 
       {/* The Options (Vertical Stack) */}
-      <div className="space-y-6 mb-12">
+      <div className="space-y-4 mb-8">
         
         {/* OPTION A: UPLOAD */}
         <motion.button 

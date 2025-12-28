@@ -293,9 +293,9 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
           animate="center"
           exit="exit"
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="w-full mb-12 text-center"
+          className="w-full mb-8 text-center"
         >
-          <h1 className="font-serif text-5xl md:text-6xl text-stone-900 mb-6 leading-tight">
+          <h1 className="font-serif text-5xl md:text-6xl text-stone-900 mb-4 leading-tight">
             {getQuestion()}
             {currentStep <= 4 && <span className="text-emerald-600 ml-2">*</span>}
           </h1>
@@ -317,7 +317,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
 
       {/* Ghost Input - Minimal Underline Style */}
       <div className="w-full max-w-3xl">
-        <div className="relative mb-12">
+        <div className="relative mb-8">
           <Textarea
             ref={textareaRef}
             value={getCurrentValue()}

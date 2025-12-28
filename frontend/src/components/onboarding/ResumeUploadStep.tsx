@@ -183,7 +183,7 @@ export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepPro
   return (
     <div 
       ref={dropzoneRef}
-      className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12"
+      className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8"
     >
       {/* The Headline (Matches Step 1 Style) */}
       <AnimatePresence mode="wait">

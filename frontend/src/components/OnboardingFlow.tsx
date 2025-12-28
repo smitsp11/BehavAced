@@ -149,9 +149,9 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   return (
     <div className="h-screen w-full overflow-hidden bg-stone-50 flex">
       {/* LEFT SIDEBAR - The Context Sidebar (35%) */}
-      <div className="w-[35%] bg-stone-100/50 border-r border-stone-200 p-8 flex flex-col sticky top-0 h-screen overflow-y-auto">
+      <div className="w-[35%] bg-stone-100/50 border-r border-stone-200 p-6 flex flex-col sticky top-0 h-screen overflow-y-auto">
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-8">
           <h2 className="text-xs font-bold uppercase tracking-widest text-stone-600 mb-2 font-sans">
             The Executive Diagnostic
           </h2>
@@ -161,7 +161,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         </div>
 
         {/* Vertical Timeline */}
-        <div className="flex-1 space-y-8">
+        <div className="flex-1 space-y-6">
           {visibleSteps.map((step, index) => {
             const isCurrent = step.id === currentStep
             const isPast = index < currentStepIndex
@@ -221,7 +221,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             animate="center"
             exit="exit"
             transition={{ duration: 0.4, ease: 'easeInOut' }}
-            className="h-full flex items-center justify-center p-12"
+            className="h-full flex items-center justify-center p-8"
           >
             {renderCurrentStep()}
           </motion.div>

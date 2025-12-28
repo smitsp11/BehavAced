@@ -69,29 +69,29 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
   const canContinue = roleTitle.trim().length > 0 && company.trim().length > 0
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col overflow-y-auto px-12 md:px-24 py-12">
+    <div className="w-full max-w-4xl mx-auto flex flex-col overflow-y-auto px-12 md:px-24 py-8">
       
       {/* The Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="mb-16"
+        className="mb-6"
       >
-        <h2 className="font-serif text-5xl md:text-6xl text-stone-900 leading-tight mb-4">
+        <h2 className="font-serif text-4xl md:text-5xl text-stone-900 leading-tight mb-2">
           Where did you make <br />
           <span className="italic text-stone-400">your mark?</span>
         </h2>
-        <p className="font-sans text-stone-500 text-lg">
+        <p className="font-sans text-stone-500 text-base">
           Focus on your most recent or relevant role.
         </p>
       </motion.div>
 
       {/* The "Mad Libs" Inputs (Role & Company) */}
-      <div className="space-y-12 mb-16">
+      <div className="space-y-4 mb-6">
         
         {/* Role & Company Group */}
-        <div className="space-y-8">
+        <div className="space-y-4">
           <div className="group">
             <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2 group-focus-within:text-emerald-600 transition-colors font-sans">
               I worked as a...
@@ -101,7 +101,7 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
               placeholder="Senior Product Manager"
               value={roleTitle}
               onChange={(e) => setRoleTitle(e.target.value)}
-              className="w-full bg-transparent text-4xl md:text-5xl font-serif text-stone-900 placeholder:text-stone-200 border-b-2 border-stone-200 focus:border-stone-900 focus:outline-none py-4 transition-all focus:ring-0"
+              className="w-full bg-transparent text-3xl md:text-4xl font-serif text-stone-900 placeholder:text-stone-200 border-b-2 border-stone-200 focus:border-stone-900 focus:outline-none py-3 transition-all focus:ring-0"
             />
           </div>
 
@@ -114,31 +114,31 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
               placeholder="Tech Corp Inc."
               value={company}
               onChange={(e) => setCompany(e.target.value)}
-              className="w-full bg-transparent text-4xl md:text-5xl font-serif text-stone-900 placeholder:text-stone-200 border-b-2 border-stone-200 focus:border-stone-900 focus:outline-none py-4 transition-all focus:ring-0"
+              className="w-full bg-transparent text-3xl md:text-4xl font-serif text-stone-900 placeholder:text-stone-200 border-b-2 border-stone-200 focus:border-stone-900 focus:outline-none py-3 transition-all focus:ring-0"
             />
           </div>
         </div>
 
         {/* The Metadata (Dates & Location) - Subtle Row */}
-        <div className="flex flex-wrap gap-8">
+        <div className="flex flex-wrap gap-6">
           <div className="flex items-center gap-3 text-stone-400 focus-within:text-stone-900 transition-colors group">
-            <Calendar className="w-5 h-5" />
+            <Calendar className="w-4 h-4" />
             <input 
               type="text" 
               placeholder="2020 — Present"
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
-              className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 w-40 text-lg font-sans focus:ring-0"
+              className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 w-40 text-base font-sans focus:ring-0"
             />
           </div>
           <div className="flex items-center gap-3 text-stone-400 focus-within:text-stone-900 transition-colors group">
-            <MapPin className="w-5 h-5" />
+            <MapPin className="w-4 h-4" />
             <input 
               type="text" 
               placeholder="New York / Remote"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 w-48 text-lg font-sans focus:ring-0"
+              className="bg-transparent border-b border-stone-200 focus:border-stone-900 focus:outline-none py-1 w-48 text-base font-sans focus:ring-0"
             />
           </div>
         </div>
@@ -146,11 +146,11 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
       </div>
 
       {/* The "Wins" Section (Editorial List) */}
-      <div className="space-y-6 mb-12">
-        <h3 className="font-serif text-3xl text-stone-900">
+      <div className="space-y-3 mb-6">
+        <h3 className="font-serif text-2xl text-stone-900">
           Key Achievements
         </h3>
-        <p className="text-stone-400 text-sm mb-4 font-sans">
+        <p className="text-stone-400 text-sm mb-3 font-sans">
           What did you build, lead, or improve?
         </p>
 
@@ -168,7 +168,7 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
               placeholder="e.g. Led a team of 5 to reduce latency by 40%..."
               value={achievement}
               onChange={(e) => updateAchievement(index, e.target.value)}
-              className="flex-1 bg-transparent text-xl text-stone-600 placeholder:text-stone-200 border-b border-stone-100 focus:border-stone-300 focus:outline-none py-2 resize-none font-sans focus:ring-0"
+              className="flex-1 bg-transparent text-lg text-stone-600 placeholder:text-stone-200 border-b border-stone-100 focus:border-stone-300 focus:outline-none py-2 resize-none font-sans focus:ring-0"
             />
             {index > 0 && (
               <button
@@ -190,7 +190,7 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between pb-20">
+      <div className="flex items-center justify-between pb-8">
         <Button
           onClick={onPrev}
           variant="outline"
