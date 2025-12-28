@@ -1,7 +1,9 @@
 'use client'
 
+import React from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
+import { useAuth } from '@/components/auth/AuthProvider'
 import PersonalityStep from '@/components/onboarding/PersonalityStep'
 import ExperienceChoiceStep from '@/components/onboarding/ExperienceChoiceStep'
 import ResumeUploadStep from '@/components/onboarding/ResumeUploadStep'
@@ -47,6 +49,7 @@ const STEP_INFO = [
 ]
 
 export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
+  const { user } = useAuth()
   const {
     currentStep,
     getNextStep,
@@ -58,8 +61,16 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     resumeFile,
     manualExperienceData,
     voiceFile,
-    completeStep
+    completeStep,
+    setUserId
   } = useOnboardingStore()
+
+  // Set authenticated user ID when component mounts
+  React.useEffect(() => {
+    if (user?.id && !userId) {
+      setUserId(user.id)
+    }
+  }, [user, userId, setUserId])
 
   const handleNext = () => {
     const nextStep = getNextStep()
@@ -78,10 +89,16 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const handleCompleteOnboarding = () => {
     const currentState = useOnboardingStore.getState()
     
-    let finalUserId = currentState.userId || userId
+    // Use authenticated user ID - this should always be available since we require auth
+    const finalUserId = user?.id || currentState.userId || userId
     if (!finalUserId) {
-      finalUserId = crypto.randomUUID()
-      console.log('Generated fallback userId:', finalUserId)
+      console.error('No user ID available - user should be authenticated')
+      return
+    }
+
+    // Ensure user ID is set in store
+    if (finalUserId && !currentState.userId) {
+      setUserId(finalUserId)
     }
 
     completeStep('voice-upload')

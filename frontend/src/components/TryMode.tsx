@@ -511,7 +511,7 @@ export default function TryMode() {
               <div className="flex flex-col sm:flex-row gap-4 flex-shrink-0">
                 {/* Filled Button */}
                 <motion.button
-                  onClick={() => router.push('/onboarding')}
+                  onClick={() => router.push('/login')}
                   className="bg-white text-gray-900 rounded-full px-8 py-5 text-lg font-semibold flex items-center gap-3 hover:bg-gray-100 transition-all duration-300"
                   style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
                   whileHover={{ scale: 1.02 }}

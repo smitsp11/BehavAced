@@ -27,7 +27,9 @@ export function LoginForm() {
     }
 
     if (data.session) {
-      router.push('/dashboard')
+      // Check if user has completed onboarding by checking if they have a profile
+      // For now, redirect to onboarding - we can add profile check later
+      router.push('/onboarding')
     }
   }
 

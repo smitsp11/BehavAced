@@ -155,9 +155,8 @@ export default function ManualExperienceStep({ onNext, onPrev }: ManualExperienc
 
     setManualExperienceData(manualData)
 
-    // Generate a UUID-like user ID if we don't have one
-    const userId = crypto.randomUUID()
-    setUserId(userId)
+    // User ID should already be set from authenticated user in OnboardingFlow
+    // No need to generate a new one
 
     onNext()
   }

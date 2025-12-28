@@ -3,53 +3,43 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import OnboardingFlow from '@/components/OnboardingFlow'
-import { getCacheStatus } from '@/lib/api'
-
-const STORAGE_KEY_USER_ID = 'behavaced_user_id'
-const STORAGE_KEY_ONBOARDED = 'behavaced_onboarded'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 export default function OnboardingPage() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
 
-  // TEMPORARILY DISABLED: Persistence for design testing - always start fresh
-  // Check if user is already onboarded and redirect to dashboard
-  // useEffect(() => {
-  //   const checkOnboardingStatus = async () => {
-  //     const storedUserId = localStorage.getItem(STORAGE_KEY_USER_ID)
-  //     const storedOnboarded = localStorage.getItem(STORAGE_KEY_ONBOARDED) === 'true'
+  // Require authentication - redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, authLoading, router])
 
-  //     if (storedUserId && storedOnboarded) {
-  //       // In dev mode, try to load cached profile from backend
-  //       if (process.env.NODE_ENV === 'development') {
-  //         try {
-  //           const cacheStatus = await getCacheStatus()
-  //           if (cacheStatus.exists && cacheStatus.user_id) {
-  //             router.push('/dashboard')
-  //             return
-  //           }
-  //         } catch (error) {
-  //           console.log('No cached profile found')
-  //         }
-  //       }
+  const handleOnboardingComplete = (userId: string) => {
+    // Redirect to dashboard - userId is already the authenticated user's ID
+    router.push('/dashboard')
+  }
 
-  //       // If onboarded, redirect to dashboard
-  //       router.push('/dashboard')
-  //     }
-  //   }
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <main className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-stone-500">Loading...</p>
+        </div>
+      </main>
+    )
+  }
 
-  //   checkOnboardingStatus()
-  // }, [router])
-
-  const handleOnboardingComplete = (newUserId: string) => {
-    // Save to sessionStorage for persistence across navigation
-    sessionStorage.setItem('behavaced_user_id', newUserId)
-    
-    // Redirect to dashboard with userId
-    router.push(`/dashboard?userId=${newUserId}`)
+  // Don't render onboarding if not authenticated (will redirect)
+  if (!user) {
+    return null
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <main className="min-h-screen bg-stone-50">
       <OnboardingFlow onComplete={handleOnboardingComplete} />
     </main>
   )

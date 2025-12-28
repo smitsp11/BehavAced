@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Upload, FileText, X, ArrowRight, ArrowLeft, CheckCircle, Paperclip } from 'lucide-react'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
+import { useAuth } from '@/components/auth/AuthProvider'
 import { uploadResume } from '@/lib/api'
 import { fileToBase64, getFileExtension } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -150,17 +151,28 @@ export default function ResumeUploadStep({ onNext, onPrev }: ResumeUploadStepPro
 
       setBackgroundTaskStatus('resumeProcessing', 'processing')
       
-      let userId = crypto.randomUUID()
+      // Use authenticated user ID - should always be available since we require auth
+      const userId = user?.id
+      if (!userId) {
+        setError('User not authenticated. Please log in again.')
+        setBackgroundTaskStatus('resumeProcessing', 'error', 'User not authenticated')
+        setUploading(false)
+        return
+      }
+
+      // Set user ID from authenticated user
+      setUserId(userId)
+
       try {
         const response = await uploadResume(base64Content, resumeFile.name, fileExt)
         if (response.success && response.user_id) {
-          userId = response.user_id
+          // Backend may return a user_id, but we'll use the authenticated one
+          // The backend should use the authenticated user from the session
         }
       } catch (apiErr) {
-        console.log('Resume API not available - continuing with generated userId:', userId)
+        console.error('Resume API error:', apiErr)
+        // Continue even if API fails - user ID is already set
       }
-
-      setUserId(userId)
       setUploadComplete(true)
       setBackgroundTaskStatus('resumeProcessing', 'completed')
       onNext()

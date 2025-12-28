@@ -11,7 +11,8 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  // Redirect to onboarding for new users, dashboard for existing
-  return NextResponse.redirect(`${origin}/dashboard`)
+  // Redirect to onboarding for new users (they'll need to complete onboarding)
+  // We can check if they have a profile later, but for now redirect to onboarding
+  return NextResponse.redirect(`${origin}/onboarding`)
 }
 
