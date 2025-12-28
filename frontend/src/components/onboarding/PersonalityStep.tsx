@@ -283,158 +283,101 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
   }
 
   return (
-    <div className="w-full h-full bg-stone-50 flex">
-      {/* LEFT SIDEBAR - Coach's Guide (30%) */}
-      <div className="w-[30%] border-r border-stone-200 p-8 flex flex-col">
-        <div className="mb-8">
-          <h2 className="font-serif text-2xl text-stone-900 mb-2">The Executive Diagnostic</h2>
-          <p className="font-sans text-sm text-stone-600 leading-relaxed">
-            A private consultation to understand your authentic communication style.
-          </p>
-        </div>
+    <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+      {/* Question - Massive Serif Headline */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentStep}
+          variants={slideUpVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
+          className="w-full mb-12 text-center"
+        >
+          <h1 className="font-serif text-5xl md:text-6xl text-stone-900 mb-6 leading-tight">
+            {getQuestion()}
+            {currentStep <= 4 && <span className="text-emerald-600 ml-2">*</span>}
+          </h1>
+        </motion.div>
+      </AnimatePresence>
 
-        {/* Vertical Step Counter */}
-        <div className="flex-1 space-y-6">
-          {STEP_INFO.map((step, index) => (
-            <div
-              key={index}
-              className={`flex items-start gap-4 transition-all duration-300 ${
-                index + 1 === currentStep
-                  ? 'opacity-100'
-                  : index + 1 < currentStep
-                  ? 'opacity-60'
-                  : 'opacity-40'
-              }`}
-            >
-              <div className="flex-shrink-0">
-                <span
-                  className={`font-serif italic font-light text-3xl block ${
-                    index + 1 === currentStep
-                      ? 'text-black'
-                      : index + 1 < currentStep
-                      ? 'text-stone-400'
-                      : 'text-stone-300'
-                  }`}
-                >
-                  {step.number}
-                </span>
-              </div>
-              <div className="flex-1 pt-1">
-                <h3
-                  className={`font-serif text-lg mb-1 ${
-                    index + 1 === currentStep
-                      ? 'text-stone-900'
-                      : 'text-stone-600'
-                  }`}
-                >
-                  {step.title}
-                </h3>
-                <p className="font-sans text-xs text-stone-500 leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Analyzing Indicator */}
+      {isAnalyzing && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="mb-6 flex items-center justify-center gap-2 text-sm text-emerald-600"
+        >
+          <Brain className="w-4 h-4 animate-pulse" />
+          <span className="font-sans">Analyzing communication pattern...</span>
+        </motion.div>
+      )}
 
-      {/* RIGHT SIDE - Writing Desk (70%) */}
-      <div className="flex-1 p-12 flex flex-col">
-        {/* Question - Massive Serif Headline */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            variants={slideUpVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-            className="mb-8"
-          >
-            <h1 className="font-serif text-5xl md:text-6xl text-stone-900 mb-4 leading-tight">
-              {getQuestion()}
-              {currentStep <= 4 && <span className="text-emerald-600 ml-2">*</span>}
-            </h1>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Analyzing Indicator */}
-        {isAnalyzing && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="mb-4 flex items-center gap-2 text-sm text-emerald-600"
-          >
-            <Brain className="w-4 h-4 animate-pulse" />
-            <span className="font-sans">Analyzing communication pattern...</span>
-          </motion.div>
-        )}
-
-        {/* Ghost Input - Minimal Underline Style */}
-        <div className="flex-1 flex flex-col">
-          <div className="relative flex-1">
-            <Textarea
-              ref={textareaRef}
-              value={getCurrentValue()}
-              onChange={(e) => handleInputChange(e.target.value)}
-              placeholder={getPlaceholder()}
-              rows={12}
-              className="w-full h-full resize-none bg-transparent border-0 border-b-2 border-stone-300 focus:border-emerald-500 focus:ring-0 rounded-none p-0 text-lg font-sans text-stone-900 placeholder:text-stone-400 transition-all duration-300"
-              style={{
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: 400,
-                lineHeight: '1.8',
-                boxShadow: 'none',
-                outline: 'none'
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                  e.preventDefault()
-                  if (canProceed()) {
-                    handleNext()
-                  }
+      {/* Ghost Input - Minimal Underline Style */}
+      <div className="w-full max-w-3xl">
+        <div className="relative mb-12">
+          <Textarea
+            ref={textareaRef}
+            value={getCurrentValue()}
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder={getPlaceholder()}
+            rows={8}
+            className="w-full resize-none bg-transparent border-0 border-b-2 border-stone-300 focus:border-emerald-500 focus:ring-0 rounded-none p-0 text-3xl md:text-4xl font-sans text-stone-900 placeholder:text-stone-300 transition-all duration-300"
+            style={{
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 400,
+              lineHeight: '1.6',
+              boxShadow: 'none',
+              outline: 'none'
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                if (canProceed()) {
+                  handleNext()
                 }
-              }}
-            />
+              }
+            }}
+          />
+        </div>
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between">
+          <div>
+            {currentStep > 1 && (
+              <Button
+                onClick={handleBack}
+                variant="outline"
+                className="px-6 py-3 border-stone-300 text-stone-700 hover:border-stone-400 hover:bg-stone-50"
+                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            )}
           </div>
 
-          {/* Navigation */}
-          <div className="mt-8 flex items-center justify-between">
-            <div>
-              {currentStep > 1 && (
-                <Button
-                  onClick={handleBack}
-                  variant="outline"
-                  className="px-6 py-3 border-stone-300 text-stone-700 hover:border-stone-400 hover:bg-stone-50"
-                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-4">
-              {canProceed() && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-sm text-stone-500 font-sans"
-                >
-                  Press <kbd className="px-2 py-1 bg-stone-100 rounded text-xs">⌘ Enter</kbd> to continue
-                </motion.p>
-              )}
-              <Button
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className="bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+          <div className="flex items-center gap-4">
+            {canProceed() && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-sm text-stone-500 font-sans"
               >
-                {currentStep === TOTAL_STEPS ? 'Continue' : 'Next'}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
+                Press <kbd className="px-2 py-1 bg-stone-100 rounded text-xs">⌘ Enter</kbd> to continue
+              </motion.p>
+            )}
+            <Button
+              onClick={handleNext}
+              disabled={!canProceed()}
+              className="bg-stone-900 text-white px-8 py-3 hover:bg-stone-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+            >
+              {currentStep === TOTAL_STEPS ? 'Continue' : 'Next'}
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
           </div>
         </div>
       </div>

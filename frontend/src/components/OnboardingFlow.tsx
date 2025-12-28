@@ -1,9 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
-import { Progress } from '@/components/ui/Progress'
-import { AnimatePresence } from 'framer-motion'
-import { SlideIn, FadeIn } from '@/components/ui/motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useOnboardingStore } from '@/lib/stores/onboardingStore'
 import PersonalityStep from '@/components/onboarding/PersonalityStep'
 import ExperienceChoiceStep from '@/components/onboarding/ExperienceChoiceStep'
@@ -16,16 +13,46 @@ interface OnboardingFlowProps {
   onComplete: (userId: string) => void
 }
 
+const STEP_INFO = [
+  {
+    id: 'personality',
+    number: '01',
+    title: 'Identity',
+    description: 'Understanding your core work style and communication patterns.'
+  },
+  {
+    id: 'experience-choice',
+    number: '02',
+    title: 'Path',
+    description: 'Choose how you\'d like to share your professional experience.'
+  },
+  {
+    id: 'resume-upload',
+    number: '03',
+    title: 'Resume',
+    description: 'Upload your resume for AI analysis and story extraction.'
+  },
+  {
+    id: 'manual-experience',
+    number: '03',
+    title: 'Experience',
+    description: 'Share your key professional experiences and achievements.'
+  },
+  {
+    id: 'voice-upload',
+    number: '04',
+    title: 'Voice',
+    description: 'Upload a voice sample to match your natural speaking style.'
+  }
+]
+
 export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const {
     currentStep,
-    completedSteps,
     getNextStep,
     getPrevStep,
     setStep,
-    canProceedToStep,
     experienceChoice,
-    isProcessing,
     userId,
     personalityData,
     resumeFile,
@@ -33,39 +60,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     voiceFile,
     completeStep
   } = useOnboardingStore()
-
-  // Calculate progress (processing step is now skipped - happens in background)
-  const getProgress = () => {
-    const steps = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload']
-    const visibleSteps = steps.filter(step => {
-      if (step === 'resume-upload' && experienceChoice === 'manual') return false
-      if (step === 'manual-experience' && experienceChoice === 'resume') return false
-      return true
-    })
-    const currentIndex = visibleSteps.indexOf(currentStep)
-    return Math.max(0, Math.min(100, ((currentIndex + 1) / visibleSteps.length) * 100))
-  }
-
-  // Calculate step number for display
-  const getStepNumber = () => {
-    const stepOrder = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload']
-    const visibleSteps = stepOrder.filter(step => {
-      if (step === 'resume-upload' && experienceChoice === 'manual') return false
-      if (step === 'manual-experience' && experienceChoice === 'resume') return false
-      return true
-    })
-    return visibleSteps.indexOf(currentStep) + 1
-  }
-
-  const getTotalSteps = () => {
-    const stepOrder = ['personality', 'experience-choice', 'resume-upload', 'manual-experience', 'voice-upload']
-    const visibleSteps = stepOrder.filter(step => {
-      if (step === 'resume-upload' && experienceChoice === 'manual') return false
-      if (step === 'manual-experience' && experienceChoice === 'resume') return false
-      return true
-    })
-    return visibleSteps.length
-  }
 
   const handleNext = () => {
     const nextStep = getNextStep()
@@ -81,26 +75,19 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     }
   }
 
-  // Handle completing onboarding - skip processing step and go directly to dashboard
   const handleCompleteOnboarding = () => {
-    // Get the latest state from the store (userId might have just been set)
     const currentState = useOnboardingStore.getState()
     
-    // Get or generate userId
     let finalUserId = currentState.userId || userId
     if (!finalUserId) {
-      // Generate a new UUID if one doesn't exist (fallback)
       finalUserId = crypto.randomUUID()
       console.log('Generated fallback userId:', finalUserId)
     }
 
-    // Mark steps as complete
     completeStep('voice-upload')
     completeStep('processing')
     completeStep('complete')
 
-    // Start background processing (non-blocking)
-    // Use setTimeout to ensure it runs after redirect
     setTimeout(() => {
       startBackgroundProcessing({
         userId: finalUserId,
@@ -112,7 +99,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       })
     }, 100)
 
-    // Immediately redirect to dashboard
     onComplete(finalUserId)
   }
 
@@ -133,68 +119,114 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     }
   }
 
+  // Get visible steps based on experience choice
+  const getVisibleSteps = () => {
+    return STEP_INFO.filter(step => {
+      if (step.id === 'resume-upload' && experienceChoice === 'manual') return false
+      if (step.id === 'manual-experience' && experienceChoice === 'resume') return false
+      return true
+    })
+  }
+
+  const visibleSteps = getVisibleSteps()
+  const currentStepIndex = visibleSteps.findIndex(step => step.id === currentStep)
+
+  const slideUpVariants = {
+    enter: {
+      y: 50,
+      opacity: 0
+    },
+    center: {
+      y: 0,
+      opacity: 1
+    },
+    exit: {
+      y: -50,
+      opacity: 0
+    }
+  }
+
   return (
-    <div className="min-h-screen relative">
-      {/* Unified Background Gradient - Same as TryMode */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50/30 to-white" />
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-10 left-10 w-[600px] h-[600px] bg-gradient-to-br from-green-200/20 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-40 right-20 w-[700px] h-[700px] bg-gradient-to-bl from-emerald-200/15 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-40 left-1/4 w-[550px] h-[550px] bg-gradient-to-tr from-green-200/18 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-1/2 right-1/3 w-[500px] h-[500px] bg-gradient-to-br from-emerald-200/12 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-[650px] h-[650px] bg-gradient-to-tl from-green-200/15 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-1/3 left-1/2 w-[450px] h-[450px] bg-gradient-to-r from-green-200/10 to-transparent rounded-full blur-3xl" />
+    <div className="h-screen w-full overflow-hidden bg-stone-50 flex">
+      {/* LEFT SIDEBAR - The Context Sidebar (35%) */}
+      <div className="w-[35%] bg-stone-100/50 border-r border-stone-200 p-8 flex flex-col sticky top-0 h-screen overflow-y-auto">
+        {/* Header */}
+        <div className="mb-12">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-stone-600 mb-2 font-sans">
+            The Executive Diagnostic
+          </h2>
+          <p className="font-sans text-sm text-stone-500 leading-relaxed">
+            A private consultation to understand your authentic communication style.
+          </p>
+        </div>
+
+        {/* Vertical Timeline */}
+        <div className="flex-1 space-y-8">
+          {visibleSteps.map((step, index) => {
+            const isCurrent = step.id === currentStep
+            const isPast = index < currentStepIndex
+            const isFuture = index > currentStepIndex
+
+            return (
+              <div
+                key={step.id}
+                className={`flex items-start gap-4 transition-all duration-300 ${
+                  isCurrent
+                    ? 'opacity-100'
+                    : isPast
+                    ? 'opacity-60'
+                    : 'opacity-40'
+                }`}
+              >
+                <div className="flex-shrink-0">
+                  <span
+                    className={`font-serif italic font-light text-3xl block ${
+                      isCurrent
+                        ? 'text-stone-900'
+                        : isPast
+                        ? 'text-stone-400'
+                        : 'text-stone-300'
+                    }`}
+                  >
+                    {step.number}
+                  </span>
+                </div>
+                <div className="flex-1 pt-1">
+                  <h3
+                    className={`font-serif text-lg mb-1 ${
+                      isCurrent
+                        ? 'text-stone-900'
+                        : 'text-stone-600'
+                    }`}
+                  >
+                    {step.title}
+                  </h3>
+                  <p className="font-sans text-xs text-stone-500 leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        {/* Premium Hero Section */}
-        <FadeIn className="mb-16 text-center">
-          <div className="mb-8">
-            {/* Friendly Icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full mb-6 shadow-lg">
-              <span className="text-4xl">✨</span>
-            </div>
-            
-            {/* Big Playfair Display Headline */}
-            <h1 className="text-5xl md:text-6xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-              Welcome to BehavAced
-            </h1>
-            
-            {/* One-line Supportive Tagline */}
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-              Let's build your personalized behavioral interview voice.
-            </p>
-          </div>
-
-          {/* Soft Mint Progress Bar */}
-          {!isProcessing && (
-            <div className="max-w-md mx-auto">
-              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden mb-3">
-                <div 
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#28d98a] to-[#6fffc5] rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${getProgress()}%` }}
-                />
-              </div>
-              <div className="flex justify-between text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400 }}>
-                <span>Step {getStepNumber()} of {getTotalSteps()}</span>
-                <span>{Math.round(getProgress())}% Complete</span>
-              </div>
-            </div>
-          )}
-        </FadeIn>
-
-        {/* Current Step Component with Animation - Floating Card */}
+      {/* RIGHT COLUMN - The Writing Desk (65%) */}
+      <div className="flex-1 bg-stone-50 overflow-y-auto">
         <AnimatePresence mode="wait">
-          <SlideIn key={currentStep}>
-            <div className="bg-white/95 backdrop-blur-sm border-[0.5px] border-green-300/60 rounded-2xl shadow-[0_8px_30px_rgba(0,180,90,0.12)] max-w-2xl mx-auto" style={{ paddingTop: '48px', paddingLeft: '40px', paddingRight: '40px', paddingBottom: '40px' }}>
-              {renderCurrentStep()}
-            </div>
-          </SlideIn>
+          <motion.div
+            key={currentStep}
+            variants={slideUpVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            className="h-full flex items-center justify-center p-12"
+          >
+            {renderCurrentStep()}
+          </motion.div>
         </AnimatePresence>
       </div>
     </div>
   )
 }
-
