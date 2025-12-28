@@ -53,7 +53,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
 
   const handleSubmit = () => {
     // Basic validation
-    if (!formData.work_style.trim() || !formData.communication.trim() || !formData.strengths.trim()) {
+    if (!formData.work_style.trim() || !formData.communication.trim() || !formData.strengths.trim() || !formData.challenges.trim()) {
       return
     }
 
@@ -114,8 +114,10 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
         return formData.communication.trim().length > 0
       case 3:
         return formData.strengths.trim().length > 0
+      case 4:
+        return formData.challenges.trim().length > 0
       default:
-        return true // Steps 4-5 are optional
+        return true // Step 5 is optional
     }
   }
 
@@ -205,7 +207,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
           <div>
             <label className="block mb-2 block flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px' }}>
               <span className="text-lg">🌱</span>
-              <span>What areas are you working to improve?</span>
+              <span>What areas are you working to improve? <span className="text-green-600">*</span></span>
             </label>
             <Textarea
               placeholder="e.g., Public speaking, delegation, time management..."
@@ -313,7 +315,7 @@ export default function PersonalityStep({ onNext, onPrev }: PersonalityStepProps
         </Button>
       </div>
 
-      {currentStep <= 3 && (
+      {currentStep <= 4 && (
         <p className="text-center mt-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '15px', color: '#7D8B92' }}>
           * Required fields
         </p>
